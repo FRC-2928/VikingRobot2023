@@ -3,7 +3,7 @@ package frc.robot.oi;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.oi.DriverOI;
 
@@ -16,11 +16,11 @@ public class DriverOI {
 
     // ---------------- Drivetrain ----------------------------
 
-    public Button getShiftLowButton() {
+    public Trigger getShiftLowButton() {
         return new JoystickButton(m_controller, XboxController.Button.kX.value);
     }
 
-    public Button getShiftHighButton() {
+    public Trigger getShiftHighButton() {
         return new JoystickButton(m_controller, XboxController.Button.kY.value);
     }
 
@@ -28,8 +28,8 @@ public class DriverOI {
         return () -> -m_controller.getLeftY();
     }
 
-    public Button getIsAtHighSpeed() {
-        return new Button(() -> Math.abs(m_controller.getLeftY()) > .85);
+    public Trigger getIsAtHighSpeed() {
+        return new Trigger(() -> Math.abs(m_controller.getLeftY()) > .85);
     }
 
     public DoubleSupplier getRotateSupplier() {
