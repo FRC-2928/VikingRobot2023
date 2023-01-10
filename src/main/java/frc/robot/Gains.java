@@ -11,19 +11,19 @@ public class Gains {
 	// Proportional gain for closed loop. This is multiplied by closed loop error in sensor units. 
 	// Note the closed loop output interprets a final value of 1023 as full output. 
 	// So use a gain of ‘0.25’ to get full output if err is 4096u (Mag Encoder 1 rotation)
-	public final double kP;
+	public final double P;
 
 	// Integral gain for closed loop. 
 	// This is multiplied by closed loop error in sensor units every PID Loop. 
-	public final double kI;
+	public final double I;
 
 	// Derivative gain for closed loop. 
 	// This is multiplied by derivative error (sensor units per PID loop). 
-	public final double kD;
+	public final double D;
 
 	// Feed Forward gain for Closed loop. 
 	// If using velocity, motion magic, or motion profile, use (1023 * duty-cycle / sensor-velocity-sensor-units-per-100ms)
-	public final double kF;
+	public final double F;
 	
 	// Integral Zone can be used to auto clear the integral accumulator if the sensor position
 	// is too far from the target. This prevent unstable oscillation if the kI is too large. 
@@ -35,10 +35,10 @@ public class Gains {
 	public final double kPeakOutput;
 	
 	public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput){
-		kP = _kP;
-		kI = _kI;
-		kD = _kD;
-		kF = _kF;
+		P = _kP;
+		I = _kI;
+		D = _kD;
+		F = _kF;
 		kIzone = _kIzone;
 		kPeakOutput = _kPeakOutput;
 	}
