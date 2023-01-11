@@ -8,9 +8,9 @@ import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveDistance extends CommandBase {
-  private final Drivetrain m_drive;
-  private final double m_distance;
-  private final double m_speed;
+  private final Drivetrain drivetrain;
+  private final double distance;
+  private final double speed;
 
   // NEW todo fix autonomous later
   /**
@@ -31,26 +31,26 @@ public class DriveDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_drive.arcadeDrive(0, 0);
-    m_drive.resetEncoders();
+    this.drivetrain.diffDrive.arcadeDrive(0, 0);
+    this.drivetrain.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(m_speed, 0);
+    this.drivetrain.diffDrive.arcadeDrive(this.speed, 0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drive.arcadeDrive(0, 0);
+    this.drivetrain.diffDrive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
    public boolean isFinished() {
   //   // Compare distance travelled from start to desired distance
-     return Math.abs(m_drive.getAvgDistanceMeters()) >= m_distance;
+     return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
    }
 }
