@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 public class RobotContainer {
   
   // The Robot's Subsystems
-  private final Transmission m_transmission = new Transmission();
-  private final Drivetrain m_drivetrain = new Drivetrain(m_transmission::getGearState);
+  public final Transmission m_transmission = new Transmission();
+  public final Drivetrain m_drivetrain = new Drivetrain(m_transmission::getGearState);
 
   // XBox Controllers
   private final XboxController m_driverController = new XboxController(0);
@@ -64,7 +64,7 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(
         // A split-stick arcade command, with forward/backward controlled by the left
         // hand, and turning controlled by the right.
-        new RunCommand(() -> m_drivetrain.arcadeDrive(m_driverOI.getMoveSupplier(), m_driverOI.getRotateSupplier()),
+        new RunCommand(() -> m_drivetrain.diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble(), m_driverOI.getRotateSupplier().getAsDouble()),
               m_drivetrain));
 
     // Configure button commands
