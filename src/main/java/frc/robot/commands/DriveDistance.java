@@ -8,9 +8,9 @@ import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveDistance extends CommandBase {
-  private final Drivetrain drivetrain;
-  private final double distance;
-  private final double speed;
+  private final Drivetrain m_drivetrain;
+  private final double m_distance;
+  private final double m_speed;
 
   // NEW todo fix autonomous later
   /**
@@ -22,35 +22,35 @@ public class DriveDistance extends CommandBase {
    * @param drive The drivetrain subsystem on which this command will run
    */
   public DriveDistance(double speed, double inches, Drivetrain drive) {
-    this.distance = inches;
-    this.speed = speed;
-    this.drivetrain = drive;
+    m_distance = inches;
+    m_speed = speed;
+    m_drivetrain = drive;
     addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.drivetrain.diffDrive.arcadeDrive(0, 0);
-    this.drivetrain.resetEncoders();
+    m_drivetrain.m_diffDrive.arcadeDrive(0, 0);
+    m_drivetrain.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.drivetrain.diffDrive.arcadeDrive(this.speed, 0);
+    m_drivetrain.m_diffDrive.arcadeDrive(m_speed, 0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.drivetrain.diffDrive.arcadeDrive(0, 0);
+    m_drivetrain.m_diffDrive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
    public boolean isFinished() {
   //   // Compare distance travelled from start to desired distance
-     return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
+     return Math.abs(m_drivetrain.getAvgDistanceMeters()) >= m_distance;
    }
 }

@@ -19,7 +19,7 @@ public class Balance extends CommandBase {
     public void initialize() {
         drivetrain.halt();
 
-        for(TalonFX fx : new TalonFX[] { drivetrain.leftLeader, drivetrain.rightLeader }) {
+        for(TalonFX fx : new TalonFX[] { drivetrain.m_leftLeader, drivetrain.rightLeader }) {
             fx.selectProfileSlot(0, 0);
             fx.set(ControlMode.Position, 0);
 
