@@ -7,7 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AutonomousDistance;
 import frc.robot.commands.AutonomousTime;
-import frc.robot.commands.Balance;
+import frc.robot.commands.BalanceNative;
+import frc.robot.commands.BalancePID;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -65,13 +66,13 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(
         // A split-stick arcade command, with forward/backward controlled by the left
         // hand, and turning controlled by the right.
-        new RunCommand(() -> m_drivetrain.m_diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble(), m_driverOI.getRotateSupplier().getAsDouble()),
+        new RunCommand(() -> m_drivetrain.m_diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble() * 0.4, m_driverOI.getRotateSupplier().getAsDouble() * 0.4),
               m_drivetrain));
 
     // Configure button commands
     m_driverOI.getShiftLowButton().onTrue(new InstantCommand(m_transmission::setLow, m_transmission));
     m_driverOI.getShiftHighButton().onTrue(new InstantCommand(m_transmission::setHigh, m_transmission));
-    m_driverOI.getBalanceButton().whileTrue(new Balance(this.m_drivetrain));
+    m_driverOI.getBalanceButton().whileTrue(new BalancePID(this.m_drivetrain));
   }
 
   /**
