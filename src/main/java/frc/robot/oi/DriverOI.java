@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.oi.DriverOI;
 
 public class DriverOI {
@@ -23,6 +22,10 @@ public class DriverOI {
 
     public Trigger getShiftHighButton() {
         return new JoystickButton(m_controller, XboxController.Button.kY.value);
+    }
+
+    public Trigger getBalanceButton() {
+        return new JoystickButton(m_controller, XboxController.Button.kA.value);
     }
 
     public DoubleSupplier getMoveSupplier() {
