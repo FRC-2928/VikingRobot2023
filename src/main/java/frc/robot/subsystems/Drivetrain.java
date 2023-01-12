@@ -22,14 +22,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 public class Drivetrain extends SubsystemBase {
-  public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
+  public final WPI_TalonFX m_leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
   public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
   public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
   public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
 
-  private Supplier<Transmission.GearState> gearStateSupplier;
+  private Supplier<Transmission.GearState> m_gearStateSupplier;
 
-  public DifferentialDrive diffDrive;
+  public DifferentialDrive m_diffDrive;
 
   // Set up the BuiltInAccelerometer
   public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
@@ -40,35 +40,35 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drivetrain. */
   public Drivetrain(Supplier<Transmission.GearState> gearStateSupplier) {
-    this.gearStateSupplier = gearStateSupplier;
+    m_gearStateSupplier = gearStateSupplier;
 
     // Motors
-    this.configmotors();
+    configmotors();
 
     // Configure PID values for the talons
-    this.setWheelPIDF();
+    setWheelPIDF();
 
-    this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
+    m_diffDrive = new DifferentialDrive(m_leftLeader, rightLeader);
 
     // Reset encoders and gyro
-    this.resetEncoders();
-    this.zeroGyro();
+    resetEncoders();
+    zeroGyro();
   }
 
   public void setWheelPIDF() {
     // set the PID values for each individual wheel
-    for (TalonFX fx : new TalonFX[] { this.leftLeader, this.rightLeader }) {
-      fx.config_kP(0, DrivetrainConstants.GainsProfiled.P, 0);
-      fx.config_kI(0, DrivetrainConstants.GainsProfiled.I, 0);
-      fx.config_kD(0, DrivetrainConstants.GainsProfiled.D, 0);
-      fx.config_kF(0, DrivetrainConstants.GainsProfiled.F, 0);
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, rightLeader }) {
+      fx.config_kP(0, DrivetrainConstants.GainsBalance.P, 0);
+      fx.config_kI(0, DrivetrainConstants.GainsBalance.I, 0);
+      fx.config_kD(0, DrivetrainConstants.GainsBalance.D, 0);
+      fx.config_kF(0, DrivetrainConstants.GainsBalance.F, 0);
       // m_talonsMaster.config_IntegralZone(0, 30);
     }
   }
 
   public void configmotors() { // new
     // Configure the motors
-    for (TalonFX fx : new TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, leftFollower, rightLeader, rightFollower }) {
       // Reset settings for safety
       fx.configFactoryDefault();
 
@@ -105,40 +105,40 @@ public class Drivetrain extends SubsystemBase {
     }
 
     // New Talon FX inverts. Would replace InvertType.InvertMotorOutput
-    // this.m_leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
-    // this.m_rightLeader.setInverted(TalonFXInvertType.Clockwise);
+    // m_leftLeader.setInverted(TalonFXInvertType.CounterClockwise);
+    // m_rightLeader.setInverted(TalonFXInvertType.Clockwise);
 
     // Setting followers, followers don't automatically follow the Leader's inverts
     // so you must set the invert type to Follow the Leader
-    this.leftFollower.setInverted(InvertType.FollowMaster);
-    this.rightFollower.setInverted(InvertType.FollowMaster);
+    leftFollower.setInverted(InvertType.FollowMaster);
+    rightFollower.setInverted(InvertType.FollowMaster);
 
-    this.leftFollower.follow(this.leftLeader, FollowerType.PercentOutput);
-    this.rightFollower.follow(this.rightLeader, FollowerType.PercentOutput);
+    leftFollower.follow(m_leftLeader, FollowerType.PercentOutput);
+    rightFollower.follow(rightLeader, FollowerType.PercentOutput);
 
-    this.rightLeader.setInverted(InvertType.InvertMotorOutput);
+    rightLeader.setInverted(InvertType.InvertMotorOutput);
   }
 
   // -----------------------------------------------------------
   // Control Input
   // -----------------------------------------------------------
   public void halt() {
-    this.diffDrive.arcadeDrive(0, 0);
+    m_diffDrive.arcadeDrive(0, 0);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    this.leftLeader.set(ControlMode.PercentOutput, leftVolts / 12);
-    this.rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
-    this.diffDrive.feed();
+    m_leftLeader.set(ControlMode.PercentOutput, leftVolts / 12);
+    rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
+    m_diffDrive.feed();
   }
 
   public void zeroGyro() {
-    this.pigeon.reset();
+    pigeon.reset();
   }
 
   public void resetEncoders() {
-    this.leftLeader.setSelectedSensorPosition(0);
-    this.rightLeader.setSelectedSensorPosition(0);
+    m_leftLeader.setSelectedSensorPosition(0);
+    rightLeader.setSelectedSensorPosition(0);
   }
 
   // -----------------------------------------------------------
@@ -158,25 +158,25 @@ public class Drivetrain extends SubsystemBase {
 
   // Encoder ticks to meters
   public double encoderTicksToMeters(double encoderTicks) {
-    GearState gearState = this.gearStateSupplier.get();
-    return this.wheelRotationsToMeters(this.motorRotationsToWheelRotations(encoderTicks, gearState));
+    GearState gearState = m_gearStateSupplier.get();
+    return wheelRotationsToMeters(motorRotationsToWheelRotations(encoderTicks, gearState));
   }
 
   public double getLeftDistanceMeters() {
-    return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
+    return encoderTicksToMeters(m_leftLeader.getSelectedSensorPosition());
   }
 
   public double getRightDistanceMeters() {
-    return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
+    return encoderTicksToMeters(rightLeader.getSelectedSensorPosition());
   }
 
   public double getAvgDistanceMeters() {
-    return (this.getLeftDistanceMeters() + this.getRightDistanceMeters()) / 2;
+    return (getLeftDistanceMeters() + getRightDistanceMeters()) / 2;
   }
 
   public double[] readGyro() {
     double[] angle = new double[3];
-    this.pigeon.getYawPitchRoll(angle);
+    pigeon.getYawPitchRoll(angle);
     return angle;
   }
 

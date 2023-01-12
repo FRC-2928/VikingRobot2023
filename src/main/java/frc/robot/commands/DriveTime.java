@@ -31,19 +31,19 @@ public class DriveTime extends CommandBase {
   @Override
   public void initialize() {
     m_startTime = System.currentTimeMillis();
-    m_drive.diffDrive.arcadeDrive(0, 0);
+    m_drive.m_diffDrive.arcadeDrive(0, 0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.diffDrive.arcadeDrive(m_speed, 0);
+    m_drive.m_diffDrive.arcadeDrive(m_speed, 0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drive.diffDrive.arcadeDrive(0, 0);
+    m_drive.m_diffDrive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
