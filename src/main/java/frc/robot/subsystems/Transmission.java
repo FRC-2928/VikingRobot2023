@@ -12,7 +12,7 @@ import frc.robot.Constants;
  */
 
 public class Transmission extends SubsystemBase {
-  private Solenoid m_shiftPiston;
+  //private Solenoid m_shiftPiston;
   private Solenoid m_shiftPistonHigh;
   private Solenoid m_shiftPistonLow;
   private GearState m_gearState;

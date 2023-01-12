@@ -79,7 +79,7 @@ public final class Constants {
 
         public static final double kUnitsPerRevolution = 2048;
 
-        // TODO change to correct values
+        // TO DO change to correct values
         public static final double HighGearRatio = 10.71;
         public static final double LowGearRatio = 5;
 
