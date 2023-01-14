@@ -8,7 +8,7 @@ import frc.robot.Constants;
  * Utility class responsible for the gyro
  */
 public class Pigeon{
-    private PigeonIMU m_pigeon;
+    private static PigeonIMU m_pigeon;
 
     public Pigeon(){
         m_pigeon = new PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
@@ -19,6 +19,11 @@ public class Pigeon{
         double ypr[] = {0, 0, 0};
         m_pigeon.getYawPitchRoll(ypr);
         return ypr[0];
+    }
+    public static double getRoll(){
+        double rll[] = {0, 0, 0};
+        m_pigeon.getYawPitchRoll(rll);
+        return rll[2];
     }
 
     public void resetGyro(){
