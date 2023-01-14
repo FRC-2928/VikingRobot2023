@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 //import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
@@ -15,10 +16,10 @@ import frc.robot.subsystems.Drivetrain;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class roll_corectionPID extends PIDCommand {
+public class Roll_corectionPID extends PIDCommand {
   /** Creates a new roll_corection. */
   public Drivetrain drive;
-  public roll_corectionPID(Drivetrain drivetrain) {
+  public Roll_corectionPID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
         new PIDController(DrivetrainConstants.GainsRollBalance.P, DrivetrainConstants.GainsRollBalance.I,DrivetrainConstants.GainsRollBalance.D),
@@ -30,6 +31,8 @@ public class roll_corectionPID extends PIDCommand {
         // This uses the output
         output -> {
           // Use the output here
+          SmartDashboard.putNumber("Roll",drivetrain.m_pigeon.getRoll());
+          SmartDashboard.putNumber("Output",output);
           drivetrain.tankDriveVolts(-output,output);
         });
     // Use addRequirements() here to declare subsystem dependencies.
