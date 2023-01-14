@@ -9,6 +9,7 @@ import frc.robot.commands.AutonomousDistance;
 import frc.robot.commands.AutonomousTime;
 import frc.robot.commands.BalanceNative;
 import frc.robot.commands.BalancePID;
+import frc.robot.commands.roll_corectionPID;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Transmission;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
@@ -72,10 +74,17 @@ public class RobotContainer {
     // Configure button commands
     m_driverOI.getShiftLowButton().onTrue(new InstantCommand(m_transmission::setLow, m_transmission));
     m_driverOI.getShiftHighButton().onTrue(new InstantCommand(m_transmission::setHigh, m_transmission));
-    m_driverOI.getBalanceButton().whileTrue(new BalancePID(this.m_drivetrain));
+    m_driverOI.getBalanceButton().whileTrue(Balance());
     m_driverOI.getResetGyroButton().onTrue(new InstantCommand(m_drivetrain::zeroGyro, m_drivetrain));
 
   }
+
+
+  private Command Balance() {
+    new SequentialCommandGroup(new roll_corectionPID(this.m_drivetrain),new BalancePID(this.m_drivetrain));
+    return null;
+  }
+
 
   /**
    * Configure AutoChooser 
