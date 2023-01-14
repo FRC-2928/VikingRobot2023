@@ -7,8 +7,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalancePID extends PIDCommand {
-  private Drivetrain drivetrain;
-  
+  public Drivetrain drivetrain;
   public BalancePID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
@@ -34,11 +33,9 @@ public class BalancePID extends PIDCommand {
 
         //maybe omit tolerance? not sure what it does but works well with 10 (tippy with 5)
         //potentially unit of encoder ticks on pigeon
-    this.m_controller.setTolerance(10.0);
+        //realized tolerance is for atSetpoint and anything inbetween
+    this.m_controller.setTolerance(1.0);
     this.addRequirements(drivetrain);
-    this.drivetrain = drivetrain;
-
-
     SmartDashboard.putData(this.m_controller);
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -55,6 +52,7 @@ public class BalancePID extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    //return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;=
+    return this.m_controller.atSetpoint();
   }
 }
