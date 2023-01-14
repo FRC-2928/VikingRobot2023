@@ -4,12 +4,21 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.AutonomousDistance;
-import frc.robot.commands.AutonomousTime;
-//import frc.robot.commands.BalanceNative;
-import frc.robot.commands.BalancePID;
-import frc.robot.commands.BalanceRollPID;
+import frc.robot.commands.DrivetrainCommands.AutonomousDistance;
+import frc.robot.commands.DrivetrainCommands.AutonomousTime;
+import frc.robot.commands.DrivetrainCommands.BalancePID;
+import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
+import frc.robot.commands.DrivetrainCommands.DriveTime;
+import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -18,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Transmission;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
@@ -49,6 +59,8 @@ public class RobotContainer {
 
     // Configure default commands, button bindings, and shuffleboard
     configureSubsystems();
+
+    configureAuto();
   }
 
   /**
@@ -57,6 +69,38 @@ public class RobotContainer {
    */
   private void configureSubsystems() {
     configureDrivetrain();
+  }
+
+  private void configureAuto(){
+    m_chooser.setDefaultOption("Do Nothing", new SequentialCommandGroup(new WaitCommand(0.1)));
+    m_chooser.addOption("back up and balance", new SequentialCommandGroup(new WaitCommand(.2), 
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
+                                                //Todo: find right time/speed to get onto teeter totter
+                                                new DriveTime(-.4, .5, m_drivetrain),
+                                                new BalanceRollPID(m_drivetrain),
+                                                new BalancePID(m_drivetrain)));
+    m_chooser.addOption("curve right around station and balance", new SequentialCommandGroup(
+                                                                        new WaitCommand(.1),
+                                                                        new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto1")),
+                                                                        //Todo: find right time/speed to get onto teeter totter
+                                                                        new DriveTime(-.4, .5, m_drivetrain),
+                                                                        new BalanceRollPID(m_drivetrain),
+                                                                        new BalancePID(m_drivetrain)));
+    m_chooser.addOption("test", new SequentialCommandGroup(new WaitCommand(.1),
+                                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance"))));                                                              
+    
+  }
+
+  public Trajectory loadTrajectory(String trajectoryJSON) {
+    Trajectory trajectory = new Trajectory();
+
+    try{
+        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("output", trajectoryJSON + ".wpilib.json"));
+        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+      } catch (IOException ex) {
+        DriverStation.reportError("Unable to open Trajectory:" + trajectoryJSON, ex.getStackTrace());
+      }
+      return trajectory;
   }
 
    /**
