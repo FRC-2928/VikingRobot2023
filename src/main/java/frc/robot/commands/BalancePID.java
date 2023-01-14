@@ -15,8 +15,14 @@ public class BalancePID extends PIDCommand {
         new PIDController(DrivetrainConstants.GainsBalance.P, DrivetrainConstants.GainsBalance.I, DrivetrainConstants.GainsBalance.D),
         // This should return the measurement
         () -> {
-          SmartDashboard.putNumber("pitch", drivetrain.m_pigeon.getPitch());
-          return drivetrain.m_pigeon.getPitch();
+          double[] angle = new double[3];
+          drivetrain.m_pigeon.getYawPitchRoll(angle);
+
+          //double pitch = drivetrain.m_pigeon.getPitch();
+          double pitch = angle[2];
+
+          SmartDashboard.putNumber("pitch", pitch);
+          return pitch;
         },
         // This should return the setpoint (can also be a constant)
         () -> 0,
@@ -25,9 +31,15 @@ public class BalancePID extends PIDCommand {
           drivetrain.tankDriveVolts(-output, -output);
           SmartDashboard.putNumber("pid output", output);
         });
-    this.m_controller.setTolerance(1.0);
+
+        //maybe omit tolerance? not sure what it does but works well with 10 (tippy with 5)
+        //potentially unit of encoder ticks on pigeon
+    this.m_controller.setTolerance(10.0);
     this.addRequirements(drivetrain);
     this.drivetrain = drivetrain;
+
+
+    SmartDashboard.putData(this.m_controller);
 
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.

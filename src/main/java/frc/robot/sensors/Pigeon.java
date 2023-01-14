@@ -12,6 +12,7 @@ public class Pigeon{
 
     public Pigeon(){
         m_pigeon = new PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+        
     }
 
     public double getYaw(){
