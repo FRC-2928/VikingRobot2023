@@ -16,28 +16,44 @@ import frc.robot.subsystems.Drivetrain;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Roll_corectionPID extends PIDCommand {
+public class BalanceRollPID extends PIDCommand {
   /** Creates a new roll_corection. */
   public Drivetrain drive;
-  public Roll_corectionPID(Drivetrain drivetrain) {
+  public BalanceRollPID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
         new PIDController(DrivetrainConstants.GainsRollBalance.P, DrivetrainConstants.GainsRollBalance.I,DrivetrainConstants.GainsRollBalance.D),
         // This should return the measurement
         
-        () -> drivetrain.m_pigeon.getRoll(),
+        () -> {
+          double[] angle = new double[3];
+          drivetrain.m_pigeon.getYawPitchRoll(angle);
+
+          //double pitch = drivetrain.m_pigeon.getPitch();
+          double roll = angle[1];
+
+          SmartDashboard.putNumber("roll", roll);
+          return roll;
+        },
         // This should return the setpoint (can also be a constant)
         () -> 0,
         // This uses the output
         output -> {
           // Use the output here
-          SmartDashboard.putNumber("Roll",drivetrain.m_pigeon.getRoll());
+          //SmartDashboard.putNumber("Roll",angle[1]);
           SmartDashboard.putNumber("Output",output);
-          drivetrain.tankDriveVolts(-output,output);
+          if(drivetrain.m_pigeon.getRoll() >0){
+            drivetrain.tankDriveVolts(output,-output);
+          }
+          else{
+            drivetrain.tankDriveVolts(-output,output);
+          }
+          
         });
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(2, 10);
+    getController().setTolerance(0.25, 10);
+    SmartDashboard.putData(this.m_controller);
   }
 
   // Returns true when the command should end.
