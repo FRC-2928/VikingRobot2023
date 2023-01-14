@@ -39,4 +39,8 @@ public class DriverOI {
     public DoubleSupplier getRotateSupplier() {
         return () -> m_controller.getRightX();
     }  
+
+    public Trigger getResetGyroButton(){
+        return new JoystickButton(m_controller, XboxController.Button.kB.value);
+    }
 }
