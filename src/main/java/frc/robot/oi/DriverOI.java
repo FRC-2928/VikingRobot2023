@@ -25,7 +25,7 @@ public class DriverOI {
     }
 
     public Trigger getBalanceButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kA.value);
+        return new JoystickButton(m_controller, XboxController.Button.kRightBumper.value);
     }
 
     public DoubleSupplier getMoveSupplier() {
@@ -42,5 +42,9 @@ public class DriverOI {
 
     public Trigger getResetGyroButton(){
         return new JoystickButton(m_controller, XboxController.Button.kB.value);
+    }
+
+    public Trigger RollButton(){
+        return new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value);
     }
 }
