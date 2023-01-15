@@ -19,6 +19,8 @@ import frc.robot.subsystems.Drivetrain;
 public class BalanceRollPID extends PIDCommand {
   /** Creates a new roll_corection. */
   public Drivetrain drive;
+  public static int ROLL = 1;
+  public static double time = System.currentTimeMillis();
   public BalanceRollPID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
@@ -30,7 +32,7 @@ public class BalanceRollPID extends PIDCommand {
           drivetrain.m_pigeon.getYawPitchRoll(angle);
 
           //double pitch = drivetrain.m_pigeon.getPitch();
-          double roll = angle[1];
+          double roll = angle[ROLL];
 
           SmartDashboard.putNumber("roll", roll);
           return roll;
@@ -52,13 +54,18 @@ public class BalanceRollPID extends PIDCommand {
         });
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.25, 10);
+    getController().setTolerance(0.28, 10);
     SmartDashboard.putData(this.m_controller);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    if(System.currentTimeMillis() > time + 7000){
+      return true;
+    }
+    else{
+      return getController().atSetpoint();
+    }
   }
 }
