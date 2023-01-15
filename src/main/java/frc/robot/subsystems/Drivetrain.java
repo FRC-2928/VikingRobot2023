@@ -68,6 +68,8 @@ public class Drivetrain extends SubsystemBase {
 
     m_diffDrive = new DifferentialDrive(m_leftLeader, m_rightLeader);
 
+    m_feedForward = DrivetrainConstants.kFeedForward;
+
     // Setup odometry to start at position 0,0 (top left of field)
     m_yaw = m_pigeon.getYaw();
     SmartDashboard.putNumber("Initial robot yaw", m_yaw);
