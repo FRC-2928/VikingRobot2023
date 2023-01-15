@@ -74,7 +74,8 @@ public class RobotContainer {
     // Configure button commands
     m_driverOI.getShiftLowButton().onTrue(new InstantCommand(m_transmission::setLow, m_transmission));
     m_driverOI.getShiftHighButton().onTrue(new InstantCommand(m_transmission::setHigh, m_transmission));
-    m_driverOI.getBalanceButton().whileTrue(new SequentialCommandGroup(new BalanceRollPID(this.m_drivetrain), new BalancePID(this.m_drivetrain, false)));
+    m_driverOI.getBalanceButton().whileTrue(new BalancePID(this.m_drivetrain));
+    m_driverOI.getRollButton().whileTrue(new BalanceRollPID(this.m_drivetrain));
     m_driverOI.getResetGyroButton().onTrue(new InstantCommand(m_drivetrain::zeroGyro, m_drivetrain));
 
   }
