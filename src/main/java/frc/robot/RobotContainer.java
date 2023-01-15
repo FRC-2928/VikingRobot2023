@@ -60,7 +60,6 @@ public class RobotContainer {
     // Configure default commands, button bindings, and shuffleboard
     configureSubsystems();
 
-    configureAuto();
   }
 
   /**
@@ -71,25 +70,7 @@ public class RobotContainer {
     configureDrivetrain();
   }
 
-  private void configureAuto(){
-    m_chooser.setDefaultOption("Do Nothing", new SequentialCommandGroup(new WaitCommand(0.1)));
-    m_chooser.addOption("back up and balance", new SequentialCommandGroup(new WaitCommand(.2), 
-                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
-                                                //Todo: find right time/speed to get onto teeter totter
-                                                new DriveTime(-.4, .5, m_drivetrain),
-                                                new BalanceRollPID(m_drivetrain),
-                                                new BalancePID(m_drivetrain)));
-    m_chooser.addOption("curve right around station and balance", new SequentialCommandGroup(
-                                                                        new WaitCommand(.1),
-                                                                        new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto1")),
-                                                                        //Todo: find right time/speed to get onto teeter totter
-                                                                        new DriveTime(-.4, .5, m_drivetrain),
-                                                                        new BalanceRollPID(m_drivetrain),
-                                                                        new BalancePID(m_drivetrain)));
-    m_chooser.addOption("test", new SequentialCommandGroup(new WaitCommand(.1),
-                                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance"))));                                                              
-    
-  }
+  
 
   public Trajectory loadTrajectory(String trajectoryJSON) {
     Trajectory trajectory = new Trajectory();
@@ -139,6 +120,26 @@ public class RobotContainer {
     // Setup SmartDashboard options
     m_chooser.setDefaultOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
     m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
+    m_chooser.addOption("Do Nothing", new SequentialCommandGroup(new WaitCommand(0.1)));
+    m_chooser.addOption("back up and balance", new SequentialCommandGroup(new WaitCommand(.2), 
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
+                                                //Todo: find right time/speed to get onto teeter totter
+                                                new DriveTime(-.4, .5, m_drivetrain),
+                                                new BalanceRollPID(m_drivetrain),
+                                                new BalancePID(m_drivetrain)));
+    m_chooser.addOption("curve right around station and balance", new SequentialCommandGroup(
+                                                                        new WaitCommand(.1),
+                                                                        new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto1")),
+                                                                        //Todo: find right time/speed to get onto teeter totter
+                                                                        new DriveTime(-.4, .5, m_drivetrain),
+                                                                        new BalanceRollPID(m_drivetrain),
+                                                                        new BalancePID(m_drivetrain)));
+    m_chooser.addOption("test", new SequentialCommandGroup(new WaitCommand(.1),
+                                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance"))));   
+    m_chooser.addOption("testing", new SequentialCommandGroup(new WaitCommand(.1),
+                                                                new DriveTime(.5, 2, m_drivetrain)));                                                           
+    
+  
     SmartDashboard.putData(m_chooser);
   }
 
