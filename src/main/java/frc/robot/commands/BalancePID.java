@@ -8,7 +8,7 @@ import frc.robot.subsystems.Drivetrain;
 
 public class BalancePID extends PIDCommand {
   public Drivetrain drivetrain;
-  public BalancePID(Drivetrain drivetrain) {
+  public BalancePID(Drivetrain drivetrain, Boolean otherbot) {
     super(
         // The controller that the command will use
         new PIDController(DrivetrainConstants.GainsBalance.P, DrivetrainConstants.GainsBalance.I, DrivetrainConstants.GainsBalance.D),
@@ -52,7 +52,7 @@ public class BalancePID extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;=
+    //return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;
     return this.m_controller.atSetpoint();
   }
 }
