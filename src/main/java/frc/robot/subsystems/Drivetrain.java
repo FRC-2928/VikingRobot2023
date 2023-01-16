@@ -309,6 +309,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Rotation2d getRotation(){
+
+      m_yaw = readGyro()[0];
     
         return (Rotation2d.fromDegrees(m_yaw));      
   }
@@ -341,7 +343,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     
-
+  
    m_odometry.update(getRotation(), getLeftDistanceMeters(), getRightDistanceMeters());
     publishTelemetry();
 

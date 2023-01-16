@@ -124,7 +124,7 @@ public final class Constants {
         public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
         public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
         public static final Gains GainsBalance = new Gains(0.15, 0, 0.005, 0, 0, 0.3);
-        public static final Gains GainsRollBalance = new Gains(1.5,0,0.03,0.0,0, 0.3);
+        public static final Gains GainsRollBalance = new Gains(1,0,0.03,0.0,0, 0.3);
 
         // public static final double kDistanceToleranceMeters = 0.1;
         // public static final double kVelocityToleranceMeters = 0.1;
