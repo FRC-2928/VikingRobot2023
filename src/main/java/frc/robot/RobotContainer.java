@@ -131,15 +131,25 @@ public class RobotContainer {
                                                                         new WaitCommand(.1),
                                                                         new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto1")),
                                                                         //Todo: find right time/speed to get onto teeter totter
-                                                                        new DriveTime(-.4, .5, m_drivetrain),
+                                                                        //new DriveTime(-.4, .5, m_drivetrain),
                                                                         new BalanceRollPID(m_drivetrain),
                                                                         new BalancePID(m_drivetrain)));
     m_chooser.addOption("test", new SequentialCommandGroup(new WaitCommand(.1),
                                                                 new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance"))));   
     m_chooser.addOption("testing", new SequentialCommandGroup(new WaitCommand(.1),
-                                                                new DriveTime(.5, 2, m_drivetrain)));                                                           
+                                                                new DriveTime(.5, 2, m_drivetrain))); 
+    m_chooser.addOption("backupbalance", new SequentialCommandGroup(new WaitCommand(.1),
+                                              new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
+                                              new BalanceRollPID(m_drivetrain),
+                                              new BalancePID(m_drivetrain)));                                                          
     
-  
+    m_chooser.addOption("auto2", new SequentialCommandGroup(
+                                                new WaitCommand(.1),
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto2")),
+                                                //Todo: find right time/speed to get onto teeter totter
+                                                //new DriveTime(-.4, .5, m_drivetrain),
+                                                new BalanceRollPID(m_drivetrain),
+                                                new BalancePID(m_drivetrain)));
     SmartDashboard.putData(m_chooser);
   }
 
