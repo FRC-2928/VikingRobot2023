@@ -229,7 +229,7 @@ public class Drivetrain extends SubsystemBase {
     tankDriveVolts(0.0, 0.0);
   }
 
-  public void setOutputMetersPerSecond(double leftMetersPerSecond, double rightMetersPerSecond) {
+  public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
         
     System.out.println("right m/s" + rightMetersPerSecond);
     // Calculate feedforward for the left and right wheels.
@@ -329,6 +329,10 @@ public class Drivetrain extends SubsystemBase {
     return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
   }
 
+  public double getHeading(){
+    return m_pigeon.getFusedHeading();
+  }
+
 // ----------------------------------------------------
 // Process Logic
 // ----------------------------------------------------
@@ -345,6 +349,9 @@ public class Drivetrain extends SubsystemBase {
 
   public void publishTelemetry(){
     SmartDashboard.putNumber("motor output", getMotorOutput());
+    m_field2d.setRobotPose(getPose());
+    SmartDashboard.putNumber("right enoder ticks", m_rightLeader.getSelectedSensorPosition());
+    SmartDashboard.putNumber("left enoder ticks", m_leftLeader.getSelectedSensorPosition());
   }
 
 }
