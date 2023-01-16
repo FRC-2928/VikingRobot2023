@@ -317,13 +317,7 @@ public class Drivetrain extends SubsystemBase {
     return m_rightLeader.getMotorOutputVoltage();
   }
 
-  // This method will be called once per scheduler run
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("motor output", getMotorOutput());
-
-  }
-
+  
   public double metersToWheelRotations(double metersPerSecond) {
     return metersPerSecond / (DrivetrainConstants.kWheelDiameterMeters * Math.PI);
   }
@@ -333,5 +327,24 @@ public class Drivetrain extends SubsystemBase {
         return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.highGearRatio;
     }
     return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
-}
+  }
+
+// ----------------------------------------------------
+// Process Logic
+// ----------------------------------------------------
+
+// This method will be called once per scheduler run
+  @Override
+  public void periodic() {
+    
+
+   m_odometry.update(getRotation(), getLeftDistanceMeters(), getRightDistanceMeters());
+    publishTelemetry();
+
+  }
+
+  public void publishTelemetry(){
+    SmartDashboard.putNumber("motor output", getMotorOutput());
+  }
+
 }
