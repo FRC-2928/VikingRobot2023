@@ -36,9 +36,11 @@ public class RunRamseteTrajectory extends RamseteCommand {
     m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
     SmartDashboard.putNumber("start traj Y", m_trajectory.getInitialPose().getY());
     SmartDashboard.putNumber("start odom Y", m_drivetrain.getPose().getY());
+    SmartDashboard.putNumber("start traj X", m_trajectory.getInitialPose().getX());
+    SmartDashboard.putNumber("start odom X", m_drivetrain.getPose().getX());
     m_drivetrain.setPIDSlot(0);
     SmartDashboard.putNumber("start odometry heading", m_drivetrain.getPose().getRotation().getDegrees());
-    //SmartDashboard.putNumber("start heading", m_drivetrain.getHeading());
+    SmartDashboard.putNumber("start heading", m_drivetrain.getHeading());
     m_drivetrain.disableMotorSafety();    
   }
 

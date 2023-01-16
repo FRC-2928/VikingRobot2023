@@ -95,7 +95,7 @@ public final class Constants {
 
         // TO DO change to correct values
         public static final double highGearRatio = 10.71;
-        public static final double lowGearRatio = 5;
+        public static final double lowGearRatio = 10.71;
 
         public static final double kMaxSpeedMetersPerSecond = 2.0;
         public static final double kMaxAccelMetersPerSecondSquared = 2.0;
