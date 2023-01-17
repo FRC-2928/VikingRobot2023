@@ -48,14 +48,13 @@ public class BalancePID extends PIDCommand {
   @Override
   public void execute() {
     super.execute();
-
-    SmartDashboard.putNumber("I&D values", this.m_controller.getVelocityError());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     // return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;
-    return this.m_controller.atSetpoint();
+    // return this.m_controller.atSetpoint();
+    return false;
   }
 }
