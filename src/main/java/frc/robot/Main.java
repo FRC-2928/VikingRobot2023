@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.Log;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all. Unless you know what
@@ -12,14 +13,13 @@ import edu.wpi.first.wpilibj.RobotBase;
  * call.
  */
 public final class Main {
-  private Main() {}
-
   /**
    * Main initialization function. Do not perform any initialization here.
    *
    * <p>If you change your main robot class, change the parameter type.
    */
-  public static void main(String... args) {
+  public static void main(String... args) throws Exception {
+    Log.start();
     RobotBase.startRobot(Robot::new);
   }
 }
