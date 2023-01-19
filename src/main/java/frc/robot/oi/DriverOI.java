@@ -16,6 +16,11 @@ public class DriverOI {
 
     // ---------------- Drivetrain ----------------------------
 
+    public DoubleSupplier getRotateSupplier() {
+        return () -> m_controller.getRightX();
+    }
+
+
     public Trigger getShiftLowButton() {
         return new JoystickButton(m_controller, XboxController.Button.kX.value);
     }
@@ -24,9 +29,6 @@ public class DriverOI {
         return new JoystickButton(m_controller, XboxController.Button.kY.value);
     }
 
-    public Trigger getBalanceButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kA.value);
-    }
 
     public Trigger getOrchestraButton(){
         return new JoystickButton(m_controller, XboxController.Button.kStart.value);
@@ -38,11 +40,15 @@ public class DriverOI {
 
     public Trigger getIsAtHighSpeed() {
         return new Trigger(() -> Math.abs(m_controller.getLeftY()) > .85);
+    } 
+
+    public Trigger getBalanceButton() {
+        return new JoystickButton(m_controller, XboxController.Button.kRightBumper.value);
     }
 
-    public DoubleSupplier getRotateSupplier() {
-        return () -> m_controller.getRightX();
-    }  
+    public Trigger getRollButton(){
+        return new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value);
+    }
 
     public Trigger getResetGyroButton(){
         return new JoystickButton(m_controller, XboxController.Button.kB.value);

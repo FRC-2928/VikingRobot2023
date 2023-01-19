@@ -4,33 +4,32 @@
 
 package frc.robot.commands.DrivetrainCommands;
 
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-//import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
-//import frc.robot.sensors.Pigeon;
 import frc.robot.subsystems.Drivetrain;
 
-
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class BalanceRollPID extends PIDCommand {
-  /** Creates a new roll_corection. */
+  public static final int ROLL = 1;
+
   public Drivetrain drive;
+  public double time = System.currentTimeMillis();
+
   public BalanceRollPID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsRollBalance.P, DrivetrainConstants.GainsRollBalance.I,DrivetrainConstants.GainsRollBalance.D),
+        new PIDController(DrivetrainConstants.GainsRollBalance.P, DrivetrainConstants.GainsRollBalance.I,
+            DrivetrainConstants.GainsRollBalance.D),
         // This should return the measurement
-        
+
         () -> {
           double[] angle = new double[3];
           drivetrain.m_pigeon.getYawPitchRoll(angle);
 
-          //double pitch = drivetrain.m_pigeon.getPitch();
-          double roll = angle[1];
+          // double pitch = drivetrain.m_pigeon.getPitch();
+          double roll = angle[ROLL];
 
           SmartDashboard.putNumber("roll", roll);
           return roll;
@@ -40,25 +39,34 @@ public class BalanceRollPID extends PIDCommand {
         // This uses the output
         output -> {
           // Use the output here
-          //SmartDashboard.putNumber("Roll",angle[1]);
-          SmartDashboard.putNumber("Output",output);
-          if(drivetrain.m_pigeon.getRoll() >0){
-            drivetrain.tankDriveVolts(output,-output);
+          // SmartDashboard.putNumber("Roll",angle[1]);
+          SmartDashboard.putNumber("Output", output);
+          if (drivetrain.m_pigeon.getRoll() > 0) {
+            drivetrain.tankDriveVolts(output, -output);
+          } else {
+            drivetrain.tankDriveVolts(-output, output);
           }
-          else{
-            drivetrain.tankDriveVolts(-output,output);
-          }
-          
+
         });
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.25, 10);
+    getController().setTolerance(0.28, 10);
     SmartDashboard.putData(this.m_controller);
+  }
+
+  @Override
+  public void initialize() {
+    this.time = System.currentTimeMillis();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    if (System.currentTimeMillis() > time + 7000) {
+      return true;
+    } else {
+      //return getController().atSetpoint();
+      return false;
+    }
   }
 }

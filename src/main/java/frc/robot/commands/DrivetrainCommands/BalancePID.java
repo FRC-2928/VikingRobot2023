@@ -8,16 +8,18 @@ import frc.robot.subsystems.Drivetrain;
 
 public class BalancePID extends PIDCommand {
   public Drivetrain drivetrain;
+
   public BalancePID(Drivetrain drivetrain) {
     super(
         // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsBalance.P, DrivetrainConstants.GainsBalance.I, DrivetrainConstants.GainsBalance.D),
+        new PIDController(DrivetrainConstants.GainsBalance.P, DrivetrainConstants.GainsBalance.I,
+            DrivetrainConstants.GainsBalance.D),
         // This should return the measurement
         () -> {
           double[] angle = new double[3];
           drivetrain.m_pigeon.getYawPitchRoll(angle);
 
-          //double pitch = drivetrain.m_pigeon.getPitch();
+          // double pitch = drivetrain.m_pigeon.getPitch();
           double pitch = angle[2];
 
           SmartDashboard.putNumber("pitch", pitch);
@@ -31,9 +33,10 @@ public class BalancePID extends PIDCommand {
           SmartDashboard.putNumber("pid output", output);
         });
 
-        //maybe omit tolerance? not sure what it does but works well with 10 (tippy with 5)
-        //potentially unit of encoder ticks on pigeon
-        //realized tolerance is for atSetpoint and anything inbetween
+    // maybe omit tolerance? not sure what it does but works well with 10 (tippy
+    // with 5)
+    // potentially unit of encoder ticks on pigeon
+    // realized tolerance is for atSetpoint and anything inbetween
     this.m_controller.setTolerance(1.0);
     this.addRequirements(drivetrain);
     SmartDashboard.putData(this.m_controller);
@@ -45,14 +48,13 @@ public class BalancePID extends PIDCommand {
   @Override
   public void execute() {
     super.execute();
-    
-    SmartDashboard.putNumber("I&D values", this.m_controller.getVelocityError());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;=
-    return this.m_controller.atSetpoint();
+    // return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;
+    // return this.m_controller.atSetpoint();
+    return false;
   }
 }

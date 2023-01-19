@@ -178,7 +178,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void zeroGyro() {
-    m_pigeon.reset();
+    m_pigeon.reset(); 
   }
 
   public void resetEncoders() {
