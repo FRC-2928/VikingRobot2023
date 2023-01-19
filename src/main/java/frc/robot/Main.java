@@ -19,6 +19,7 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) throws Exception {
+    Log.lineLimit = 100;
     Log.start();
     RobotBase.startRobot(Robot::new);
   }
