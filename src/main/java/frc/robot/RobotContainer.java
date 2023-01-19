@@ -4,11 +4,22 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.AutonomousDistance;
-import frc.robot.commands.AutonomousTime;
 import frc.robot.commands.OrchestraPlayer;
+import frc.robot.commands.DrivetrainCommands.AutonomousDistance;
+import frc.robot.commands.DrivetrainCommands.AutonomousTime;
+import frc.robot.commands.DrivetrainCommands.BalancePID;
+import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
+import frc.robot.commands.DrivetrainCommands.DriveTime;
+import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,6 +27,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Transmission;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
@@ -47,6 +60,7 @@ public class RobotContainer {
 
     // Configure default commands, button bindings, and shuffleboard
     configureSubsystems();
+
   }
 
   /**
@@ -55,6 +69,20 @@ public class RobotContainer {
    */
   private void configureSubsystems() {
     configureDrivetrain();
+  }
+
+  
+
+  public Trajectory loadTrajectory(String trajectoryJSON) {
+    Trajectory trajectory = new Trajectory();
+
+    try{
+        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve("paths/" + trajectoryJSON + ".wpilib.json");
+        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+      } catch (IOException ex) {
+        DriverStation.reportError("Unable to open Trajectory:" + trajectoryJSON, ex.getStackTrace());
+      }
+      return trajectory;
   }
 
    /**
@@ -66,14 +94,26 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(
         // A split-stick arcade command, with forward/backward controlled by the left
         // hand, and turning controlled by the right.
-        new RunCommand(() -> m_drivetrain.m_diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble() * 0.5, m_driverOI.getRotateSupplier().getAsDouble() * 0.5),
+        new RunCommand(() -> m_drivetrain.m_diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble() * 0.4, m_driverOI.getRotateSupplier().getAsDouble() * 0.4),
               m_drivetrain));
 
     // Configure button commands
     m_driverOI.getShiftLowButton().onTrue(new InstantCommand(m_transmission::setLow, m_transmission));
     m_driverOI.getShiftHighButton().onTrue(new InstantCommand(m_transmission::setHigh, m_transmission));
     m_driverOI.getOrchestraButton().whileTrue(new OrchestraPlayer(m_drivetrain, Filesystem.getDeployDirectory().toPath().resolve("homedepot.chrp").toString()));
+    m_driverOI.getBalanceButton().whileTrue(new SequentialCommandGroup(new BalanceRollPID(this.m_drivetrain),new BalancePID(this.m_drivetrain)));
+    m_driverOI.getResetGyroButton().onTrue(new InstantCommand(m_drivetrain::zeroGyro, m_drivetrain));
+
   }
+
+  //Unused balance command
+ /*
+    private Command Balance() {
+    new SequentialCommandGroup(new Roll_corectionPID(this.m_drivetrain),new BalancePID(this.m_drivetrain));
+    return null;
+  }
+  */
+
 
   /**
    * Configure AutoChooser 
@@ -82,6 +122,36 @@ public class RobotContainer {
     // Setup SmartDashboard options
     m_chooser.setDefaultOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
     m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
+    m_chooser.addOption("Do Nothing", new SequentialCommandGroup(new WaitCommand(0.1)));
+    m_chooser.addOption("back up and balance", new SequentialCommandGroup(new WaitCommand(.2), 
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
+                                                //Todo: find right time/speed to get onto teeter totter
+                                                new DriveTime(-.4, .5, m_drivetrain),
+                                                new BalanceRollPID(m_drivetrain),
+                                                new BalancePID(m_drivetrain)));
+    m_chooser.addOption("curve right around station and balance", new SequentialCommandGroup(
+                                                                        new WaitCommand(.1),
+                                                                        new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto1")),
+                                                                        //Todo: find right time/speed to get onto teeter totter
+                                                                        //new DriveTime(-.4, .5, m_drivetrain),
+                                                                        new BalanceRollPID(m_drivetrain),
+                                                                        new BalancePID(m_drivetrain)));
+    m_chooser.addOption("test", new SequentialCommandGroup(new WaitCommand(.1),
+                                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance"))));   
+    m_chooser.addOption("testing", new SequentialCommandGroup(new WaitCommand(.1),
+                                                                new DriveTime(.5, 2, m_drivetrain))); 
+    m_chooser.addOption("backupbalance", new SequentialCommandGroup(new WaitCommand(.1),
+                                              new RunRamseteTrajectory(m_drivetrain, loadTrajectory("BackUpToBalance")),
+                                              new BalanceRollPID(m_drivetrain),
+                                              new BalancePID(m_drivetrain)));                                                          
+    
+    m_chooser.addOption("auto2", new SequentialCommandGroup(
+                                                new WaitCommand(.1),
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto2")),
+                                                //Todo: find right time/speed to get onto teeter totter
+                                                //new DriveTime(-.4, .5, m_drivetrain),
+                                                new BalanceRollPID(m_drivetrain),
+                                                new BalancePID(m_drivetrain)));
     SmartDashboard.putData(m_chooser);
   }
 
