@@ -24,19 +24,27 @@ public class DriverOI {
         return new JoystickButton(m_controller, XboxController.Button.kY.value);
     }
 
-    public Trigger getIsAtHighSpeed() {
-        return new Trigger(() -> Math.abs(m_controller.getLeftY()) > .85);
+    public Trigger getBalanceButton() {
+        return new JoystickButton(m_controller, XboxController.Button.kA.value);
+    }
+
+    public Trigger getOrchestraButton(){
+        return new JoystickButton(m_controller, XboxController.Button.kStart.value);
     }
 
     public DoubleSupplier getMoveSupplier() {
         return () -> -m_controller.getLeftY();
     }
 
-    public DoubleSupplier getRotateSupplier() {
-        return () -> m_controller.getRightX();
+    public Trigger getIsAtHighSpeed() {
+        return new Trigger(() -> Math.abs(m_controller.getLeftY()) > .85);
     }
 
-    public Trigger getOrchestraButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kBack.value);
+    public DoubleSupplier getRotateSupplier() {
+        return () -> m_controller.getRightX();
+    }  
+
+    public Trigger getResetGyroButton(){
+        return new JoystickButton(m_controller, XboxController.Button.kB.value);
     }
 }

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
@@ -47,6 +48,19 @@ public final class Constants {
         public static final int kPigeonIMU = 3;
     }
 
+    public static final class AutoConstants {
+    
+        // Setup trajectory constraints
+        public static final TrajectoryConfig kTrajectoryConfig =
+        new TrajectoryConfig(DrivetrainConstants.kMaxSpeedMetersPerSecond, 
+                             DrivetrainConstants.kMaxAccelMetersPerSecondSquared)
+            .setKinematics(DrivetrainConstants.kDriveKinematics)
+            .addConstraint(DrivetrainConstants.kAutoVoltageConstraint);
+            // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+            public static final double kRamseteB = 2;
+            public static final double kRamseteZeta = 0.7;
+    }
+
     public static final class DrivetrainConstants {
 
         // kS (static friction), kV (velocity), and kA (acceleration)
@@ -70,18 +84,18 @@ public final class Constants {
 
         public static final boolean kGyroReversed = true;
 
-        public static final int EncoderCPR = 2048;
-        public static final double WheelDiameterMeters = 0.1015;
+        public static final int encoderCPR = 2048;
+        public static final double kWheelDiameterMeters = 0.1015;
 
         public static final double kEncoderDistancePerPulse =
                 // Assumes the encoders are directly mounted on the wheel shafts
-                (WheelDiameterMeters * Math.PI) / (double) EncoderCPR;
+                (kWheelDiameterMeters * Math.PI) / (double) encoderCPR;
 
         public static final double kUnitsPerRevolution = 2048;
 
-        // TODO change to correct values
-        public static final double HighGearRatio = 10.71;
-        public static final double LowGearRatio = 5;
+        // TO DO change to correct values
+        public static final double highGearRatio = 10.71;
+        public static final double lowGearRatio = 10.71;
 
         public static final double kMaxSpeedMetersPerSecond = 2.0;
         public static final double kMaxAccelMetersPerSecondSquared = 2.0;
@@ -109,10 +123,13 @@ public final class Constants {
         public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
         public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
         public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
-        public static final Gains GainsBalance = new Gains(1, 0, 0, 0, 0, 0.3);
+        public static final Gains GainsBalance = new Gains(0.15, 0, 0.005, 0, 0, 0.3);
+        public static final Gains GainsRollBalance = new Gains(1,0,0.03,0.0,0, 0.3);
 
         // public static final double kDistanceToleranceMeters = 0.1;
         // public static final double kVelocityToleranceMeters = 0.1;
+        
     }
+
 
 }
