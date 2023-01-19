@@ -11,14 +11,14 @@
     "TalonFX",
     "TalonFX"
   ],
-  "number of samples per average": 5,
+  "number of samples per average": 1,
   "primary encoder inverted": false,
   "primary encoder ports": [
     0,
     1
   ],
   "primary motor ports": [
-    0,
+    15,
     14
   ],
   "primary motors inverted": [
@@ -31,12 +31,12 @@
     3
   ],
   "secondary motor ports": [
-    15,
+    0,
     1
   ],
   "secondary motors inverted": [
     true,
     true
   ],
-  "velocity measurement period": 100
+  "velocity measurement period": 1
 }
