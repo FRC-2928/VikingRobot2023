@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 import frc.robot.Constants;
@@ -16,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -23,16 +25,16 @@ import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 public class Drivetrain extends SubsystemBase {
   public final WPI_TalonFX m_leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
-  public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
-  public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
-  public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
+  public final WPI_TalonFX m_rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
+  public final WPI_TalonFX m_leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
+  public final WPI_TalonFX m_rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
 
   private Supplier<Transmission.GearState> m_gearStateSupplier;
 
   public DifferentialDrive m_diffDrive;
 
   // Set up the BuiltInAccelerometer
-  public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+  public WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
 
   // -----------------------------------------------------------
   // Initialization
@@ -48,7 +50,7 @@ public class Drivetrain extends SubsystemBase {
     // Configure PID values for the talons
     setWheelPIDF();
 
-    m_diffDrive = new DifferentialDrive(m_leftLeader, rightLeader);
+    m_diffDrive = new DifferentialDrive(m_leftLeader, m_rightLeader);
 
     // Reset encoders and gyro
     resetEncoders();
@@ -57,7 +59,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void setWheelPIDF() {
     // set the PID values for each individual wheel
-    for (TalonFX fx : new TalonFX[] { m_leftLeader, rightLeader }) {
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, m_rightLeader }) {
       fx.config_kP(0, DrivetrainConstants.GainsBalance.P, 0);
       fx.config_kI(0, DrivetrainConstants.GainsBalance.I, 0);
       fx.config_kD(0, DrivetrainConstants.GainsBalance.D, 0);
@@ -68,7 +70,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void configmotors() { // new
     // Configure the motors
-    for (TalonFX fx : new TalonFX[] { m_leftLeader, leftFollower, rightLeader, rightFollower }) {
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, m_leftFollower, m_rightLeader, m_rightFollower }) {
       // Reset settings for safety
       fx.configFactoryDefault();
 
@@ -110,13 +112,52 @@ public class Drivetrain extends SubsystemBase {
 
     // Setting followers, followers don't automatically follow the Leader's inverts
     // so you must set the invert type to Follow the Leader
-    leftFollower.setInverted(InvertType.FollowMaster);
-    rightFollower.setInverted(InvertType.FollowMaster);
+    m_leftFollower.setInverted(InvertType.FollowMaster);
+    m_rightFollower.setInverted(InvertType.FollowMaster);
 
-    leftFollower.follow(m_leftLeader, FollowerType.PercentOutput);
-    rightFollower.follow(rightLeader, FollowerType.PercentOutput);
+    m_leftFollower.follow(m_leftLeader, FollowerType.PercentOutput);
+    m_rightFollower.follow(m_rightLeader, FollowerType.PercentOutput);
 
-    rightLeader.setInverted(InvertType.InvertMotorOutput);
+    m_rightLeader.setInverted(InvertType.InvertMotorOutput);
+  }
+
+  // Revert back to the integrated sensors (encoders)
+  public void setIntegratedSensors() {
+    // Configure the motors
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, m_leftFollower, m_rightLeader, m_rightFollower }) {
+      // Use 1-to-1 coefficient for the encoders.
+      fx.configSelectedFeedbackCoefficient(1);
+      fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    }
+  }
+
+  // Use Gyro Pitch as the sensor
+  public void setPIDPigeonSensors() {
+    // Configure the motors
+    for (TalonFX fx : new TalonFX[] { m_leftLeader, m_rightLeader }) {
+
+      // Configure the RemoteSensor0 and set it to the Pigeon pitch source
+      fx.configRemoteFeedbackFilter(m_pigeon.getDeviceID(),
+          RemoteSensorSource.Pigeon_Pitch,
+          0);
+      fx.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+
+      // Convert Pitch to tenths of a degree
+      fx.configSelectedFeedbackCoefficient(3600.0 / DrivetrainConstants.kUnitsPerRevolution);
+    }
+  }
+
+  public void setPIDSlot(int slot) {
+    int PID_PRIMARY = 0;
+    m_leftLeader.selectProfileSlot(slot, PID_PRIMARY);
+    m_rightLeader.selectProfileSlot(slot, PID_PRIMARY);
+  }
+
+  // Controls to the setpoint using the internal feedback sensor
+  public void setPIDSetpoint(double setpoint) {
+    this.m_leftLeader.set(ControlMode.Position, setpoint);
+    this.m_rightLeader.set(ControlMode.Position, setpoint);
+    this.m_diffDrive.feed();
   }
 
   // -----------------------------------------------------------
@@ -128,17 +169,17 @@ public class Drivetrain extends SubsystemBase {
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     m_leftLeader.set(ControlMode.PercentOutput, leftVolts / 12);
-    rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
+    m_rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
     m_diffDrive.feed();
   }
 
   public void zeroGyro() {
-    pigeon.reset();
+    m_pigeon.reset(); 
   }
 
   public void resetEncoders() {
     m_leftLeader.setSelectedSensorPosition(0);
-    rightLeader.setSelectedSensorPosition(0);
+    m_rightLeader.setSelectedSensorPosition(0);
   }
 
   // -----------------------------------------------------------
@@ -167,7 +208,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getRightDistanceMeters() {
-    return encoderTicksToMeters(rightLeader.getSelectedSensorPosition());
+    return encoderTicksToMeters(m_rightLeader.getSelectedSensorPosition());
   }
 
   public double getAvgDistanceMeters() {
@@ -176,11 +217,23 @@ public class Drivetrain extends SubsystemBase {
 
   public double[] readGyro() {
     double[] angle = new double[3];
-    pigeon.getYawPitchRoll(angle);
+    m_pigeon.getYawPitchRoll(angle);
     return angle;
+  }
+
+  public double getPitch(){
+    return m_pigeon.getPitch();
+  }
+  
+  public double getMotorOutput(){
+    return m_rightLeader.getMotorOutputVoltage();
   }
 
   // This method will be called once per scheduler run
   @Override
-  public void periodic() {}
+  public void periodic() {
+    SmartDashboard.putNumber("motor output", getMotorOutput());
+    SmartDashboard.putNumber("pitchh", getPitch());
+
+  }
 }
