@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -33,6 +34,8 @@ public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
 	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
+
+  private final Limelight m_limelight = new Limelight();
 
 	private Supplier<Transmission.GearState> gearStateSupplier;
 
@@ -277,6 +280,13 @@ public class Drivetrain extends SubsystemBase {
 	public double getHeading() {
 		return pigeon.getFusedHeading();
 	}
+
+  public Pose2d getLimelightPose(){
+
+    Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5]);
+    return new Pose2d(m_limelight.getPose()[0], m_limelight.getPose()[1], rotation);
+  
+  }
 
 	// ----------------------------------------------------
 	// Process Logic

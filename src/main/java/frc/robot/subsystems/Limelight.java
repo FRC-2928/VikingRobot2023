@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,6 +26,8 @@ public class Limelight{
   private double m_area;
   private double m_targetDistance;
   private double m_skew;
+
+  private Pose3d m_pose;
 
   private boolean m_targetFound;
 
@@ -61,6 +64,10 @@ public class Limelight{
   // -----------------------------------------------------------
   public double getSkew(){
     return m_limelightNI.getEntry("ts").getDouble(0);
+  }
+
+  public double[] getPose(){
+    return m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
   }
 
   // public double getTargetDistance(){
