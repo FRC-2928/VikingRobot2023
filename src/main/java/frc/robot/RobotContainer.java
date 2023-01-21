@@ -6,13 +6,13 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.OrchestraPlayer;
 import frc.robot.commands.DrivetrainCommands.AutonomousDistance;
 import frc.robot.commands.DrivetrainCommands.AutonomousTime;
@@ -91,11 +91,17 @@ public class RobotContainer {
   public void configureDrivetrain() {
     // Configure default commands
     // Set the default drive command to split-stick arcade drive
+    // A split-stick arcade command, with forward/backward controlled by the left
+    // hand, and turning controlled by the right.
     m_drivetrain.setDefaultCommand(
-        // A split-stick arcade command, with forward/backward controlled by the left
-        // hand, and turning controlled by the right.
-        new RunCommand(() -> m_drivetrain.m_diffDrive.arcadeDrive(m_driverOI.getMoveSupplier().getAsDouble() * 0.4, m_driverOI.getRotateSupplier().getAsDouble() * 0.4),
-              m_drivetrain));
+      new RunCommand(
+        () -> m_drivetrain.m_diffDrive.arcadeDrive(
+          m_driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
+          m_driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier
+        ),
+        m_drivetrain
+      )
+    );
 
     // Configure button commands
     m_driverOI.getShiftLowButton().onTrue(new InstantCommand(m_transmission::setLow, m_transmission));
