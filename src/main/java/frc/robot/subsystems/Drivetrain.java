@@ -171,6 +171,11 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.resetPosition(this.readYaw(), 0, 0, pose);
 	}
 
+  public void updateOdometryFromLimelight(){
+    this.resetEncoders();
+    this.odometry.resetPosition(this.readYaw(), yaw, yaw, getLimelightPose());
+  }
+
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// System.out.println("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
@@ -251,6 +256,10 @@ public class Drivetrain extends SubsystemBase {
 		return angle;
 	}
 
+  /**
+   * 
+   * @return pose from encoders
+   */
 	public Pose2d getPose() {
 		return odometry.getPoseMeters();
 	}
@@ -281,9 +290,13 @@ public class Drivetrain extends SubsystemBase {
 		return pigeon.getFusedHeading();
 	}
 
+  /**
+   * calculated using meters
+   * @return pose from the limelight
+   */
   public Pose2d getLimelightPose(){
 
-    Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5]);
+    Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5] / 180 * Math.PI);
     return new Pose2d(m_limelight.getPose()[0], m_limelight.getPose()[1], rotation);
   
   }
@@ -295,7 +308,14 @@ public class Drivetrain extends SubsystemBase {
 	// This method will be called once per scheduler run
 	@Override
 	public void periodic() {
-		odometry.update(readYaw(), getLeftDistanceMeters(), getRightDistanceMeters());
+
+    //if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
+    if((getLimelightPose().getX() != 0) && (getLimelightPose().getY() != 0)){
+      updateOdometryFromLimelight();
+    } else{
+		  odometry.update(readYaw(), getLeftDistanceMeters(), getRightDistanceMeters());
+    }
+
 		publishTelemetry();
 	}
 
@@ -304,5 +324,6 @@ public class Drivetrain extends SubsystemBase {
 		field2d.setRobotPose(getPose());
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
+    SmartDashboard.putNumber("poseX", getPose().getX());
 	}
 }
