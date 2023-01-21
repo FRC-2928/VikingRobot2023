@@ -147,7 +147,7 @@ public class RobotContainer {
     
     m_chooser.addOption("auto2", new SequentialCommandGroup(
                                                 new WaitCommand(.1),
-                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto2")),
+                                                new RunRamseteTrajectory(m_drivetrain, loadTrajectory("Auto3")),
                                                 //Todo: find right time/speed to get onto teeter totter
                                                 //new DriveTime(-.4, .5, m_drivetrain),
                                                 new BalanceRollPID(m_drivetrain),
