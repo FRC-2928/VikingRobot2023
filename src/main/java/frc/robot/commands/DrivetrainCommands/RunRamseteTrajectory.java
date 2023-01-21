@@ -9,55 +9,47 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
 public class RunRamseteTrajectory extends RamseteCommand {
+	private Drivetrain drivetrain;
+	private Trajectory trajectory;
+	
+	public RunRamseteTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
+		super(
+			trajectory,
+			drivetrain::getPose,
+			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+			DrivetrainConstants.kDriveKinematics,
+			drivetrain::setOutputMetersPerSecond,
+			drivetrain
+		);
+		this.drivetrain = drivetrain;
+		this.trajectory = trajectory;
+	}
 
-  Drivetrain m_drivetrain;
-  Trajectory m_trajectory;
-  
+	public void initialize() {
+		super.initialize();
+		this.drivetrain.resetOdometry(this.trajectory.getInitialPose());
+		SmartDashboard.putNumber("start traj Y", this.trajectory.getInitialPose().getY());
+		SmartDashboard.putNumber("start odom Y", this.drivetrain.getPose().getY());
+		SmartDashboard.putNumber("start traj X", this.trajectory.getInitialPose().getX());
+		SmartDashboard.putNumber("start odom X", this.drivetrain.getPose().getX());
+		SmartDashboard.putNumber("start odometry heading", this.drivetrain.getPose().getRotation().getDegrees());
+		SmartDashboard.putNumber("start heading", this.drivetrain.getHeading());  
+	}
 
+	public void execute() {
+		super.execute();
+		SmartDashboard.putNumber("Odometry X", this.drivetrain.getPose().getX());
+		SmartDashboard.putNumber("Odometry Y", this.drivetrain.getPose().getY());
+		SmartDashboard.putNumber("Odometry heading", this.drivetrain.getPose().getRotation().getDegrees());
+		//SmartDashboard.putNumber("current heading", this.drivetrain.getHeading());
+		this.drivetrain.diffDrive.feed(); // Feed motor safety instead of disabling it
+	}
 
-  /**
-   * Creates a new RamseteTrajectoryCommand.
-   */
-  public RunRamseteTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
-    super(
-      trajectory,
-      drivetrain::getPose,
-      new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-      DrivetrainConstants.kDriveKinematics,
-      drivetrain::setOutputMetersPerSecond,
-      drivetrain
-    );
-    m_drivetrain = drivetrain;
-    m_trajectory = trajectory;
-  }
-
-  public void initialize() {
-    super.initialize();
-    m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
-    SmartDashboard.putNumber("start traj Y", m_trajectory.getInitialPose().getY());
-    SmartDashboard.putNumber("start odom Y", m_drivetrain.getPose().getY());
-    SmartDashboard.putNumber("start traj X", m_trajectory.getInitialPose().getX());
-    SmartDashboard.putNumber("start odom X", m_drivetrain.getPose().getX());
-    m_drivetrain.setPIDSlot(0);
-    SmartDashboard.putNumber("start odometry heading", m_drivetrain.getPose().getRotation().getDegrees());
-    SmartDashboard.putNumber("start heading", m_drivetrain.getHeading());
-    m_drivetrain.disableMotorSafety();    
-  }
-
-  public void execute() {
-    super.execute();
-    SmartDashboard.putNumber("Odometry X", m_drivetrain.getPose().getX());
-    SmartDashboard.putNumber("Odometry Y", m_drivetrain.getPose().getY());
-    SmartDashboard.putNumber("Odometry heading", m_drivetrain.getPose().getRotation().getDegrees());
-    //SmartDashboard.putNumber("current heading", m_drivetrain.getHeading());
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-    //SmartDashboard.putNumber("end heading", m_drivetrain.getHeading());
-    m_drivetrain.stopDrivetrain();
-    m_drivetrain.enableMotorSafety();
-  }
+	@Override
+	public void end(boolean interrupted) {
+		super.end(interrupted);
+		//SmartDashboard.putNumber("end heading", this.drivetrain.getHeading());
+		this.drivetrain.halt();
+	}
 
 }
