@@ -196,7 +196,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
         
-    System.out.println("right m/s" + rightMetersPerSecond);
+    //System.out.println("right m/s" + rightMetersPerSecond);
     // Calculate feedforward for the left and right wheels.
     double leftFeedForward = m_feedForward.calculate(leftMetersPerSecond);
     double rightFeedForward = m_feedForward.calculate(rightMetersPerSecond);
