@@ -143,8 +143,8 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Setpoint Position", setpointPos);
 		*/
 		// Send it through a PID controller
-		double leftPIDVolts = m_leftController.calculate(this.getRoll(), 0);
-		double rightPIDVolts = m_rightController.calculate(this.getRoll(), 0);
+		double leftPIDVolts = m_leftController.calculate(this.readRoll(), 0);
+		double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
 		SmartDashboard.putNumber("Left PID Volts", leftPIDVolts);
 		SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
 		
@@ -186,7 +186,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		this.resetEncoders();
-		this.odometry.resetPosition(this.readYaw(), 0, 0, pose);
+		this.odometry.resetPosition(this.readYawRot(), 0, 0, pose);
 	}
 
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
@@ -273,7 +273,7 @@ public class Drivetrain extends SubsystemBase {
 		return odometry.getPoseMeters();
 	}
 
-	public Rotation2d readYaw() {
+	public Rotation2d readYawRot() {
 
 		yaw = readGyro()[0];
 
@@ -306,7 +306,7 @@ public class Drivetrain extends SubsystemBase {
 	// This method will be called once per scheduler run
 	@Override
 	public void periodic() {
-		odometry.update(readYaw(), getLeftDistanceMeters(), getRightDistanceMeters());
+		odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		publishTelemetry();
 	}
 
@@ -316,15 +316,15 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
 	}
-	public double getYaw(){
+	public double readYaw(){
 		
 		return this.readGyro()[0];
 	}
-	public double getPitch(){
+	public double readPitch(){
 		
 		return this.readGyro()[2];
 	}
-	public double getRoll(){
+	public double readRoll(){
 		
 		return this.readGyro()[1];
 	}
