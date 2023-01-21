@@ -12,72 +12,69 @@ import frc.robot.Constants;
  */
 
 public class Transmission extends SubsystemBase {
-  //private Solenoid m_shiftPiston;
-  private Solenoid m_shiftPistonHigh;
-  private Solenoid m_shiftPistonLow;
-  private GearState m_gearState;
+	//private Solenoid shiftPiston;
+	private Solenoid shiftPistonHigh;
+	private Solenoid shiftPistonLow;
+	private GearState gearState;
 
-  public enum GearState {
-    HIGH, LOW;
-  }
+	public enum GearState {
+		HIGH,
+		LOW;
+	}
 
-  public Transmission() {
+	public Transmission() {
+		// this.shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoid);
+		this.shiftPistonHigh = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidHigh);
+		this.shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
 
-    // m_shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoid);
-    m_shiftPistonHigh = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidHigh);
-    m_shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
+		this.gearState = GearState.LOW;
+	}
 
-    m_gearState = GearState.LOW;
+	public void setGearState(GearState state) {
+		this.gearState = state;
 
-  }
+		switch (state) {
+			case HIGH:
+				setFalse();
+				break;
 
-  public void setGearState(GearState state) {
-    m_gearState = state;
+			case LOW:
+				setTrue();
+				break;
+		}
+	}
 
-    switch (state) {
+	public void setHigh(){
+		setGearState(GearState.HIGH);
+	}
 
-    case HIGH:
-      setFalse();
-      break;
+	public void setLow(){
+		System.out.println("this.transmission::setHigh!!!!");
+		setGearState(GearState.LOW);
+	}
 
-    case LOW:
-      setTrue();
-      break;
-    }
-  }
+	public void toggle() {
+		setGearState(this.gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
+	}
 
-  public void setHigh(){
-    setGearState(GearState.HIGH);
-  }
+	public GearState getGearState() {
+		return this.gearState;
+	}
 
-  public void setLow(){
-    System.out.println("m_transmission::setHigh!!!!");
-    setGearState(GearState.LOW);
-  }
+	private void setTrue() {
+		// this.shiftPiston.set(true);
+		this.shiftPistonHigh.set(true);
+		this.shiftPistonLow.set(false);
+	}
 
-  public void toggle() {
-    setGearState(m_gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
-  }
+	private void setFalse() {
+		// this.shiftPiston.set(false);
+		this.shiftPistonHigh.set(false);
+		this.shiftPistonLow.set(true);
+	}
 
-  public GearState getGearState() {
-    return m_gearState;
-  }
-
-  private void setTrue() {
-    // m_shiftPiston.set(true);
-    m_shiftPistonHigh.set(true);
-    m_shiftPistonLow.set(false);
-  }
-
-  private void setFalse() {
-    // m_shiftPiston.set(false);
-    m_shiftPistonHigh.set(false);
-    m_shiftPistonLow.set(true);
-  }
-
-  @Override
-  public void periodic() {
-    SmartDashboard.putString("Gear State", m_gearState.toString());
-    // SmartDashboard.putBoolean("Gearstate", m_shiftPiston.isDisabled());
-  }
+	@Override
+	public void periodic() {
+		SmartDashboard.putString("Gear State", this.gearState.toString());
+	}
 }
