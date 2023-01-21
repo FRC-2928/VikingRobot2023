@@ -62,6 +62,7 @@ public final class Constants {
     }
 
     public static final class DrivetrainConstants {
+        public static final double arcadeDriveMultiplier = 0.4;
 
         // kS (static friction), kV (velocity), and kA (acceleration)
         public static final double ksVolts = 0.6024;
@@ -94,7 +95,7 @@ public final class Constants {
         public static final double kUnitsPerRevolution = 2048;
 
         // TO DO change to correct values
-        public static final double highGearRatio = 10.71;
+        public static final double highGearRatio = 5;
         public static final double lowGearRatio = 10.71;
 
         public static final double kMaxSpeedMetersPerSecond = 2.0;
