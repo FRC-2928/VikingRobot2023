@@ -62,7 +62,7 @@ public final class Constants {
     }
 
     public static final class DrivetrainConstants {
-        public static final double arcadeDriveMultiplier = 0.4;
+        public static final double arcadeDriveMultiplier = 0.8;
 
         // kS (static friction), kV (velocity), and kA (acceleration)
         public static final double ksVolts = 0.6024;
