@@ -1,60 +1,64 @@
 package frc.robot.commands.DrivetrainCommands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalancePID extends PIDCommand {
-  public Drivetrain drivetrain;
+	private double time = System.currentTimeMillis();
 
-  public BalancePID(Drivetrain drivetrain) {
-    super(
-        // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsBalance.P, DrivetrainConstants.GainsBalance.I,
-            DrivetrainConstants.GainsBalance.D),
-        // This should return the measurement
-        () -> {
-          double[] angle = new double[3];
-          drivetrain.m_pigeon.getYawPitchRoll(angle);
+	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
+	public boolean stopAtSetpoint;
 
-          // double pitch = drivetrain.m_pigeon.getPitch();
-          double pitch = angle[2];
+	/// The timeout to automatically end the command at
+	/// Set to Double.POSITIVE_INFINITY to disable
+	public double timeout;
+	
+	public BalancePID(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
+		super(
+			new PIDController(
+				DrivetrainConstants.GainsBalance.P,
+				DrivetrainConstants.GainsBalance.I,
+				DrivetrainConstants.GainsBalance.D
+			),
+			() -> drivetrain.readGyro()[2],
+			0,
+			output -> drivetrain.tankDriveVolts(-output, -output)
+		);
 
-          SmartDashboard.putNumber("pitch", pitch);
-          return pitch;
-        },
-        // This should return the setpoint (can also be a constant)
-        () -> 0,
-        // This uses the output
-        output -> {
-          drivetrain.tankDriveVolts(-output, -output);
-          SmartDashboard.putNumber("pid output", output);
-        });
+		this.m_controller.setTolerance(1.0);
+		this.m_controller.setSetpoint(0.0);
+		this.m_controller.calculate(0.0);
 
-    // maybe omit tolerance? not sure what it does but works well with 10 (tippy
-    // with 5)
-    // potentially unit of encoder ticks on pigeon
-    // realized tolerance is for atSetpoint and anything inbetween
-    this.m_controller.setTolerance(1.0);
-    this.addRequirements(drivetrain);
-    SmartDashboard.putData(this.m_controller);
+		this.stopAtSetpoint = stopAtSetpoint;
+		this.timeout = timeout;
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
-  }
+		this.addRequirements(drivetrain);
+	}
 
-  @Override
-  public void execute() {
-    super.execute();
-  }
+	/// Construct a manual-style command, which does not stop at setpoint, nor does it timeout.
+	public static BalancePID manual(Drivetrain drivetrain) {
+		return new BalancePID(drivetrain, false, Double.POSITIVE_INFINITY);
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    // return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;
-    // return this.m_controller.atSetpoint();
-    return false;
-  }
+	/// Construct an auto-style command, which automatically stops at setpoint or after `timeout` ms.
+	public static BalancePID auto(Drivetrain drivetrain, double timeout) {
+		return new BalancePID(drivetrain, true, timeout);
+	}
+
+	/// Construct an auto-style command, which automatically stops at setpoint, but does not timeout.
+	public static BalancePID auto(Drivetrain drivetrain) {
+		return new BalancePID(drivetrain, true, Double.POSITIVE_INFINITY);
+	}
+
+	@Override
+	public void initialize() {
+		this.time = System.currentTimeMillis();
+	}
+
+	@Override
+	public boolean isFinished() {
+		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.m_controller.atSetpoint());
+	}
 }

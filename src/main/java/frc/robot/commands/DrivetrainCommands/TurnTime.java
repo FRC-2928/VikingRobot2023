@@ -1,58 +1,47 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.DrivetrainCommands;
 
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/*
- * Creates a new TurnTime command. This command will turn your robot for a
- * desired rotational speed and time.
- */
 public class TurnTime extends CommandBase {
-  private final double m_duration;
-  private final double m_rotationalSpeed;
-  private final Drivetrain m_drive;
-  private long m_startTime;
+	private final double duration;
+	private final double rotationalSpeed;
+	private final Drivetrain drivetrain;
 
-  /**
-   * Creates a new TurnTime.
-   *
-   * @param speed The speed which the robot will turn. Negative is in reverse.
-   * @param time How much time to turn in seconds
-   * @param drive The drive subsystem on which this command will run
-   */
-  public TurnTime(double speed, double time, Drivetrain drive) {
-    m_rotationalSpeed = speed;
-    m_duration = time * 1000;
-    m_drive = drive;
-    addRequirements(drive);
-  }
+	private long startTime;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_startTime = System.currentTimeMillis();
-    m_drive.m_diffDrive.arcadeDrive(0, 0);
-  }
+	/**
+	 * Creates a new TurnTime.
+	 *
+	 * @param speed The speed which the robot will turn. Negative is in reverse.
+	 * @param time How much time to turn in seconds
+	 * @param drive The drive subsystem on which this command will run
+	 */
+	public TurnTime(double speed, double time, Drivetrain drive) {
+		this.rotationalSpeed = speed;
+		this.duration = time * 1000;
+		this.drivetrain = drive;
+		this.addRequirements(drive);
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_drive.m_diffDrive.arcadeDrive(0, m_rotationalSpeed);
-  }
+	@Override
+	public void initialize() {
+		this.startTime = System.currentTimeMillis();
+		this.drivetrain.halt();
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_drive.m_diffDrive.arcadeDrive(0, 0);
-  }
+	@Override
+	public void execute() {
+		this.drivetrain.diffDrive.arcadeDrive(0, this.rotationalSpeed);
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return (System.currentTimeMillis() - m_startTime) >= m_duration;
-  }
+	@Override
+	public void end(boolean interrupted) {
+		this.drivetrain.halt();
+	}
+
+	@Override
+	public boolean isFinished() {
+		return (System.currentTimeMillis() - this.startTime) >= this.duration;
+	}
 }

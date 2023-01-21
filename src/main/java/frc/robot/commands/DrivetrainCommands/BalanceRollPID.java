@@ -1,72 +1,67 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.DrivetrainCommands;
 
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalanceRollPID extends PIDCommand {
-  public static final int ROLL = 1;
+	private double time = System.currentTimeMillis();
 
-  public Drivetrain drive;
-  public double time = System.currentTimeMillis();
+	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
+	public boolean stopAtSetpoint;
 
-  public BalanceRollPID(Drivetrain drivetrain) {
-    super(
-        // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsRollBalance.P, DrivetrainConstants.GainsRollBalance.I,
-            DrivetrainConstants.GainsRollBalance.D),
-        // This should return the measurement
+	/// The timeout to automatically end the command at
+	/// Set to Double.POSITIVE_INFINITY to disable
+	public double timeout;
 
-        () -> {
-          double[] angle = new double[3];
-          drivetrain.m_pigeon.getYawPitchRoll(angle);
+	public BalanceRollPID(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
+		super(
+			new PIDController(
+				DrivetrainConstants.GainsRollBalance.P,
+				DrivetrainConstants.GainsRollBalance.I,
+				DrivetrainConstants.GainsRollBalance.D
+			),
+			() -> drivetrain.readGyro()[1],
+			0,
+			output -> {
+				if (drivetrain.pigeon.getRoll() > 0)  drivetrain.tankDriveVolts(output, -output);
+				else drivetrain.tankDriveVolts(-output, output);
+			}
+		);
+		
+		this.m_controller.setTolerance(0.3);
+		this.m_controller.setSetpoint(0.0);
+		this.m_controller.calculate(0.0);
 
-          // double pitch = drivetrain.m_pigeon.getPitch();
-          double roll = angle[ROLL];
+		this.stopAtSetpoint = stopAtSetpoint;
+		this.timeout = timeout;
 
-          SmartDashboard.putNumber("roll", roll);
-          return roll;
-        },
-        // This should return the setpoint (can also be a constant)
-        () -> 0,
-        // This uses the output
-        output -> {
-          // Use the output here
-          // SmartDashboard.putNumber("Roll",angle[1]);
-          SmartDashboard.putNumber("Output", output);
-          if (drivetrain.m_pigeon.getRoll() > 0) {
-            drivetrain.tankDriveVolts(output, -output);
-          } else {
-            drivetrain.tankDriveVolts(-output, output);
-          }
+		this.addRequirements(drivetrain);
+	}
 
-        });
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.28, 10);
-    SmartDashboard.putData(this.m_controller);
-  }
+	/// Construct a manual-style command, which does not stop at setpoint, nor does it timeout.
+	public static BalanceRollPID manual(Drivetrain drivetrain) {
+		return new BalanceRollPID(drivetrain, false, Double.POSITIVE_INFINITY);
+	}
 
-  @Override
-  public void initialize() {
-    this.time = System.currentTimeMillis();
-  }
+	/// Construct an auto-style command, which automatically stops at setpoint or after `timeout` ms.
+	public static BalanceRollPID auto(Drivetrain drivetrain, double timeout) {
+		return new BalanceRollPID(drivetrain, true, timeout);
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    if (System.currentTimeMillis() > time + 7000) {
-      return true;
-    } else {
-      //return getController().atSetpoint();
-      return false;
-    }
-  }
+	/// Construct an auto-style command, which automatically stops at setpoint, but does not timeout.
+	public static BalanceRollPID auto(Drivetrain drivetrain) {
+		return new BalanceRollPID(drivetrain, true, Double.POSITIVE_INFINITY);
+	}
+
+	@Override
+	public void initialize() {
+		this.time = System.currentTimeMillis();
+	}
+
+	@Override
+	public boolean isFinished() {
+		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.m_controller.atSetpoint());
+	}
 }
