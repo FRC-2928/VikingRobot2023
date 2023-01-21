@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,6 +51,11 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 
 	private double yaw;
+	private final PIDController m_leftController =
+    	new PIDController(1, 0.0, 0.3);
+
+ 	private final PIDController m_rightController =
+    	new PIDController(1.2, 0.0, 0.0);    
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -130,6 +136,21 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
+	public void BalanceRollPitch(double Output) {
+    
+		/*SmartDashboard.putNumber("Requested Velocity", velocity);
+		SmartDashboard.putNumber("Setpoint Velocity", setpointVel);
+		SmartDashboard.putNumber("Setpoint Position", setpointPos);
+		*/
+		// Send it through a PID controller
+		double leftPIDVolts = m_leftController.calculate(this.readGyro()[1], 0);
+		double rightPIDVolts = m_rightController.calculate(this.readGyro()[1], 0);
+		SmartDashboard.putNumber("Left PID Volts", leftPIDVolts);
+		SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
+		
+		// Add the voltage values and send them to the motors
+		tankDriveVolts(Output + leftPIDVolts, Output + rightPIDVolts);
+	  }
 
 	// -----------------------------------------------------------
 	// Control Input
