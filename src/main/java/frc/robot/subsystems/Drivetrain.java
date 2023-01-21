@@ -51,16 +51,15 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 
 	private double yaw;
-	private final PIDController m_leftController =
+	private final PIDController m_rollPID =
     	new PIDController(1, 0.0, 0.3);
-
+	/*
  	private final PIDController m_rightController =
     	new PIDController(1, 0.0, 0.3);    
-
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
-
+	*/
 	/** Creates a new Drivetrain. */
 	public Drivetrain(Supplier<Transmission.GearState> gearStateSupplier) {
 		this.gearStateSupplier = gearStateSupplier;
@@ -82,6 +81,8 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(getPose());
 		SmartDashboard.putData("Field", this.field2d);
+
+		m_rollPID.setTolerance(0.28);
 	}
 
 	public void configureMotors() {
@@ -136,20 +137,21 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
-	public void BalanceRollPitch(double Output) {
+	public void BalanceRollPitch(double output) {
     
 		/*SmartDashboard.putNumber("Requested Velocity", velocity);
 		SmartDashboard.putNumber("Setpoint Velocity", setpointVel);
 		SmartDashboard.putNumber("Setpoint Position", setpointPos);
 		*/
 		// Send it through a PID controller
-		double leftPIDVolts = m_leftController.calculate(this.readRoll(), 0);
-		double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
-		SmartDashboard.putNumber("Left PID Volts", leftPIDVolts);
-		SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
+		double rollPIDVolts = m_rollPID.calculate(this.readRoll(), 0);
+		//double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
+		SmartDashboard.putNumber("PID Volts", rollPIDVolts);
+		//SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
 		
 		// Add the voltage values and send them to the motors
-		tankDriveVolts(Output + leftPIDVolts, Output + rightPIDVolts);
+		if (this.readRoll() > 0)  this.tankDriveVolts(-output+rollPIDVolts, -output-rollPIDVolts);
+		else this.tankDriveVolts(-output-rollPIDVolts, -output+rollPIDVolts);
 	  }
 
 	// -----------------------------------------------------------
