@@ -65,8 +65,7 @@ public class BalanceRollPID extends PIDCommand {
     if (System.currentTimeMillis() > time + 7000) {
       return true;
     } else {
-      //return getController().atSetpoint();
-      return false;
+      return getController().atSetpoint();
     }
   }
 }
