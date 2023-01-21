@@ -11,60 +11,58 @@ import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Log;
 
 public class DriverOI {
-    private XboxController m_controller;
+	private XboxController controller;
 
-    public DriverOI(XboxController controller) {
-        m_controller = controller;
-        
-        m_controller.a(new EventLoop());
-        this.debugAddButtonLog(m_controller::b, "B");
-        this.debugAddButtonLog(m_controller::x, "X");
-        this.debugAddButtonLog(m_controller::y, "Y");
-    }
+	public DriverOI(XboxController controller) {
+		this.controller = controller;
 
-    private void debugAddButtonLog(Consumer<EventLoop> fn, String name) {
-        EventLoop loop = new EventLoop();
-        loop.bind(() -> Log.writeln("Button press: " + name));
-        fn.accept(loop);
-    } 
+		this.controller.a(new EventLoop());
+		this.debugAddButtonLog(this.controller::b, "B");
+		this.debugAddButtonLog(this.controller::x, "X");
+		this.debugAddButtonLog(this.controller::y, "Y");
+	}
 
-    // ---------------- Drivetrain ----------------------------
+	private void debugAddButtonLog(Consumer<EventLoop> fn, String name) {
+		EventLoop loop = new EventLoop();
+		loop.bind(() -> Log.writeln("Button press: " + name));
+		fn.accept(loop);
+	}
 
-    public DoubleSupplier getRotateSupplier() {
-        return () -> m_controller.getRightX();
-    }
+	// ---------------- Drivetrain ----------------------------
 
+	public DoubleSupplier getRotateSupplier() {
+		return () -> this.controller.getRightX();
+	}
 
-    public Trigger getShiftLowButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kX.value);
-    }
+	public Trigger getShiftLowButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kX.value);
+	}
 
-    public Trigger getShiftHighButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kY.value);
-    }
+	public Trigger getShiftHighButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kY.value);
+	}
 
+	public Trigger getOrchestraButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
+	}
 
-    public Trigger getOrchestraButton(){
-        return new JoystickButton(m_controller, XboxController.Button.kStart.value);
-    }
+	public DoubleSupplier getMoveSupplier() {
+		return () -> -this.controller.getLeftY();
+	}
 
-    public DoubleSupplier getMoveSupplier() {
-        return () -> -m_controller.getLeftY();
-    }
+	public Trigger getIsAtHighSpeed() {
+		return new Trigger(() -> Math.abs(this.controller.getLeftY()) > .85);
+	}
 
-    public Trigger getIsAtHighSpeed() {
-        return new Trigger(() -> Math.abs(m_controller.getLeftY()) > .85);
-    } 
+	public Trigger getBalanceButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	}
 
-    public Trigger getBalanceButton() {
-        return new JoystickButton(m_controller, XboxController.Button.kRightBumper.value);
-    }
+	public Trigger getRollButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+	}
 
-    public Trigger getRollButton(){
-        return new JoystickButton(m_controller, XboxController.Button.kLeftBumper.value);
-    }
-
-    public Trigger getResetGyroButton(){
-        return new JoystickButton(m_controller, XboxController.Button.kB.value);
-    }
+	public Trigger getResetGyroButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	}
 }
