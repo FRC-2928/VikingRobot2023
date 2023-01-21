@@ -55,7 +55,7 @@ public class Drivetrain extends SubsystemBase {
     	new PIDController(1, 0.0, 0.3);
 
  	private final PIDController m_rightController =
-    	new PIDController(1.2, 0.0, 0.0);    
+    	new PIDController(1, 0.0, 0.3);    
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -143,8 +143,8 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Setpoint Position", setpointPos);
 		*/
 		// Send it through a PID controller
-		double leftPIDVolts = m_leftController.calculate(this.readGyro()[1], 0);
-		double rightPIDVolts = m_rightController.calculate(this.readGyro()[1], 0);
+		double leftPIDVolts = m_leftController.calculate(this.getRoll(), 0);
+		double rightPIDVolts = m_rightController.calculate(this.getRoll(), 0);
 		SmartDashboard.putNumber("Left PID Volts", leftPIDVolts);
 		SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
 		
@@ -315,5 +315,17 @@ public class Drivetrain extends SubsystemBase {
 		field2d.setRobotPose(getPose());
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
+	}
+	public double getYaw(){
+		
+		return this.readGyro()[0];
+	}
+	public double getPitch(){
+		
+		return this.readGyro()[2];
+	}
+	public double getRoll(){
+		
+		return this.readGyro()[1];
 	}
 }
