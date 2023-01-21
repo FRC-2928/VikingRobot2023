@@ -21,6 +21,7 @@ public final class Main {
   public static void main(String... args) throws Exception {
     Log.lineLimit = 100;
     Log.start();
+    Log.writeln("Robot starting...");
     RobotBase.startRobot(Robot::new);
   }
 }
