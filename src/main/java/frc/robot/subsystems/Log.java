@@ -39,12 +39,15 @@ public final class Log extends SubsystemBase {
 
     /// Trims as many leading lines is necessary so that the buffer contains less than `lineLimit` lines long
     public static void trimExcessLeadingLines() {
+        // TODO: Fix this, it doesn't seem to work
         while(Log.instance.lines > Log.lineLimit) Log.instance.trimSingleLine();
     }
 
     /// Unconditionally trims a single line off the front
     private void trimSingleLine() {
-        this.log.delete(0, Math.max(this.log.indexOf("\n"), 0));
+        // TODO: Fix this, it doesn't seem to work, but this function is called
+        
+        this.log.delete(0, Math.max(this.log.indexOf("\n"), 0)); // this doesnt work
         this.lines--;
         this.dirty = true;
     }

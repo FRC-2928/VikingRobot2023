@@ -33,16 +33,12 @@ public class BalancePID extends PIDCommand {
           SmartDashboard.putNumber("pid output", output);
         });
 
-    // maybe omit tolerance? not sure what it does but works well with 10 (tippy
-    // with 5)
-    // potentially unit of encoder ticks on pigeon
-    // realized tolerance is for atSetpoint and anything inbetween
     this.m_controller.setTolerance(1.0);
-    this.addRequirements(drivetrain);
+    this.m_controller.setSetpoint(0.0);
+    this.m_controller.calculate(0.0);
     SmartDashboard.putData(this.m_controller);
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
+    this.addRequirements(drivetrain);
   }
 
   @Override
@@ -53,8 +49,6 @@ public class BalancePID extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return drivetrain.m_pigeon.getYaw() < 2 & drivetrain.m_pigeon.getYaw() > -2;
-    // return this.m_controller.atSetpoint();
-    return false;
+    return this.m_controller.atSetpoint();
   }
 }
