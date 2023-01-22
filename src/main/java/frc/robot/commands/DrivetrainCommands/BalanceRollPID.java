@@ -25,7 +25,7 @@ public class BalanceRollPID extends PIDCommand {
 			() -> drivetrain.readGyro()[1],
 			0,
 			output -> {
-				if (drivetrain.readRoll() > 0)  drivetrain.tankDriveVolts(output, -output);
+				if (drivetrain.readPitch() > 0)  drivetrain.tankDriveVolts(output, -output);
 				else drivetrain.tankDriveVolts(-output, output);
 			}
 		);

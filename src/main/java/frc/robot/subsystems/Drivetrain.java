@@ -52,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
 
 	private double yaw;
 	private final PIDController m_rollPID =
-    	new PIDController(1, 0.0, 0.3);
+    	new PIDController(0.3, 0.0, 0.03);
 	/*
  	private final PIDController m_rightController =
     	new PIDController(1, 0.0, 0.3);    
@@ -137,6 +137,7 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
+
 	public void BalanceRollPitch(double output) {
     
 		/*SmartDashboard.putNumber("Requested Velocity", velocity);
@@ -150,9 +151,9 @@ public class Drivetrain extends SubsystemBase {
 		//SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
 		
 		// Add the voltage values and send them to the motors
-		if (this.readRoll() > 0)  this.tankDriveVolts(-output+rollPIDVolts, -output-rollPIDVolts);
-		else this.tankDriveVolts(-output-rollPIDVolts, -output+rollPIDVolts);
-	  }
+		if(this.readPitch() > 0) this.tankDriveVolts(-output + rollPIDVolts, -output - rollPIDVolts);
+		else this.tankDriveVolts(-output - rollPIDVolts, -output + rollPIDVolts);
+	}
 
 	// -----------------------------------------------------------
 	// Control Input
