@@ -11,7 +11,7 @@ public class LimelightData {
     private boolean m_isTargetFound = false;
 
     public LimelightData(double horizontalOffset, double verticalOffset, double targetDistance, boolean isTargetFound,
-    double skew){
+    double skew) {
         m_horizontalOffset = horizontalOffset;
         m_verticalOffset = verticalOffset;
         m_targetDistance = targetDistance;
@@ -19,57 +19,57 @@ public class LimelightData {
         m_skew = skew;
     }
 
-    public LimelightData(double horizontalOffset, double verticalOffset, double targetDistance, boolean isTargetFound){
+    public LimelightData(double horizontalOffset, double verticalOffset, double targetDistance, boolean isTargetFound) {
         m_horizontalOffset = horizontalOffset;
         m_verticalOffset = verticalOffset;
         m_targetDistance = targetDistance;
         m_isTargetFound = isTargetFound;
     }
 
-    public LimelightData(double horizontalOffset, double verticalOffset, double targetDistance){
+    public LimelightData(double horizontalOffset, double verticalOffset, double targetDistance) {
         m_horizontalOffset = horizontalOffset;
         m_verticalOffset = verticalOffset;
         m_targetDistance = targetDistance;
     }
 
-    public LimelightData(double horizontalOffset, double verticalOffset){
+    public LimelightData(double horizontalOffset, double verticalOffset) {
         m_horizontalOffset = horizontalOffset;
         m_verticalOffset = verticalOffset;
     }
 
-    public void setHorizontalOffset(double horizontalOffeset){
+    public void setHorizontalOffset(double horizontalOffeset) {
         m_horizontalOffset = horizontalOffeset;
     }
 
-    public void setVerticalOffset(double verticalOffset){
+    public void setVerticalOffset(double verticalOffset) {
         m_verticalOffset = verticalOffset;
     }
 
-    public void setTargetDistance(double targetDistance){
+    public void setTargetDistance(double targetDistance) {
         m_targetDistance = targetDistance;
     }
 
-    public void setTargetFound(boolean isTargetFound){
+    public void setTargetFound(boolean isTargetFound) {
         m_isTargetFound = isTargetFound;
     }
 
-    public double getSkew(){
+    public double getSkew() {
         return m_skew;
     }
     
-    public double getHorizontalOffset(){
+    public double getHorizontalOffset() {
         return m_horizontalOffset;
     }
 
-    public double getVerticalOffset(){
+    public double getVerticalOffset() {
         return m_verticalOffset;
     }
 
-    public double getTargetDistance(){
+    public double getTargetDistance() {
         return m_targetDistance;
     }
 
-    public boolean getTargetFound(){
+    public boolean getTargetFound() {
         return m_isTargetFound;
     }
 }

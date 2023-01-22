@@ -1,13 +1,8 @@
 package frc.robot.oi;
 
-import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -33,12 +28,6 @@ public class DriverOI {
 	}
 
 	private void debugAddButtonLog(int id, String message) {
-		new JoystickButton(this.controller, id)
-			.onTrue(new InstantCommand(() -> Log.writeln("press " + message)))
-			.onFalse(new InstantCommand(() -> Log.writeln("release " + message)));
-	}
-
-	private void debugAddAxisLog(int id, String message) {
 		new JoystickButton(this.controller, id)
 			.onTrue(new InstantCommand(() -> Log.writeln("press " + message)))
 			.onFalse(new InstantCommand(() -> Log.writeln("release " + message)));
@@ -81,7 +70,8 @@ public class DriverOI {
 	public Trigger getResetGyroButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
-	public Trigger getBalanceAuxButton(){
+
+	public Trigger getBalanceAuxButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 }

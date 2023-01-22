@@ -318,15 +318,15 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
 	}
-	public double readYaw(){
+	public double readYaw() {
 		
 		return this.readGyro()[0];
 	}
-	public double readPitch(){
+	public double readPitch() {
 		
 		return this.readGyro()[2];
 	}
-	public double readRoll(){
+	public double readRoll() {
 		
 		return this.readGyro()[1];
 	}
