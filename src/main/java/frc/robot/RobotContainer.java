@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
@@ -91,6 +92,7 @@ public class RobotContainer {
 		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
+		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
 	}
 
 	private void configureAutoChooser() {
