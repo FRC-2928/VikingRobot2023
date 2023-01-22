@@ -92,7 +92,7 @@ public class RobotContainer {
 		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
-		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
+		driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 	}
 
 	private void configureAutoChooser() {
