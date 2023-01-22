@@ -35,26 +35,25 @@ public class Transmission extends SubsystemBase {
 
 		switch (state) {
 			case HIGH:
-				setFalse();
+				this.setFalse();
 				break;
 
 			case LOW:
-				setTrue();
+				this. setTrue();
 				break;
 		}
 	}
 
-	public void setHigh(){
-		setGearState(GearState.HIGH);
+	public void setHigh() {
+		this.setGearState(GearState.HIGH);
 	}
 
-	public void setLow(){
-		System.out.println("this.transmission::setHigh!!!!");
-		setGearState(GearState.LOW);
+	public void setLow() {
+		this.setGearState(GearState.LOW);
 	}
 
 	public void toggle() {
-		setGearState(this.gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
+		this.setGearState(this.gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
 	}
 
 	public GearState getGearState() {
@@ -75,6 +74,6 @@ public class Transmission extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putString("Gear State", this.gearState.toString());
+		SmartDashboard.putString("Gear", this.gearState.toString());
 	}
 }

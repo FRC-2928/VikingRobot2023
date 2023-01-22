@@ -36,7 +36,7 @@ public class Limelight{
     setStream(0);
   }
 
-  public LimelightData getLimelightData(){
+  public LimelightData getLimelightData() {
     updateReadings();
     return new LimelightData(m_horizontalOffset, m_verticalOffset, m_targetDistance, m_targetFound, m_skew);
   }
@@ -44,7 +44,7 @@ public class Limelight{
   // -----------------------------------------------------------
   // Control Input
   // -----------------------------------------------------------
-  public void updateReadings(){
+  public void updateReadings() {
     m_horizontalOffset = getHorizontalOffset();
     m_verticalOffset = getVerticalOffset();
     //m_targetDistance = getTargetDistance();
@@ -52,40 +52,40 @@ public class Limelight{
     m_skew = getSkew();
   }
 
-  public void setStream(int stream){
+  public void setStream(int stream) {
     m_limelightNI.getEntry("stream").setNumber(stream);
   }
   
   // -----------------------------------------------------------
   // System State
   // -----------------------------------------------------------
-  public double getSkew(){
+  public double getSkew() {
     return m_limelightNI.getEntry("ts").getDouble(0);
   }
 
-  // public double getTargetDistance(){
+  // public double getTargetDistance() {
   //   double h = (LimelightConstants.kHighGoalHeight - LimelightConstants.kHighLimelightHeight) / 12;
   //   return h/Math.tan(Math.toRadians(getVerticalOffset() + LimelightConstants.kHighLimelightMountAngle));
   // }
 
-  public double getHorizontalOffset(){
+  public double getHorizontalOffset() {
     NetworkTableEntry tx = m_limelightNI.getEntry("tx");
     m_horizontalOffset = tx.getDouble(0.0);
     return m_horizontalOffset;
   }
 
-  public double getVerticalOffset(){
+  public double getVerticalOffset() {
     NetworkTableEntry ty = m_limelightNI.getEntry("ty");
     m_verticalOffset = ty.getDouble(0.0);
     return m_verticalOffset;
   }
 
-  public double getArea(){
+  public double getArea() {
     return m_area;
   }
 
-  public boolean isTargetFound(){
-    if (m_limelightNI.getEntry("tv").getDouble(0.0) == 0.0){
+  public boolean isTargetFound() {
+    if (m_limelightNI.getEntry("tv").getDouble(0.0) == 0.0) {
       m_targetFound = false;
     }
     else{

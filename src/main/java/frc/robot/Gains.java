@@ -27,7 +27,7 @@ public class Gains {
 	// A value of ‘1’ represents full output in both directions.
 	public final double kPeakOutput;
 	
-	public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput){
+	public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput) {
 		P = _kP;
 		I = _kI;
 		D = _kD;
