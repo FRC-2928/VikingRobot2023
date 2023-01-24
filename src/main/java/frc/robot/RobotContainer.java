@@ -3,6 +3,10 @@ package frc.robot;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -93,15 +97,16 @@ public class RobotContainer {
 		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
-		driverOI.getGoToTag6Button().whileTrue(new RunRamseteTrajectory(this.drivetrain, 
-			this.drivetrain.navigateToDropoff(DrivetrainConstants.tag6, 1)));
+		driverOI.getGoToTag6Button().onTrue(new RunRamseteTrajectory(this.drivetrain, 
+			this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
 
 		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
 	}
 
 
 	private void configureAutoChooser() {
-		chooser.setDefaultOption("-", new InstantCommand(() -> this.drivetrain.halt()));
+		chooser.setDefaultOption("testing", new RunRamseteTrajectory(this.drivetrain, 
+		this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
 		chooser.addOption(
 			"Back up to balance",
 			new SequentialCommandGroup(

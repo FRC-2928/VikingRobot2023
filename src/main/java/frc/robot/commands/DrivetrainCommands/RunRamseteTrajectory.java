@@ -15,7 +15,7 @@ public class RunRamseteTrajectory extends RamseteCommand {
 	public RunRamseteTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
 		super(
 			trajectory,
-			drivetrain::getPose,
+			drivetrain::getEncoderPose,
 			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 			DrivetrainConstants.kDriveKinematics,
 			drivetrain::setOutputMetersPerSecond,
@@ -28,19 +28,20 @@ public class RunRamseteTrajectory extends RamseteCommand {
 	public void initialize() {
 		super.initialize();
 		this.drivetrain.resetOdometry(this.trajectory.getInitialPose());
+		System.out.println("Initial Pose: " + this.trajectory.getInitialPose());
 		SmartDashboard.putNumber("start traj Y", this.trajectory.getInitialPose().getY());
-		SmartDashboard.putNumber("start odom Y", this.drivetrain.getPose().getY());
+		SmartDashboard.putNumber("start odom Y", this.drivetrain.getEncoderPose().getY());
 		SmartDashboard.putNumber("start traj X", this.trajectory.getInitialPose().getX());
-		SmartDashboard.putNumber("start odom X", this.drivetrain.getPose().getX());
-		SmartDashboard.putNumber("start odometry heading", this.drivetrain.getPose().getRotation().getDegrees());
+		SmartDashboard.putNumber("start odom X", this.drivetrain.getEncoderPose().getX());
+		SmartDashboard.putNumber("start odometry heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
 		SmartDashboard.putNumber("start heading", this.drivetrain.getHeading());  
 	}
 
 	public void execute() {
 		super.execute();
-		SmartDashboard.putNumber("Odometry X", this.drivetrain.getPose().getX());
-		SmartDashboard.putNumber("Odometry Y", this.drivetrain.getPose().getY());
-		SmartDashboard.putNumber("Odometry heading", this.drivetrain.getPose().getRotation().getDegrees());
+		SmartDashboard.putNumber("Odometry X", this.drivetrain.getEncoderPose().getX());
+		SmartDashboard.putNumber("Odometry Y", this.drivetrain.getEncoderPose().getY());
+		SmartDashboard.putNumber("Odometry heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
 		//SmartDashboard.putNumber("current heading", this.drivetrain.getHeading());
 		this.drivetrain.diffDrive.feed(); // Feed motor safety instead of disabling it
 	}

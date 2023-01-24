@@ -6,9 +6,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -56,6 +58,8 @@ public class Drivetrain extends SubsystemBase {
 	// Drivetrain odometry to keep track of our position on the field
 	private DifferentialDriveOdometry odometry;
 
+	private DifferentialDrivePoseEstimator m_poseEstimator;
+
 	private final Field2d field2d = new Field2d();
 
 	private double yaw;
@@ -86,8 +90,9 @@ public class Drivetrain extends SubsystemBase {
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(yaw), 0, 0);
+		m_poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, new Rotation2d(yaw), 0, 0, getLimelightPose());
 
-		this.field2d.setRobotPose(getPose());
+		this.field2d.setRobotPose(getEncoderPose());
 		SmartDashboard.putData("Field", this.field2d);
 
 		m_rollPID.setTolerance(0.28);
@@ -288,8 +293,16 @@ public class Drivetrain extends SubsystemBase {
    * 
    * @return pose from encoders
    */
-	public Pose2d getPose() {
+	public Pose2d getEncoderPose() {
 		return odometry.getPoseMeters();
+	}
+
+	/**
+	 * 
+	 * @return pose using encoders and limelight
+	 */
+	public Pose2d getEstimatedPose(){
+		return m_poseEstimator.getEstimatedPosition();
 	}
 
 	public Rotation2d readYawRot() {
@@ -340,37 +353,39 @@ public class Drivetrain extends SubsystemBase {
 
 	Trajectory trajectory;
 	Pose2d startPose;
-
-	//if limelight has valid targets, sets start pose to limelight's pose, otherwise use odometry pose
-	if (m_limelight.getHasValidTargets() == 1){
-		startPose = getLimelightPose();
-	} else {
-		startPose = getPose();
-	}
+	
+	startPose = getEstimatedPose();
 
 	DriverStation.Alliance color = DriverStation.getAlliance();
+
+	// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
+	// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
 	
 	if(color == DriverStation.Alliance.Red){
 		// for red, left and right
 		//if direction is specified left, or direction is unspecified and Y is on left side of field...
 		if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
 			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-			List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), 
+			//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
+			List.of(),
 			endPose, DrivetrainConstants.kTrajectoryConfig);
 		} else {
 			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+				//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+				List.of(),
 				endPose, DrivetrainConstants.kTrajectoryConfig);
 		}
 	} else {
 		// for blue, left and right
 		if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
 			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+				//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+				List.of(),
 				endPose, DrivetrainConstants.kTrajectoryConfig);
 		} else {
 			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+				//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+				List.of(),
 				endPose, DrivetrainConstants.kTrajectoryConfig);
 		}
 	}
@@ -388,22 +403,27 @@ public class Drivetrain extends SubsystemBase {
 	public void periodic() {
 
     //if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
-	 //if((getLimelightPose().getX() != DrivetrainConstants.xOffsetField) || (getLimelightPose().getY() != DrivetrainConstants.yOffsetField)){
-    if (m_limelight.getHasValidTargets() == 1){
-		updateOdometryFromLimelight();
-    } else {
-		  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-    }
+    // if (m_limelight.getHasValidTargets() == 1){
+	// 	updateOdometryFromLimelight();
+    // } else {
+	// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
+    // }
+
+		odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
+		m_poseEstimator.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
+		if (m_limelight.getHasValidTargets() == 1){
+			m_poseEstimator.addVisionMeasurement(getLimelightPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - .3);
+		}
 
 		publishTelemetry();
 	}
 
 	public void publishTelemetry() {
 		SmartDashboard.putNumber("motor output", getMotorOutput());
-		field2d.setRobotPose(getPose());
+		field2d.setRobotPose(getEstimatedPose());
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
-    SmartDashboard.putNumber("poseX", getPose().getX());
+    SmartDashboard.putNumber("poseX", getEncoderPose().getX());
 	SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
 	public double readYaw() {
