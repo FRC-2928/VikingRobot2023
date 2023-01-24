@@ -65,4 +65,9 @@ public class DriverOI {
 	public Trigger getResetGyroButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
+
+	public Trigger getGoToTag6Button(){
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	}
+
 }

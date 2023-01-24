@@ -92,6 +92,9 @@ public class RobotContainer {
 		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
+		driverOI.getGoToTag6Button().whileTrue(new RunRamseteTrajectory(this.drivetrain, 
+			this.drivetrain.navigateToDropoff(DrivetrainConstants.tag6, 1)));
+
 	}
 
 
