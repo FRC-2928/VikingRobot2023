@@ -48,12 +48,12 @@ public final class Log extends SubsystemBase {
 		DriverStation.reportError(error.getLocalizedMessage(), error.getStackTrace());
 		Log.writelnFast("❗ ERROR ❗");
 		Log.writelnFast(error.getLocalizedMessage());
-		Log.writelnFast("❗ More information has been printed in the Driver Station ❗");
+		Log.writeln("❗ More information has been printed in the Driver Station ❗");
 	}
 
 	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
 	public static void warning(String warning) {
-		DriverStation.reportError(warning, Thread.currentThread().getStackTrace());
+		DriverStation.reportWarning(warning, Thread.currentThread().getStackTrace());
 		Log.writelnFast("⚠️ WARNING ⚠️");
 		Log.writeln(warning);
 	}
@@ -66,9 +66,7 @@ public final class Log extends SubsystemBase {
 
 	/// Unconditionally trims a single line off the front
 	private void trimSingleLine() {
-		System.out.println(this.log.indexOf("\n"));
-
-		this.log.delete(0, Math.max(this.log.indexOf("\n") + 1, 0)); // this doesnt work
+		this.log.delete(0, Math.max(this.log.indexOf("\n") + 1, 0));
 		this.lines--;
 		this.dirty = true;
 	}

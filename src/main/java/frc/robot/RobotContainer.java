@@ -5,10 +5,10 @@ import java.nio.file.Path;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
@@ -17,6 +17,7 @@ import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -95,6 +96,7 @@ public class RobotContainer {
 		driverOI.getGoToTag6Button().whileTrue(new RunRamseteTrajectory(this.drivetrain, 
 			this.drivetrain.navigateToDropoff(DrivetrainConstants.tag6, 1)));
 
+		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
 	}
 
 
@@ -112,7 +114,7 @@ public class RobotContainer {
 			)
 		);
 		chooser.addOption(
-			"Curve right around Chargin Station and balance",
+			"Curve right around Charging Station and balance",
 			new SequentialCommandGroup(
 				new WaitCommand(.1),
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
@@ -171,7 +173,7 @@ public class RobotContainer {
 				.resolve("paths/" + trajectoryJSON + ".wpilib.json");
 			trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 		} catch (IOException ex) {
-			DriverStation.reportError("Unable to open Trajectory:" + trajectoryJSON, ex.getStackTrace());
+			Log.error(ex);
 		}
 		return trajectory;
 	}

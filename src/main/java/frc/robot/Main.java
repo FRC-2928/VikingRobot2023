@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.Log;
 
@@ -11,16 +12,19 @@ import frc.robot.subsystems.Log;
  * call.
  */
 public final class Main {
-  /**
-   * Main initialization function. Do not perform any initialization here.
-   *
-   * <p>
-   * If you change your main robot class, change the parameter type.
-   */
-  public static void main(String... args) throws Exception {
-	Log.start();
-	Log.lineLimit = 100;
-	Log.writeln("Robot starting...");
-	RobotBase.startRobot(Robot::new);
-  }
+	/**
+	 * Main initialization function. Do not perform any initialization here.
+	 *
+	 * <p>
+	 * If you change your main robot class, change the parameter type.
+	 */
+	public static void main(String... args) throws Exception {
+		Log.start();
+		Log.lineLimit = 50;
+		Log.writeln("Robot starting...");
+
+		DriverStation.silenceJoystickConnectionWarning(true);
+
+		RobotBase.startRobot(Robot::new);
+	}
 }
