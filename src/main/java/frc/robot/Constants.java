@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -59,7 +62,8 @@ public final class Constants {
 	}
 
 	public static final class DrivetrainConstants {
-		public static final double arcadeDriveMultiplier = 0.8;
+
+		
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
 		public static final double ksVolts = 0.6024;
@@ -126,5 +130,43 @@ public final class Constants {
 
 		// public static final double kDistanceToleranceMeters = 0.1;
 		// public static final double kVelocityToleranceMeters = 0.1;
+
+
+		//trajectories and localization
+
+		// 0,0 is blue tag 8
+
+		public static final double fieldWidthYMeters = 8.102;
+		public static final double fieldLengthXMeters = 13.436;
+
+		public static final double yOffsetField = 4.051;
+		//offset for limelight and length of robot
+		public static final double xOffsetField = 6.718 + .91;
+		public static final double arcadeDriveMultiplier = 0.8;
+
+		//TODO: find correct location values
+		public static final Translation2d leftRedWaypoint1 = new Translation2d(fieldLengthXMeters - 3.75, fieldWidthYMeters - .8);
+		public static final Translation2d leftRedWaypoint2 = new Translation2d(fieldLengthXMeters - 1.75, fieldWidthYMeters - .8);
+		public static final Translation2d rightRedWaypoint1 = new Translation2d(2, .8);
+		public static final Translation2d rightRedWaypoint2 = new Translation2d(1, .8);
+		public static final Translation2d leftBlueWaypoint1 = new Translation2d(3.75, .8);
+		public static final Translation2d leftBlueWaypoint2 = new Translation2d(1.75, .8);
+		public static final Translation2d rightBlueWaypoint1 = new Translation2d(3.75, fieldWidthYMeters - .8);
+		public static final Translation2d rightBlueWaypoint2 = new Translation2d(1.75, fieldWidthYMeters - .8);
+
+		public static final Pose2d tag1 = new Pose2d(fieldLengthXMeters - 1.5, .88, new Rotation2d());
+		public static final Pose2d tag2 = new Pose2d(fieldLengthXMeters - 1.5, 2.4, new Rotation2d());
+		public static final Pose2d tag3 = new Pose2d(fieldLengthXMeters - 1.5, 4.95, new Rotation2d());
+		public static final Pose2d tag4 = new Pose2d();
+		public static final Pose2d tag5 = new Pose2d();
+		public static final Pose2d tag6 = new Pose2d(1.5, 4.95, new Rotation2d(Math.PI));
+		public static final Pose2d tag7 = new Pose2d(1.5, 2.4, new Rotation2d(Math.PI));
+		public static final Pose2d tag8 = new Pose2d(1.5, .88, new Rotation2d(Math.PI));
+
+		public static final TrajectoryConfig kTrajectoryConfig = 
+			new TrajectoryConfig(kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared)
+			.setKinematics(kDriveKinematics)
+			.addConstraint(kAutoVoltageConstraint);
+
 	}
 }

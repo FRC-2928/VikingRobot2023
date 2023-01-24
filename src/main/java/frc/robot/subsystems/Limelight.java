@@ -66,8 +66,23 @@ public class Limelight{
     return m_limelightNI.getEntry("ts").getDouble(0);
   }
 
+  public double getHasValidTargets(){
+    return m_limelightNI.getEntry("tv").getDouble(0);
+  }
+
   public double[] getPose(){
-    return m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
+    double[] pose = m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
+    if(pose.length == 0) {
+      return new double[6]; 
+    }
+    else {
+      return pose;
+    }
+  }
+
+  public double getPoseX(){
+    double pose = m_limelightNI.getEntry("botpose").getDouble(0);
+    return pose;
   }
 
   // public double getTargetDistance(){
