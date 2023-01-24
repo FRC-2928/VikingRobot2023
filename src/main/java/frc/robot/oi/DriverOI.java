@@ -1,11 +1,10 @@
 package frc.robot.oi;
 
-import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Log;
@@ -16,16 +15,22 @@ public class DriverOI {
 	public DriverOI(XboxController controller) {
 		this.controller = controller;
 
-		this.controller.a(new EventLoop());
-		this.debugAddButtonLog(this.controller::b, "B");
-		this.debugAddButtonLog(this.controller::x, "X");
-		this.debugAddButtonLog(this.controller::y, "Y");
+		this.debugAddButtonLog(XboxController.Button.kA.value, "A");
+		this.debugAddButtonLog(XboxController.Button.kB.value, "B");
+		this.debugAddButtonLog(XboxController.Button.kX.value, "X");
+		this.debugAddButtonLog(XboxController.Button.kY.value, "Y");
+		this.debugAddButtonLog(XboxController.Button.kStart.value, "Start");
+		this.debugAddButtonLog(XboxController.Button.kBack.value, "Back");
+		this.debugAddButtonLog(XboxController.Button.kLeftBumper.value, "Left Bumper");
+		this.debugAddButtonLog(XboxController.Button.kRightBumper.value, "Right Bumper");
+		this.debugAddButtonLog(XboxController.Button.kLeftStick.value, "Left Stick");
+		this.debugAddButtonLog(XboxController.Button.kRightStick.value, "Right Stick");
 	}
 
-	private void debugAddButtonLog(Consumer<EventLoop> fn, String name) {
-		EventLoop loop = new EventLoop();
-		loop.bind(() -> Log.writeln("Button press: " + name));
-		fn.accept(loop);
+	private void debugAddButtonLog(int id, String message) {
+		new JoystickButton(this.controller, id)
+			.onTrue(new InstantCommand(() -> Log.writeln("press " + message)))
+			.onFalse(new InstantCommand(() -> Log.writeln("release " + message)));
 	}
 
 	// ---------------- Drivetrain ----------------------------
@@ -70,4 +75,7 @@ public class DriverOI {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
+	public Trigger getBalanceAuxButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	}
 }

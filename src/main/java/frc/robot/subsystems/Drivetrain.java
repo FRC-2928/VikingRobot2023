@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -58,11 +59,15 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 
 	private double yaw;
-
+	private final PIDController m_rollPID =
+    	new PIDController(1, 0.0, 0.3);
+	/*
+ 	private final PIDController m_rightController =
+    	new PIDController(1, 0.0, 0.3);    
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
-
+	*/
 	/** Creates a new Drivetrain. */
 	public Drivetrain(Supplier<Transmission.GearState> gearStateSupplier) {
 		this.gearStateSupplier = gearStateSupplier;
@@ -84,6 +89,8 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(getPose());
 		SmartDashboard.putData("Field", this.field2d);
+
+		m_rollPID.setTolerance(0.28);
 	}
 
 	public void configureMotors() {
@@ -138,6 +145,22 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
+	public void BalanceRollPitch(double output) {
+    
+		/*SmartDashboard.putNumber("Requested Velocity", velocity);
+		SmartDashboard.putNumber("Setpoint Velocity", setpointVel);
+		SmartDashboard.putNumber("Setpoint Position", setpointPos);
+		*/
+		// Send it through a PID controller
+		double rollPIDVolts = m_rollPID.calculate(this.readRoll(), 0);
+		//double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
+		SmartDashboard.putNumber("PID Volts", rollPIDVolts);
+		//SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
+		
+		// Add the voltage values and send them to the motors
+		if (this.readRoll() > 0)  this.tankDriveVolts(-output+rollPIDVolts, -output-rollPIDVolts);
+		else this.tankDriveVolts(-output-rollPIDVolts, -output+rollPIDVolts);
+	  }
 
 	// -----------------------------------------------------------
 	// Control Input
@@ -173,12 +196,12 @@ public class Drivetrain extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		this.resetEncoders();
-		this.odometry.resetPosition(this.readYaw(), 0, 0, pose);
+		this.odometry.resetPosition(this.readYawRot(), 0, 0, pose);
 	}
 
   public void updateOdometryFromLimelight(){
     this.resetEncoders();
-    this.odometry.resetPosition(this.readYaw(), 0, 0, getLimelightPose());
+    this.odometry.resetPosition(this.readYawRot(), 0, 0, getLimelightPose());
   }
 
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
@@ -269,7 +292,7 @@ public class Drivetrain extends SubsystemBase {
 		return odometry.getPoseMeters();
 	}
 
-	public Rotation2d readYaw() {
+	public Rotation2d readYawRot() {
 
 		yaw = readGyro()[0];
 
@@ -369,7 +392,7 @@ public class Drivetrain extends SubsystemBase {
     if (m_limelight.getHasValidTargets() == 1){
 		updateOdometryFromLimelight();
     } else {
-		  odometry.update(readYaw(), getLeftDistanceMeters(), getRightDistanceMeters());
+		  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
     }
 
 		publishTelemetry();
@@ -382,5 +405,17 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
     SmartDashboard.putNumber("poseX", getPose().getX());
 	SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
+	}
+	public double readYaw() {
+		
+		return this.readGyro()[0];
+	}
+	public double readPitch() {
+		
+		return this.readGyro()[2];
+	}
+	public double readRoll() {
+		
+		return this.readGyro()[1];
 	}
 }

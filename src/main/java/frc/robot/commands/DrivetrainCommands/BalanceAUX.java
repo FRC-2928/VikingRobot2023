@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
-public class BalanceRollPID extends PIDCommand {
+public class BalanceAUX extends PIDCommand {
 	private double time = System.currentTimeMillis();
 
 	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
@@ -14,23 +14,20 @@ public class BalanceRollPID extends PIDCommand {
 	/// The timeout to automatically end the command at
 	/// Set to Double.POSITIVE_INFINITY to disable
 	public double timeout;
-
-	public BalanceRollPID(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
+	
+	public BalanceAUX(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		super(
 			new PIDController(
-				DrivetrainConstants.GainsRollBalance.P,
-				DrivetrainConstants.GainsRollBalance.I,
-				DrivetrainConstants.GainsRollBalance.D
+				DrivetrainConstants.GainsBalance.P,
+				DrivetrainConstants.GainsBalance.I,
+				DrivetrainConstants.GainsBalance.D
 			),
-			() -> drivetrain.readGyro()[1],
+			() -> drivetrain.readGyro()[2],
 			0,
-			output -> {
-				if (drivetrain.readRoll() > 0)  drivetrain.tankDriveVolts(output, -output);
-				else drivetrain.tankDriveVolts(-output, output);
-			}
+			output -> drivetrain.BalanceRollPitch(output)
 		);
-		
-		this.m_controller.setTolerance(0.3);
+
+		this.m_controller.setTolerance(1.0);
 		this.m_controller.setSetpoint(0.0);
 		this.m_controller.calculate(0.0);
 
@@ -41,18 +38,18 @@ public class BalanceRollPID extends PIDCommand {
 	}
 
 	/// Construct a manual-style command, which does not stop at setpoint, nor does it timeout.
-	public static BalanceRollPID manual(Drivetrain drivetrain) {
-		return new BalanceRollPID(drivetrain, false, Double.POSITIVE_INFINITY);
+	public static BalanceAUX manual(Drivetrain drivetrain) {
+		return new BalanceAUX(drivetrain, false, Double.POSITIVE_INFINITY);
 	}
 
 	/// Construct an auto-style command, which automatically stops at setpoint or after `timeout` ms.
-	public static BalanceRollPID auto(Drivetrain drivetrain, double timeout) {
-		return new BalanceRollPID(drivetrain, true, timeout);
+	public static BalanceAUX auto(Drivetrain drivetrain, double timeout) {
+		return new BalanceAUX(drivetrain, true, timeout);
 	}
 
 	/// Construct an auto-style command, which automatically stops at setpoint, but does not timeout.
-	public static BalanceRollPID auto(Drivetrain drivetrain) {
-		return new BalanceRollPID(drivetrain, true, Double.POSITIVE_INFINITY);
+	public static BalanceAUX auto(Drivetrain drivetrain) {
+		return new BalanceAUX(drivetrain, true, Double.POSITIVE_INFINITY);
 	}
 
 	@Override
