@@ -144,25 +144,6 @@ public final class Constants {
 		public static final double xOffsetField = 6.718 + .91;
 		public static final double arcadeDriveMultiplier = 0.8;
 
-		//TODO: find correct location values
-		public static final Translation2d leftRedWaypoint1 = new Translation2d(fieldLengthXMeters - 3.75, fieldWidthYMeters - .8);
-		public static final Translation2d leftRedWaypoint2 = new Translation2d(fieldLengthXMeters - 1.75, fieldWidthYMeters - .8);
-		public static final Translation2d rightRedWaypoint1 = new Translation2d(2, .8);
-		public static final Translation2d rightRedWaypoint2 = new Translation2d(1, .8);
-		public static final Translation2d leftBlueWaypoint1 = new Translation2d(3.75, .8);
-		public static final Translation2d leftBlueWaypoint2 = new Translation2d(1.75, .8);
-		public static final Translation2d rightBlueWaypoint1 = new Translation2d(3.75, fieldWidthYMeters - .8);
-		public static final Translation2d rightBlueWaypoint2 = new Translation2d(1.75, fieldWidthYMeters - .8);
-
-		public static final Pose2d tag1 = new Pose2d(fieldLengthXMeters - 1.5, .88, new Rotation2d());
-		public static final Pose2d tag2 = new Pose2d(fieldLengthXMeters - 1.5, 2.4, new Rotation2d());
-		public static final Pose2d tag3 = new Pose2d(fieldLengthXMeters - 1.5, 4.95, new Rotation2d());
-		public static final Pose2d tag4 = new Pose2d();
-		public static final Pose2d tag5 = new Pose2d();
-		public static final Pose2d tag6 = new Pose2d(1.5, 4.95, new Rotation2d(Math.PI));
-		public static final Pose2d tag7 = new Pose2d(1.5, 2.4, new Rotation2d(Math.PI));
-		public static final Pose2d tag8 = new Pose2d(1.5, .88, new Rotation2d(Math.PI));
-
 		public static final TrajectoryConfig kTrajectoryConfig = 
 			new TrajectoryConfig(kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared)
 			.setKinematics(kDriveKinematics)
