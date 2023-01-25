@@ -200,9 +200,8 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(
-            new Translation2d(2.0, 0.0) 
-        ),
+        // List.of(new Translation2d(2.0, 0.0)) 
+		List.of(),
         new Pose2d(4.0, 0.0, new Rotation2d(0)), // left
         DrivetrainConstants.kTrajectoryConfig);
 
