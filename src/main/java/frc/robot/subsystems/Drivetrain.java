@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,6 +29,7 @@ import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.subsystems.Transmission.GearState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -41,6 +43,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.BasePigeonSimCollection;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 public class Drivetrain extends SubsystemBase {
@@ -55,8 +58,10 @@ public class Drivetrain extends SubsystemBase {
 
 	public DifferentialDrive diffDrive;
 
-	// Set up the BuiltInAccelerometer
+	// Set up the BuiltInAccelerometer.  
 	public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+	// Simulation requires WPI_Pigeon2. Test this instead of WPI_PigeonIMU
+	public WPI_Pigeon2 pigeon2 = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
@@ -72,31 +77,8 @@ public class Drivetrain extends SubsystemBase {
 	private final PIDController m_rollPID =
     	new PIDController(1, 0.0, 0.3);
 
-	/* Object for simulated inputs into Talon. */
-	TalonFXSimCollection m_leftDriveSim = leftLeader.getSimCollection();
-	TalonFXSimCollection m_rightDriveSim = rightLeader.getSimCollection();
-  
-	/* Object for simulated inputs into Pigeon. */
-	BasePigeonSimCollection m_pigeonSim = pigeon.getSimCollection();
-	
-	/* Simulation model of the drivetrain */
-	DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
-		DCMotor.getFalcon500(2),  //2 Falcon 500s on each side of the drivetrain.
-		DrivetrainConstants.lowGearRatio,    //Low Gearing reduction.
-		2.1,                //The moment of inertia of the drivetrain about its center.
-		26.5,                         //Mass of the robot in kg.
-		DrivetrainConstants.kWheelDiameterMeters/2,  //Robot wheel radius.
-		DrivetrainConstants.kTrackWidthMeters,     //Distance between wheels.
-	
-		/*
-		 * The standard deviations for measurement noise:
-		 * x and y:          0.001 m
-		 * heading:          0.001 rad
-		 * l and r velocity: 0.1   m/s
-		 * l and r position: 0.005 m
-		 */
-		null //VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005) //Uncomment this line to add measurement noise.
-	  );
+	/* Object for simulated drivetrain. */	
+	DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon2);		
 	  
 	/*
  	private final PIDController m_rightController =
@@ -438,56 +420,8 @@ public class Drivetrain extends SubsystemBase {
 	// ----------------------------------------------------
 
 	@Override
-	public void simulationPeriodic() {
-		/* Pass the robot battery voltage to the simulated Talon FXs */
-		m_leftDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
-		m_rightDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
-
-		/*
-		* CTRE simulation is low-level, so SimCollection inputs
-		* and outputs are not affected by SetInverted(). Only
-		* the regular user-level API calls are affected.
-		*
-		* WPILib expects +V to be forward.
-		* Positive motor output lead voltage is ccw. We observe
-		* on our physical robot that this is reverse for the
-		* right motor, so negate it.
-		*
-		* We are hard-coding the negation of the values instead of
-		* using getInverted() so we can catch a possible bug in the
-		* robot code where the wrong value is passed to setInverted().
-		*/
-		m_driveSim.setInputs(m_leftDriveSim.getMotorOutputLeadVoltage(),
-							-m_rightDriveSim.getMotorOutputLeadVoltage());
-
-		/*
-		* Advance the model by 20 ms. Note that if you are running this
-		* subsystem in a separate thread or have changed the nominal
-		* timestep of TimedRobot, this value needs to match it.
-		*/
-		m_driveSim.update(0.02);
-
-		/*
-		* Update all of our sensors.
-		*
-		* Since WPILib's simulation class is assuming +V is forward,
-		* but -V is forward for the right motor, we need to negate the
-		* position reported by the simulation class. Basically, we
-		* negated the input, so we need to negate the output.
-		*/
-		m_leftDriveSim.setIntegratedSensorRawPosition(
-			(int)metersToEncoderTicks(m_driveSim.getLeftPositionMeters()));	
-
-		m_leftDriveSim.setIntegratedSensorVelocity(
-			(int)metersToEncoderTicks(m_driveSim.getLeftVelocityMetersPerSecond()) / 10);
-
-		m_rightDriveSim.setIntegratedSensorRawPosition(
-			(int)metersToEncoderTicks(-m_driveSim.getRightPositionMeters()));
-
-		m_rightDriveSim.setIntegratedSensorVelocity(
-			(int)metersToEncoderTicks(-m_driveSim.getRightVelocityMetersPerSecond()) / 10);
-
-		m_pigeonSim.setRawHeading(-m_driveSim.getHeading().getDegrees());
-	}
+    public void simulationPeriodic() {
+        this.driveSim.run();
+    }
 
 }
