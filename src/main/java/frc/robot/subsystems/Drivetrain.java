@@ -12,10 +12,13 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Transmission.GearState;
 
@@ -33,8 +37,10 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 public class Drivetrain extends SubsystemBase {
@@ -65,6 +71,33 @@ public class Drivetrain extends SubsystemBase {
 	private double yaw;
 	private final PIDController m_rollPID =
     	new PIDController(1, 0.0, 0.3);
+
+	/* Object for simulated inputs into Talon. */
+	TalonFXSimCollection m_leftDriveSim = leftLeader.getSimCollection();
+	TalonFXSimCollection m_rightDriveSim = rightLeader.getSimCollection();
+  
+	/* Object for simulated inputs into Pigeon. */
+	BasePigeonSimCollection m_pigeonSim = pigeon.getSimCollection();
+	
+	/* Simulation model of the drivetrain */
+	DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
+		DCMotor.getFalcon500(2),  //2 Falcon 500s on each side of the drivetrain.
+		DrivetrainConstants.lowGearRatio,    //Low Gearing reduction.
+		2.1,                //The moment of inertia of the drivetrain about its center.
+		26.5,                         //Mass of the robot in kg.
+		DrivetrainConstants.kWheelDiameterMeters/2,  //Robot wheel radius.
+		DrivetrainConstants.kTrackWidthMeters,     //Distance between wheels.
+	
+		/*
+		 * The standard deviations for measurement noise:
+		 * x and y:          0.001 m
+		 * heading:          0.001 rad
+		 * l and r velocity: 0.1   m/s
+		 * l and r position: 0.005 m
+		 */
+		null //VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005) //Uncomment this line to add measurement noise.
+	  );
+	  
 	/*
  	private final PIDController m_rightController =
     	new PIDController(1, 0.0, 0.3);    
@@ -327,6 +360,15 @@ public class Drivetrain extends SubsystemBase {
 		return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
 	}
 
+	public double metersToEncoderTicks(double metersPerSecond) {
+		GearState gearState = this.gearStateSupplier.get();
+		double encoderTicks = this.wheelRotationsToEncoderTicks(
+			this.metersToWheelRotations(metersPerSecond),
+			gearState
+		);
+		return encoderTicks;
+	}	
+
 	public double getHeading() {
 		return pigeon.getFusedHeading();
 	}
@@ -340,58 +382,6 @@ public class Drivetrain extends SubsystemBase {
     Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5] / 180 * Math.PI);
     return new Pose2d(m_limelight.getPose()[0] + DrivetrainConstants.xOffsetField, 
 		m_limelight.getPose()[1] + DrivetrainConstants.yOffsetField, rotation);
-  }
-
-  /**
-   * 
-   * @param startPose pose where robot starts
-   * @param endPose pose where robot should end
-   * @param direction 0 for left, 1 for right, 2 for robot to decide
-   * @return
-   */
-  public Trajectory navigateToDropoff(Pose2d endPose, int direction){
-
-	Trajectory trajectory;
-	Pose2d startPose;
-	
-	startPose = getEstimatedPose();
-
-	DriverStation.Alliance color = DriverStation.getAlliance();
-
-	// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
-	// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
-	
-	if(color == DriverStation.Alliance.Red){
-		// for red, left and right
-		//if direction is specified left, or direction is unspecified and Y is on left side of field...
-		if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-			//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
-			List.of(),
-			endPose, DrivetrainConstants.kTrajectoryConfig);
-		} else {
-			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
-				List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-		}
-	} else {
-		// for blue, left and right
-		if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
-				List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-		} else {
-			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
-				List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-		}
-	}
-
-
-	return trajectory;
   }
 
 	// ----------------------------------------------------
@@ -419,12 +409,16 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void publishTelemetry() {
-		SmartDashboard.putNumber("motor output", getMotorOutput());
-		field2d.setRobotPose(getEstimatedPose());
-		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
-    SmartDashboard.putNumber("poseX", getEncoderPose().getX());
-	SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
+		SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
+		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
+		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
+		field2d.setRobotPose(getEncoderPose());
+
+		// SmartDashboard.putNumber("motor output", getMotorOutput());	
+		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
+		// SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
+		// SmartDashboard.putNumber("poseX", getEncoderPose().getX());
+		// SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
 	public double readYaw() {
 		
@@ -438,4 +432,62 @@ public class Drivetrain extends SubsystemBase {
 		
 		return this.readGyro()[1];
 	}
+
+	// ----------------------------------------------------
+	// Simulation
+	// ----------------------------------------------------
+
+	@Override
+	public void simulationPeriodic() {
+		/* Pass the robot battery voltage to the simulated Talon FXs */
+		m_leftDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
+		m_rightDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
+
+		/*
+		* CTRE simulation is low-level, so SimCollection inputs
+		* and outputs are not affected by SetInverted(). Only
+		* the regular user-level API calls are affected.
+		*
+		* WPILib expects +V to be forward.
+		* Positive motor output lead voltage is ccw. We observe
+		* on our physical robot that this is reverse for the
+		* right motor, so negate it.
+		*
+		* We are hard-coding the negation of the values instead of
+		* using getInverted() so we can catch a possible bug in the
+		* robot code where the wrong value is passed to setInverted().
+		*/
+		m_driveSim.setInputs(m_leftDriveSim.getMotorOutputLeadVoltage(),
+							-m_rightDriveSim.getMotorOutputLeadVoltage());
+
+		/*
+		* Advance the model by 20 ms. Note that if you are running this
+		* subsystem in a separate thread or have changed the nominal
+		* timestep of TimedRobot, this value needs to match it.
+		*/
+		m_driveSim.update(0.02);
+
+		/*
+		* Update all of our sensors.
+		*
+		* Since WPILib's simulation class is assuming +V is forward,
+		* but -V is forward for the right motor, we need to negate the
+		* position reported by the simulation class. Basically, we
+		* negated the input, so we need to negate the output.
+		*/
+		m_leftDriveSim.setIntegratedSensorRawPosition(
+			(int)metersToEncoderTicks(m_driveSim.getLeftPositionMeters()));	
+
+		m_leftDriveSim.setIntegratedSensorVelocity(
+			(int)metersToEncoderTicks(m_driveSim.getLeftVelocityMetersPerSecond()) / 10);
+
+		m_rightDriveSim.setIntegratedSensorRawPosition(
+			(int)metersToEncoderTicks(-m_driveSim.getRightPositionMeters()));
+
+		m_rightDriveSim.setIntegratedSensorVelocity(
+			(int)metersToEncoderTicks(-m_driveSim.getRightVelocityMetersPerSecond()) / 10);
+
+		m_pigeonSim.setRawHeading(-m_driveSim.getHeading().getDegrees());
+	}
+
 }
