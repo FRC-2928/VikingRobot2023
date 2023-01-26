@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Log;
 
 public class RunRamseteTrajectory extends RamseteCommand {
 	private Drivetrain drivetrain;
@@ -29,7 +30,7 @@ public class RunRamseteTrajectory extends RamseteCommand {
 	public void initialize() {
 		super.initialize();
 		this.drivetrain.resetOdometry(this.trajectory.getInitialPose());
-		System.out.println("Initial Pose: " + this.trajectory.getInitialPose());
+		Log.writeln("Initial Pose: " + this.trajectory.getInitialPose());
 		SmartDashboard.putNumber("Y start traj", this.trajectory.getInitialPose().getY());
 		SmartDashboard.putNumber("Y start odom", this.drivetrain.getEncoderPose().getY());
 		SmartDashboard.putNumber("X start traj", this.trajectory.getInitialPose().getX());

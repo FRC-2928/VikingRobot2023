@@ -22,7 +22,7 @@ public class BalancePID extends PIDCommand {
 				DrivetrainConstants.GainsBalance.I,
 				DrivetrainConstants.GainsBalance.D
 			),
-			() -> drivetrain.readGyro()[2],
+			() -> drivetrain.readPitch(),
 			0,
 			output -> drivetrain.tankDriveVolts(-output, -output)
 		);
@@ -59,6 +59,6 @@ public class BalancePID extends PIDCommand {
 
 	@Override
 	public boolean isFinished() {
-		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.m_controller.atSetpoint());
+		return (System.currentTimeMillis() > this.time + this.timeout) || (this.stopAtSetpoint && this.m_controller.atSetpoint());
 	}
 }
