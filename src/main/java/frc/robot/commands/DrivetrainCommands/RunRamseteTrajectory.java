@@ -23,6 +23,7 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		);
 		this.drivetrain = drivetrain;
 		this.trajectory = trajectory;
+		addRequirements(drivetrain);
 	}
 
 	public void initialize() {
