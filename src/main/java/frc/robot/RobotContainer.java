@@ -110,8 +110,8 @@ public class RobotContainer {
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
 		
-		driverOI.getGoToTag6Button().onTrue(new RunDynamicRamseteTrajectory(this.drivetrain, 
-				() -> dynamicTrajectory.generateTrajectory(FieldConstants.tag6)));
+		// driverOI.getGoToTag6Button().onTrue(new RunDynamicRamseteTrajectory(this.drivetrain, 
+		// 		() -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
 
 		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
 	}
@@ -121,11 +121,11 @@ public class RobotContainer {
 		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
 		// 							navigateToDropoff(FieldConstants.tag6, 1)));
 
-		// chooser.setDefaultOption("Test Dropoff", 
-		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> dynamicTrajectory.generateTrajectory(FieldConstants.tag6)));
+		chooser.setDefaultOption("Test Dropoff", 
+			new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
 
 
-		chooser.setDefaultOption(
+		chooser.addOption(
 			"Back up to balance",
 			new SequentialCommandGroup(
 				new WaitCommand(.2),
