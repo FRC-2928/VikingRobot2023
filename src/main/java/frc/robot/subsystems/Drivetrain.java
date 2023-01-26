@@ -363,7 +363,7 @@ public class Drivetrain extends SubsystemBase {
 	}	
 
 	public double getHeading() {
-		return pigeon.getFusedHeading();
+		return pigeon.getYaw();
 	}
 
   /**
