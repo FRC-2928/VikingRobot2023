@@ -139,18 +139,8 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void BalanceRollPitch(double output) {
-    
-		/*SmartDashboard.putNumber("Requested Velocity", velocity);
-		SmartDashboard.putNumber("Setpoint Velocity", setpointVel);
-		SmartDashboard.putNumber("Setpoint Position", setpointPos);
-		*/
-		// Send it through a PID controller
 		double rollPIDVolts = m_rollPID.calculate(this.readRoll(), 0);
-		//double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
-		SmartDashboard.putNumber("PID Volts", rollPIDVolts);
-		//SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
 		
-		// Add the voltage values and send them to the motors
 		if(this.readPitch() > 0) this.tankDriveVolts(-output + rollPIDVolts, -output - rollPIDVolts);
 		else this.tankDriveVolts(-output - rollPIDVolts, -output + rollPIDVolts);
 	}
@@ -189,7 +179,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		this.resetEncoders();
-		this.odometry.resetPosition(this.readYawRot(), 0, 0, pose);
+		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
@@ -251,40 +241,51 @@ public class Drivetrain extends SubsystemBase {
 	// Encoder ticks to meters
 	public double encoderTicksToMeters(double encoderTicks) {
 		GearState gearState = gearStateSupplier.get();
-		return wheelRotationsToMeters(motorRotationsToWheelRotations(encoderTicks, gearState));
+		return this.wheelRotationsToMeters(this.motorRotationsToWheelRotations(encoderTicks, gearState));
 	}
 
 	public double getLeftDistanceMeters() {
-		return encoderTicksToMeters(leftLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
 	}
 
 	public double getRightDistanceMeters() {
-		return encoderTicksToMeters(rightLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
 	}
 
 	public double getAvgDistanceMeters() {
-		return (getLeftDistanceMeters() + getRightDistanceMeters()) / 2;
+		return (this.getLeftDistanceMeters() + this.getRightDistanceMeters()) / 2;
 	}
 
 	public double[] readGyro() {
 		double[] angle = new double[3];
-		pigeon.getYawPitchRoll(angle);
+		this.pigeon.getYawPitchRoll(angle);
 		return angle;
 	}
 
-	public Pose2d getPose() {
-		return odometry.getPoseMeters();
+	public double readYaw() {
+		return this.readGyro()[0];
 	}
 
-	public Rotation2d readYawRot() {
+	public double readPitch() {
+		return this.readGyro()[2];
+	}
 
-		yaw = readGyro()[0];
+	public double readRoll() {
+		return this.readGyro()[1];
+	}
 
-		return (Rotation2d.fromDegrees(yaw));
+	public Rotation2d read2dRotation() {
+		this.yaw = readGyro()[0];
+
+		return Rotation2d.fromDegrees(yaw);
+	}
+
+	public Pose2d getPose() {
+		return this.odometry.getPoseMeters();
 	}
 
 	public double getMotorOutput() {
-		return rightLeader.getMotorOutputVoltage();
+		return this.rightLeader.getMotorOutputVoltage();
 	}
 
 	public double metersToWheelRotations(double metersPerSecond) {
@@ -292,14 +293,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double wheelRotationsToEncoderTicks(double wheelRotations, Transmission.GearState gearState) {
-		if (gearState == Transmission.GearState.HIGH) {
-			return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.highGearRatio;
-		}
-		return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
+		return wheelRotations * DrivetrainConstants.encoderCPR * (gearState == Transmission.GearState.HIGH ? DrivetrainConstants.highGearRatio : DrivetrainConstants.lowGearRatio);
 	}
 
 	public double getHeading() {
-		return pigeon.getFusedHeading();
+		return this.pigeon.getFusedHeading();
 	}
 
 	// ----------------------------------------------------
@@ -309,26 +307,14 @@ public class Drivetrain extends SubsystemBase {
 	// This method will be called once per scheduler run
 	@Override
 	public void periodic() {
-		odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-		publishTelemetry();
+		this.odometry.update(this.read2dRotation(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
+		this.publishTelemetry();
 	}
 
 	public void publishTelemetry() {
-		SmartDashboard.putNumber("motor output", getMotorOutput());
-		field2d.setRobotPose(getPose());
-		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
-	}
-	public double readYaw() {
-		
-		return this.readGyro()[0];
-	}
-	public double readPitch() {
-		
-		return this.readGyro()[2];
-	}
-	public double readRoll() {
-		
-		return this.readGyro()[1];
+		SmartDashboard.putNumber("motor output", this.getMotorOutput());
+		this.field2d.setRobotPose(this.getPose());
+		SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("left enoder ticks", this.leftLeader.getSelectedSensorPosition());
 	}
 }

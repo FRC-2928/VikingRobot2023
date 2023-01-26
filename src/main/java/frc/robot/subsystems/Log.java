@@ -8,6 +8,7 @@ public final class Log extends SubsystemBase {
 	private static Log instance;
 
 	/// The maximum number of lines the buffer should contain at any given moment
+	///
 	/// Note that `writelnFast` will bypass this, so ensure you call
 	/// `trimExcessLeadingLines` after using `writelnFast`
 	public static int lineLimit = Integer.MAX_VALUE;
@@ -17,31 +18,40 @@ public final class Log extends SubsystemBase {
 
 	private Log() {}
 
-	/// Starts the log, you should never need to use this, save for the first line
-	/// of the `main` function
+	/// Starts the log, you should never need to use this, save for
+	/// the first line of the `main` function
 	public static void start() throws Exception {
 		Log.instance = new Log();
 	}
 
-	/// Writes data to the buffer and dirties the network entry.
+	/// Writes data to stderr, writes it to the buffer, and dirties
+	/// the network entry.
 	public static void write(String str) {
-		Log.instance.log.append(str);
-		Log.instance.lines += str.lines().count();
-		Log.instance.dirty = true;
-	}
-
-	/// Writes a line to the buffer, trims old leading lines, and dirties the
-	/// network entry.
-	public static void writeln(String str) {
-		Log.write(str + '\n');
+		Log.writeFast(str);
 		Log.trimExcessLeadingLines();
 	}
 
-	/// Writes a line to the buffer, does NOT trim any old leading lines, and
+	/// Writes a line to stderr, writes it to the buffer, trims old
+	/// leading lines, and dirties the network entry.
+	public static void writeln(String str) { Log.write(str + '\n'); }
+
+	/// Writes to the buffer, does NOT trim any old leading lines, and
 	/// dirties the network entry.
 	/// Use this to buffer many line calls together before calling
 	/// `trimExcessLeadingLines` or `writeln`
-	public static void writelnFast(String str) { Log.write(str + '\n'); }
+	public static void writeFast(String str) {
+		Log.instance.log.append(str);
+		Log.instance.lines += str.lines().count();
+		Log.instance.dirty = true;
+
+		System.err.print(str);
+	}
+
+	/// Writes to the buffer, does NOT trim any old leading lines, and
+	/// dirties the network entry.
+	/// Use this to buffer many line calls together before calling
+	/// `trimExcessLeadingLines` or `writeln`
+	public static void writelnFast(String str) { Log.writeFast(str + '\n'); }
 
 	/// Writes an error to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
 	public static void error(Exception error) {
@@ -55,7 +65,8 @@ public final class Log extends SubsystemBase {
 	public static void warning(String warning) {
 		DriverStation.reportWarning(warning, Thread.currentThread().getStackTrace());
 		Log.writelnFast("⚠️ WARNING ⚠️");
-		Log.writeln(warning);
+		Log.writelnFast(warning);
+		Log.writeln("⚠️ More information has been printed in the Driver Station ⚠️");
 	}
 
 	/// Trims as many leading lines is necessary so that the buffer contains less
