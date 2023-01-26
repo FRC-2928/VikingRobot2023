@@ -22,7 +22,7 @@ public class BalanceRollPID extends PIDCommand {
 				DrivetrainConstants.GainsRollBalance.I,
 				DrivetrainConstants.GainsRollBalance.D
 			),
-			() -> drivetrain.readGyro()[1],
+			() -> drivetrain.readRoll(),
 			0,
 			output -> {
 				if (drivetrain.readRoll() > 0)  drivetrain.tankDriveVolts(output, -output);
