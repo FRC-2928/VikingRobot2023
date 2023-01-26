@@ -268,11 +268,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double readPitch() {
-		return this.readGyro()[2];
+		return -this.readGyro()[1];
 	}
 
 	public double readRoll() {
-		return this.readGyro()[1];
+		return -this.readGyro()[2];
 	}
 
 	public Rotation2d read2dRotation() {
