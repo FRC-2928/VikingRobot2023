@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,15 +16,21 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
@@ -313,11 +320,16 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	/**
+	 * If the robot is in simulation then a default pose is returned
 	 * 
 	 * @return pose using encoders and limelight
 	 */
 	public Pose2d getEstimatedPose(){
-		return m_poseEstimator.getEstimatedPosition();
+		if (RobotBase.isReal()) {
+			return m_poseEstimator.getEstimatedPosition();
+		} else {
+			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
+		}		
 	}
 
 	public Rotation2d readYawRot() {
@@ -414,7 +426,7 @@ public class Drivetrain extends SubsystemBase {
 		
 		return this.readGyro()[1];
 	}
-
+	
 	// ----------------------------------------------------
 	// Simulation
 	// ----------------------------------------------------

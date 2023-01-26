@@ -19,10 +19,13 @@ import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
+import frc.robot.commands.DrivetrainCommands.GenerateTrajectory;
 import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
+import frc.robot.commands.DrivetrainCommands.RunDynamicRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.DynamicTrajectory;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -54,6 +57,10 @@ public class RobotContainer {
 
 	// Create SmartDashboard chooser for autonomous routines
 	private final SendableChooser<Command> chooser = new SendableChooser<>();
+
+	// Used for dynamic trajectories
+	// public static Trajectory dynamicTrajectory = new Trajectory();
+	public final DynamicTrajectory dynamicTrajectory = new DynamicTrajectory(drivetrain);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -102,17 +109,31 @@ public class RobotContainer {
 		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
-		// driverOI.getGoToTag6Button().onTrue(new RunRamseteTrajectory(this.drivetrain, 
-		// 	this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
+		
+		driverOI.getGoToTag6Button().onTrue(new RunDynamicRamseteTrajectory(this.drivetrain, 
+				() -> dynamicTrajectory.generateTrajectory(FieldConstants.tag6)));
 
 		driverOI.getBalanceAuxButton().onTrue(BalanceAUX.manual(this.drivetrain));
 	}
 
 
 	private void configureAutoChooser() {
-		chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-									navigateToDropoff(FieldConstants.tag6, 1)));
-		chooser.addOption(
+		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
+		// 							navigateToDropoff(FieldConstants.tag6, 1)));
+		// chooser.setDefaultOption("testing dropoff", 
+		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> {
+		// 		Pose2d currentPose = driveTrain.getEstimatedPose();
+		// 		// Move 1.7 meters to the right [PathWeaver view]
+		// 		// return driveTrain.generateXTrajectory(currentPose, 1.7);
+		// 		return dynamicTrajectory.generateTrajectory(FieldConstants.tag6));
+		// 	  }
+		// 	  ));
+
+		// chooser.setDefaultOption("Test Dropoff", 
+		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> dynamicTrajectory.generateTrajectory(FieldConstants.tag6)));
+
+
+		chooser.setDefaultOption(
 			"Back up to balance",
 			new SequentialCommandGroup(
 				new WaitCommand(.2),
