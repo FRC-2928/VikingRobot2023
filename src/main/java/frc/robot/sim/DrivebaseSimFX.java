@@ -97,7 +97,7 @@ public class DrivebaseSimFX {
 		// subsystem in a separate thread or have changed the nominal timestep
 		// of TimedRobot, this value needs to match it.
         // Reduced from 0.02 to 0.008 to make sim smoother while running trajectories
-		_driveSim.update(0.005); 
+		_driveSim.update(0.002); 
 
 		// Update all of our sensors.
 		_leftMasterSim.setIntegratedSensorRawPosition(
