@@ -27,7 +27,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
@@ -40,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
 	public DifferentialDrive diffDrive;
 
 	// Set up the BuiltInAccelerometer
-	public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+	public WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
@@ -178,6 +178,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void zeroGyro() {
+		this.pigeon.setYaw(0);
 		this.pigeon.reset();
 	}
 
@@ -297,10 +298,6 @@ public class Drivetrain extends SubsystemBase {
 		return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
 	}
 
-	public double getHeading() {
-		return pigeon.getFusedHeading();
-	}
-
 	// ----------------------------------------------------
 	// Process Logic
 	// ----------------------------------------------------
@@ -317,17 +314,21 @@ public class Drivetrain extends SubsystemBase {
 		field2d.setRobotPose(getPose());
 		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
+
+		SmartDashboard.putNumber("yaw", this.readYaw());
+		SmartDashboard.putNumber("pitch", this.readPitch());
+		SmartDashboard.putNumber("roll", this.readRoll());
 	}
+
 	public double readYaw() {
-		
 		return this.readGyro()[0];
 	}
+
 	public double readPitch() {
-		
-		return this.readGyro()[2];
+		return -this.readGyro()[1];
 	}
+
 	public double readRoll() {
-		
-		return this.readGyro()[1];
+		return -this.readGyro()[2];
 	}
 }

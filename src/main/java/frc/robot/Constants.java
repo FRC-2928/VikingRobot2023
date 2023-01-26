@@ -41,7 +41,7 @@ public final class Constants {
 		public static final int DrivetrainLeftBackTalonFX = 15;
 
 		// Sensors
-		public static final int kPigeonIMU = 3;
+		public static final int kPigeonIMU = 0;
 	}
 
 	public static final class AutoConstants {

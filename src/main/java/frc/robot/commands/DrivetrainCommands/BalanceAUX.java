@@ -22,7 +22,7 @@ public class BalanceAUX extends PIDCommand {
 				DrivetrainConstants.GainsBalance.I,
 				DrivetrainConstants.GainsBalance.D
 			),
-			() -> drivetrain.readGyro()[2],
+			() -> drivetrain.readPitch(),
 			0,
 			output -> drivetrain.BalanceRollPitch(output)
 		);
