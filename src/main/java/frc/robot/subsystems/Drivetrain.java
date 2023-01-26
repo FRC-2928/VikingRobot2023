@@ -30,8 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
@@ -47,10 +45,8 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
@@ -67,9 +63,9 @@ public class Drivetrain extends SubsystemBase {
 	public DifferentialDrive diffDrive;
 
 	// Set up the BuiltInAccelerometer.  
-	public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+	// public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
 	// Simulation requires WPI_Pigeon2. Test this instead of WPI_PigeonIMU
-	public WPI_Pigeon2 pigeon2 = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
+	public WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
@@ -86,7 +82,7 @@ public class Drivetrain extends SubsystemBase {
     	new PIDController(1, 0.0, 0.3);
 
 	/* Object for simulated drivetrain. */	
-	DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon2);		
+	DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);		
 	  
 	/*
  	private final PIDController m_rightController =

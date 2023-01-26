@@ -31,16 +31,17 @@ public class RunDynamicRamseteTrajectory extends RamseteCommand {
 		);
 		this.drivetrain = drivetrain;
         this.trajectorySupplier = trajectorySupplier;
-    addRequirements(drivetrain);
+    // addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     super.initialize();
-        Pose2d initialPose = this.trajectorySupplier.get().getInitialPose();
-		this.drivetrain.resetOdometry(initialPose);
-		SmartDashboard.putNumber("Y start traj", initialPose.getY());
+      Pose2d initialPose = this.trajectorySupplier.get().getInitialPose();
+      this.drivetrain.resetOdometry(initialPose);
+      this.drivetrain.disableMotorSafety();   
+      SmartDashboard.putNumber("Y start traj", initialPose.getY());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,7 +50,9 @@ public class RunDynamicRamseteTrajectory extends RamseteCommand {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.drivetrain.enableMotorSafety();
+  }
 
   // Returns true when the command should end.
   @Override
