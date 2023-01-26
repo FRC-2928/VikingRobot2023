@@ -1,12 +1,26 @@
 package frc.robot.commands.DrivetrainCommands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
-public class BalanceAUX extends PIDCommand {
+public class BalanceAUX extends CommandBase {
 	private double time = System.currentTimeMillis();
+
+	private Drivetrain drivetrain;
+
+	private PIDController balance = new PIDController(
+		DrivetrainConstants.GainsBalance.P,
+		DrivetrainConstants.GainsBalance.I,
+		DrivetrainConstants.GainsBalance.D
+	);
+
+	private PIDController roll = new PIDController(
+		DrivetrainConstants.GainsRollBalance.P * 0.25,
+		DrivetrainConstants.GainsRollBalance.I,
+		DrivetrainConstants.GainsRollBalance.D
+	);
 
 	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
 	public boolean stopAtSetpoint;
@@ -16,20 +30,15 @@ public class BalanceAUX extends PIDCommand {
 	public double timeout;
 	
 	public BalanceAUX(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
-		super(
-			new PIDController(
-				DrivetrainConstants.GainsBalance.P,
-				DrivetrainConstants.GainsBalance.I,
-				DrivetrainConstants.GainsBalance.D
-			),
-			() -> drivetrain.readGyro()[2],
-			0,
-			output -> drivetrain.BalanceRollPitch(output)
-		);
+		this.drivetrain = drivetrain;
 
-		this.m_controller.setTolerance(1.0);
-		this.m_controller.setSetpoint(0.0);
-		this.m_controller.calculate(0.0);
+		this.balance.setTolerance(1.0);
+		this.balance.setSetpoint(0.0);
+		this.balance.calculate(0.0);
+
+		this.roll.setTolerance(0.3);
+		this.roll.setSetpoint(0.0);
+		this.roll.calculate(0.0);
 
 		this.stopAtSetpoint = stopAtSetpoint;
 		this.timeout = timeout;
@@ -58,7 +67,16 @@ public class BalanceAUX extends PIDCommand {
 	}
 
 	@Override
+	public void execute() {
+		double balanceVolts = this.balance.calculate(this.drivetrain.readPitch());
+		double rollVolts = this.roll.calculate(this.drivetrain.readRoll());
+		
+		if(this.drivetrain.readPitch() > 0) this.drivetrain.tankDriveVolts(-balanceVolts + rollVolts, -balanceVolts - rollVolts);
+		else this.drivetrain.tankDriveVolts(-balanceVolts - rollVolts, -balanceVolts + rollVolts);
+	}
+
+	@Override
 	public boolean isFinished() {
-		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.m_controller.atSetpoint());
+		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.balance.atSetpoint() && this.roll.atSetpoint());
 	}
 }
