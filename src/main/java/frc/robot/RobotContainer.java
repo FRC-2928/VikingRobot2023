@@ -120,14 +120,6 @@ public class RobotContainer {
 	private void configureAutoChooser() {
 		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
 		// 							navigateToDropoff(FieldConstants.tag6, 1)));
-		// chooser.setDefaultOption("testing dropoff", 
-		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> {
-		// 		Pose2d currentPose = driveTrain.getEstimatedPose();
-		// 		// Move 1.7 meters to the right [PathWeaver view]
-		// 		// return driveTrain.generateXTrajectory(currentPose, 1.7);
-		// 		return dynamicTrajectory.generateTrajectory(FieldConstants.tag6));
-		// 	  }
-		// 	  ));
 
 		// chooser.setDefaultOption("Test Dropoff", 
 		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> dynamicTrajectory.generateTrajectory(FieldConstants.tag6)));
