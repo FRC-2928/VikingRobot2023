@@ -365,7 +365,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double readYaw() {
-		return -this.readGyro()[0];
+		return this.readGyro()[0];
 	}
 
 	public double readPitch() {
