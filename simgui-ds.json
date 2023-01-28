@@ -3,7 +3,6 @@
     {
       "axisConfig": [
         {
-          "decKey": 76,
           "incKey": 68
         },
         {
@@ -12,11 +11,13 @@
         },
         {
           "decKey": 69,
-          "decayRate": 0.0,
-          "keyRate": 0.009999999776482582
+          "incKey": 86
+        },
+        {
+          "incKey": 81
         }
       ],
-      "axisCount": 3,
+      "axisCount": 4,
       "buttonCount": 4,
       "buttonKeys": [
         65,
