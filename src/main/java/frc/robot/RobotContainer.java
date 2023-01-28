@@ -151,8 +151,7 @@ public class RobotContainer {
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
 				// Todo: find right time/speed to get onto teeter totter
 				new DriveTime(-.4, .5, drivetrain),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
+				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
 		chooser.addOption(
@@ -162,8 +161,7 @@ public class RobotContainer {
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
 				// Todo: find right time/speed to get onto teeter totter
 				// new DriveTime(-.4, .5, this.drivetrain),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
+				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
 		chooser.addOption(
@@ -185,8 +183,7 @@ public class RobotContainer {
 			new SequentialCommandGroup(
 				new WaitCommand(.1),
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
+				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
 
@@ -194,11 +191,8 @@ public class RobotContainer {
 			"auto 3",
 			new SequentialCommandGroup(
 				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3"))
-				// Todo: find right time/speed to get onto teeter totter
-				// new DriveTime(-.4, .5, this.drivetrain),
-				// BalanceRollPID.auto(drivetrain, 7000),
-				// BalancePID.auto(drivetrain, 7000)
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
+				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
 
