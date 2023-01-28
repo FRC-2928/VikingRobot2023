@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -134,7 +135,16 @@ public class RobotContainer {
 		// chooser.setDefaultOption("Test Dropoff",
 		// 	generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
 
-		chooser.setDefaultOption(
+		chooser.setDefaultOption("trajectory", new RunRamseteTrajectory(this.drivetrain, 
+		this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
+		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
+		// 							navigateToDropoff(FieldConstants.tag6, 1)));
+
+		// chooser.addOption("Test Dropoff", 
+		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
+
+
+		chooser.addOption(
 			"Back up to balance",
 			new SequentialCommandGroup(
 				new WaitCommand(.2),
