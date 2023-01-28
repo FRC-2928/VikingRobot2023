@@ -247,6 +247,11 @@ public class Drivetrain extends SubsystemBase {
 		this.diffDrive.feed();
 	}
 
+	public void turnPower(double power){
+		rightLeader.setVoltage(power);
+		leftLeader.setVoltage(-power);
+	}
+
 	// -----------------------------------------------------------
 	// System State
 	// -----------------------------------------------------------
@@ -446,6 +451,15 @@ public class Drivetrain extends SubsystemBase {
 
 
 	return trajectory;
+  }
+
+  /**
+   * Gets the angle of the target relative to the turret
+   * @return offset angle between target and the turret
+   */
+  public double getTargetHorizontalOffset() {
+    return m_limelight.getHorizontalOffset();
+    
   }
 
 	// ----------------------------------------------------
