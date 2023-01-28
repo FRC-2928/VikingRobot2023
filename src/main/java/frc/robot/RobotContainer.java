@@ -105,7 +105,7 @@ public class RobotContainer {
 
 
 	private void configureAutoChooser() {
-		chooser.setDefaultOption("testing", new RunRamseteTrajectory(this.drivetrain, 
+		chooser.setDefaultOption("trajectory", new RunRamseteTrajectory(this.drivetrain, 
 		this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
 		chooser.addOption(
 			"Back up to balance",
