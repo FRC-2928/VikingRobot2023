@@ -78,6 +78,7 @@ public class Drivetrain extends SubsystemBase {
 	private DifferentialDrivePoseEstimator m_poseEstimator;
 
 	private final Field2d field2d = new Field2d();
+	private final Field2d fieldEstimated = new Field2d();
 
 	private double yaw;
 
@@ -137,6 +138,10 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(getEncoderPose());
 		SmartDashboard.putData("Field", this.field2d);
+
+		this.fieldEstimated.setRobotPose(getEstimatedPose());
+		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
+		
 	}
 
 	public void configureMotors() {
@@ -356,11 +361,11 @@ public class Drivetrain extends SubsystemBase {
 	}		
 
 	public Rotation2d readYawRot() {
-		return Rotation2d.fromRadians(this.readYaw());
+		return Rotation2d.fromDegrees(this.readYaw());
 	}
 
 	public double readYaw() {
-		return this.readGyro()[0];
+		return -this.readGyro()[0];
 	}
 
 	public double readPitch() {
@@ -450,6 +455,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Heading", odometry.getPoseMeters().getRotation().getDegrees());
 		field2d.setRobotPose(getEncoderPose());
+		fieldEstimated.setRobotPose(getEstimatedPose());
 
 		// SmartDashboard.putNumber("motor output", getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
@@ -490,7 +496,7 @@ public class Drivetrain extends SubsystemBase {
 						velocityToNativeUnits(
 						-driveSim.getRightVelocityMetersPerSecond()));
 
-		pigeonSim.setRawHeading(driveSim.getHeading().getDegrees()); // Had to negated gyro heading
+		pigeonSim.setRawHeading(-driveSim.getHeading().getDegrees()); // Had to negated gyro heading
 
 		//Update other inputs to Talons
 		leftDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
