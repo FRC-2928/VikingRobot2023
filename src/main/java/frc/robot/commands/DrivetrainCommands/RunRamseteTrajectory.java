@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Log;
 
 public class RunRamseteTrajectory extends RamseteCommand {
 	private Drivetrain drivetrain;
@@ -23,18 +24,19 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		);
 		this.drivetrain = drivetrain;
 		this.trajectory = trajectory;
+		addRequirements(drivetrain);
 	}
 
 	public void initialize() {
 		super.initialize();
 		this.drivetrain.resetOdometry(this.trajectory.getInitialPose());
-		System.out.println("Initial Pose: " + this.trajectory.getInitialPose());
-		SmartDashboard.putNumber("start traj Y", this.trajectory.getInitialPose().getY());
-		SmartDashboard.putNumber("start odom Y", this.drivetrain.getEncoderPose().getY());
-		SmartDashboard.putNumber("start traj X", this.trajectory.getInitialPose().getX());
-		SmartDashboard.putNumber("start odom X", this.drivetrain.getEncoderPose().getX());
-		SmartDashboard.putNumber("start odometry heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
-		SmartDashboard.putNumber("start heading", this.drivetrain.getHeading());  
+		Log.writeln("Initial Pose: " + this.trajectory.getInitialPose());
+		SmartDashboard.putNumber("Y start traj", this.trajectory.getInitialPose().getY());
+		SmartDashboard.putNumber("Y start odom", this.drivetrain.getEncoderPose().getY());
+		SmartDashboard.putNumber("X start traj", this.trajectory.getInitialPose().getX());
+		SmartDashboard.putNumber("X start odom", this.drivetrain.getEncoderPose().getX());
+		SmartDashboard.putNumber("start odom heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
+		SmartDashboard.putNumber("start traj heading", this.trajectory.getInitialPose().getRotation().getDegrees());  
 	}
 
 	public void execute() {

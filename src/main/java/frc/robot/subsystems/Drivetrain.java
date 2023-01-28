@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,18 +13,29 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.subsystems.Transmission.GearState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -35,7 +47,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
@@ -50,7 +62,7 @@ public class Drivetrain extends SubsystemBase {
 	public DifferentialDrive diffDrive;
 
 	// Set up the BuiltInAccelerometer
-	public WPI_PigeonIMU pigeon = new WPI_PigeonIMU(Constants.CANBusIDs.kPigeonIMU);
+	public WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
@@ -63,8 +75,10 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 
 	private double yaw;
-	private final PIDController m_rollPID =
-    	new PIDController(1, 0.0, 0.3);
+
+	/* Object for simulated drivetrain. */	
+	DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
+
 	/*
  	private final PIDController m_rightController =
     	new PIDController(1, 0.0, 0.3);    
@@ -94,8 +108,6 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(getEncoderPose());
 		SmartDashboard.putData("Field", this.field2d);
-
-		m_rollPID.setTolerance(0.28);
 	}
 
 	public void configureMotors() {
@@ -150,22 +162,6 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
-	public void BalanceRollPitch(double output) {
-    
-		/*SmartDashboard.putNumber("Requested Velocity", velocity);
-		SmartDashboard.putNumber("Setpoint Velocity", setpointVel);
-		SmartDashboard.putNumber("Setpoint Position", setpointPos);
-		*/
-		// Send it through a PID controller
-		double rollPIDVolts = m_rollPID.calculate(this.readRoll(), 0);
-		//double rightPIDVolts = m_rightController.calculate(this.readRoll(), 0);
-		SmartDashboard.putNumber("PID Volts", rollPIDVolts);
-		//SmartDashboard.putNumber("Right PID Volts", rightPIDVolts);
-		
-		// Add the voltage values and send them to the motors
-		if (this.readRoll() > 0)  this.tankDriveVolts(-output+rollPIDVolts, -output-rollPIDVolts);
-		else this.tankDriveVolts(-output-rollPIDVolts, -output+rollPIDVolts);
-	  }
 
 	// -----------------------------------------------------------
 	// Control Input
@@ -191,6 +187,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void zeroGyro() {
+		this.pigeon.setYaw(0);
 		this.pigeon.reset();
 	}
 
@@ -201,7 +198,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		this.resetEncoders();
-		this.odometry.resetPosition(this.readYawRot(), 0, 0, pose);
+		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
   public void updateOdometryFromLimelight(){
@@ -268,24 +265,24 @@ public class Drivetrain extends SubsystemBase {
 	// Encoder ticks to meters
 	public double encoderTicksToMeters(double encoderTicks) {
 		GearState gearState = gearStateSupplier.get();
-		return wheelRotationsToMeters(motorRotationsToWheelRotations(encoderTicks, gearState));
+		return this.wheelRotationsToMeters(this.motorRotationsToWheelRotations(encoderTicks, gearState));
 	}
 
 	public double getLeftDistanceMeters() {
-		return encoderTicksToMeters(leftLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
 	}
 
 	public double getRightDistanceMeters() {
-		return encoderTicksToMeters(rightLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
 	}
 
 	public double getAvgDistanceMeters() {
-		return (getLeftDistanceMeters() + getRightDistanceMeters()) / 2;
+		return (this.getLeftDistanceMeters() + this.getRightDistanceMeters()) / 2;
 	}
 
 	public double[] readGyro() {
 		double[] angle = new double[3];
-		pigeon.getYawPitchRoll(angle);
+		this.pigeon.getYawPitchRoll(angle);
 		return angle;
 	}
 
@@ -298,22 +295,48 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	/**
+	 * If the robot is in simulation then a default pose is returned
 	 * 
 	 * @return pose using encoders and limelight
 	 */
 	public Pose2d getEstimatedPose(){
-		return m_poseEstimator.getEstimatedPosition();
+		if (RobotBase.isReal()) {
+			return m_poseEstimator.getEstimatedPosition();
+		} else if (Timer.getFPGATimestamp() > 0.5) {
+			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
+		} else {
+			return new Pose2d(0.0,0.0, new Rotation2d());
+		}				
 	}
 
 	public Rotation2d readYawRot() {
+		return Rotation2d.fromRadians(this.readYaw());
+	}
 
-		yaw = readGyro()[0];
+	public double readYaw() {
+		return this.readGyro()[0];
+	}
 
-		return (Rotation2d.fromDegrees(yaw));
+	public double readPitch() {
+		return -this.readGyro()[1];
+	}
+
+	public double readRoll() {
+		return -this.readGyro()[2];
+	}
+
+	public Rotation2d read2dRotation() {
+		this.yaw = readGyro()[0];
+
+		return Rotation2d.fromDegrees(yaw);
+	}
+
+	public Pose2d getPose() {
+		return this.odometry.getPoseMeters();
 	}
 
 	public double getMotorOutput() {
-		return rightLeader.getMotorOutputVoltage();
+		return this.rightLeader.getMotorOutputVoltage();
 	}
 
 	public double metersToWheelRotations(double metersPerSecond) {
@@ -327,8 +350,17 @@ public class Drivetrain extends SubsystemBase {
 		return wheelRotations * DrivetrainConstants.encoderCPR * DrivetrainConstants.lowGearRatio;
 	}
 
+	public double metersToEncoderTicks(double metersPerSecond) {
+		GearState gearState = this.gearStateSupplier.get();
+		double encoderTicks = this.wheelRotationsToEncoderTicks(
+			this.metersToWheelRotations(metersPerSecond),
+			gearState
+		);
+		return encoderTicks;
+	}	
+
 	public double getHeading() {
-		return pigeon.getFusedHeading();
+		return pigeon.getYaw();
 	}
 
   /**
@@ -421,23 +453,81 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void publishTelemetry() {
-		SmartDashboard.putNumber("motor output", getMotorOutput());
-		field2d.setRobotPose(getEstimatedPose());
-		SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
-    SmartDashboard.putNumber("poseX", getEncoderPose().getX());
-	SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
+		SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
+		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
+		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
+		field2d.setRobotPose(getEncoderPose());
+
+		// SmartDashboard.putNumber("motor output", getMotorOutput());	
+		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
+		// SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
+		// SmartDashboard.putNumber("poseX", getEncoderPose().getX());
+		// SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
-	public double readYaw() {
-		
-		return this.readGyro()[0];
-	}
-	public double readPitch() {
-		
-		return this.readGyro()[2];
-	}
-	public double readRoll() {
-		
-		return this.readGyro()[1];
-	}
+	
+	public Trajectory generateTrajectory(Pose2d endPose) {
+
+        Pose2d startPose = getEstimatedPose();
+        System.out.println("Initial Pose: " + startPose.getX());
+        SmartDashboard.putNumber("Start Pose X", startPose.getX());
+        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
+        SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
+    
+        SmartDashboard.putNumber("End Pose X", endPose.getX());
+        SmartDashboard.putNumber("End Pose Y", endPose.getY());
+        SmartDashboard.putNumber("End Pose Theta", endPose.getRotation().getDegrees());
+    
+        DriverStation.Alliance color = DriverStation.getAlliance();
+        
+        // if(color == DriverStation.Alliance.Red){
+        // 	// for red, left and right
+        // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
+        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 		//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
+        // 		List.of(),
+        // 		endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // } else {
+        // 	// for blue, left and right
+        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // }
+    
+        SmartDashboard.putNumber("Waypoint1 X", FieldConstants.Waypoints.rightBlue1.getX());
+        SmartDashboard.putNumber("Waypoint Y", FieldConstants.Waypoints.rightBlue1.getY());
+    
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+                List.of(FieldConstants.Waypoints.rightBlue1),
+                // List.of(),
+                endPose, DrivetrainConstants.kTrajectoryConfig);
+    
+        System.out.println("Traj: " + trajectory.getTotalTimeSeconds()); 
+
+        return trajectory;
+    }
+
+	// ----------------------------------------------------
+	// Simulation
+	// ----------------------------------------------------
+
+	@Override
+    public void simulationPeriodic() {
+        this.driveSim.run();
+    }
+
 }
