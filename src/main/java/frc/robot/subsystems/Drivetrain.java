@@ -371,7 +371,8 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getLimelightPose(){
 
-    Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5] / 180 * Math.PI);
+    // Rotation2d rotation = new Rotation2d(m_limelight.getPose()[5] / 180 * Math.PI);
+	Rotation2d rotation = new Rotation2d((readYaw() / 180) * Math.PI);
     return new Pose2d(m_limelight.getPose()[0] + DrivetrainConstants.xOffsetField, 
 		m_limelight.getPose()[1] + DrivetrainConstants.yOffsetField, rotation);
   }
@@ -471,6 +472,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
 		SmartDashboard.putNumber("left encoder", leftLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("right encoder", rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("limelight X", m_limelight.getPose()[0]);
 		field2d.setRobotPose(getEncoderPose());
 		fieldEstimated.setRobotPose(getEstimatedPose());
 		fieldLimelight.setRobotPose(getLimelightPose());
