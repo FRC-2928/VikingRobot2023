@@ -196,8 +196,17 @@ public class RobotContainer {
 			)
 		);
 
+		chooser.addOption(
+			"auto 2",
+			new SequentialCommandGroup(
+				new WaitCommand(.1),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto2")),
+				new BalanceAUX(drivetrain, false, 15)
+			)
+		);
+
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
-		chooser.addOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate 8")));
+		// chooser.addOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate 8")));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
