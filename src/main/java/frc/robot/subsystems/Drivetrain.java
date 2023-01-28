@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.subsystems.Transmission.GearState;
@@ -377,6 +378,24 @@ public class Drivetrain extends SubsystemBase {
     return new Pose2d(m_limelight.getPose()[0] + DrivetrainConstants.xOffsetField, 
 		m_limelight.getPose()[1] + DrivetrainConstants.yOffsetField, rotation);
   }
+
+  /** 
+	 * Returns if current robot estimated pose is left or right of the center
+	 * of the Charging Station taking the team alliance into account.
+	 * 
+	 * @return Is robot left or right of the center of the Charging Station
+	 */
+	public boolean isLeftOfChargingStation() {
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			return getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
+		} else {
+			return getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
+		}		
+	}
+
+	public boolean isRightOfChargingStation() {
+		return !isLeftOfChargingStation();
+	}
 
 	// ----------------------------------------------------
 	// Process Logic
