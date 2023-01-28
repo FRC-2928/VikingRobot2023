@@ -353,6 +353,8 @@ public class Drivetrain extends SubsystemBase {
 
 	Trajectory trajectory;
 	Pose2d startPose;
+
+	System.out.println ("End pose: " + endPose);
 	
 	startPose = getEstimatedPose();
 
