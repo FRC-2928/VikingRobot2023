@@ -124,9 +124,9 @@ public class RobotContainer {
 		driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
 		
-		driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
-		driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
-		driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
+		// driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
+		// driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
+		// driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
 	}
 
 
@@ -197,6 +197,7 @@ public class RobotContainer {
 		);
 
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+		chooser.addOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate 8")));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
@@ -337,7 +338,7 @@ public class RobotContainer {
 		Log.writeln("Waypoints:" + waypoints);
 		Log.writeln("End Pose:" + endPose);
 
-        printTrajectory(trajectory);
+        //printTrajectory(trajectory);
 
         return trajectory;
     }
