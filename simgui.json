@@ -1,6 +1,11 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "Talon FX[0]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[0]/Integrated Sensor": {
         "header": {
           "open": true
@@ -25,6 +30,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/AutoRoutineChooser": {
         "window": {
           "visible": true

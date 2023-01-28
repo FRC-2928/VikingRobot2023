@@ -275,65 +275,70 @@ public class RobotContainer {
         Log.writeln("Generate start Pose: " + startPose);
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
-        SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
     
         SmartDashboard.putNumber("End Pose X", endPose.getX());
         SmartDashboard.putNumber("End Pose Y", endPose.getY());
-        SmartDashboard.putNumber("End Pose Theta", endPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
         
 		Trajectory trajectory;
 		List<Translation2d> waypoints = new ArrayList<>();
 
+		Log.writeln("Alliance:" + alliance);
         if(alliance == DriverStation.Alliance.Red){
         	// for red, left and right
         	//if direction is specified left, or direction is unspecified and Y is on left side of field...
-        	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (startPose.getY() <= (FieldConstants.fieldWidth / 2)))){
+        	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))){
+				Log.writeln("Red left");
         		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
 					endPose, DrivetrainConstants.kTrajectoryConfig);
         	} else {
+				Log.writeln("Red right");
         		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2), 
 					endPose, DrivetrainConstants.kTrajectoryConfig);
         	}
         } else {
         	// for blue, left and right
-        	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (startPose.getY() >= (FieldConstants.fieldWidth / 2)))){
-        		if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
-					waypoints.add(FieldConstants.Waypoints.leftBlue2);
-				} else if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
+        	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))){
+        		Log.writeln("Blue left");
+				Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
+				if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
 					waypoints.add(FieldConstants.Waypoints.leftBlue1);
 				}
-					
+				if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
+					waypoints.add(FieldConstants.Waypoints.leftBlue2);
+				}				
+
 				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, DrivetrainConstants.kTrajectoryConfig);
         	} else {
+				Log.writeln("Blue right");
+				if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
+					waypoints.add(FieldConstants.Waypoints.rightBlue1);
+				}		
 				if (startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
 					waypoints.add(FieldConstants.Waypoints.rightBlue2);
-				} else if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
-					waypoints.add(FieldConstants.Waypoints.rightBlue1);
-				}				
+				} 		
 				
         		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, DrivetrainConstants.kTrajectoryConfig);
         	}
         }
-    
-        // trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-        //         List.of(FieldConstants.Waypoints.rightBlue1,
-		// 				FieldConstants.Waypoints.rightBlue2),
-        //         // List.of(),
-        //         endPose, DrivetrainConstants.kTrajectoryConfig);
     	
+		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
+		Log.writeln("Waypoints:" + waypoints);
+		Log.writeln("End Pose:" + endPose);
+
         printTrajectory(trajectory);
 
         return trajectory;
     }
 
 	public void printTrajectory(Trajectory trajectory) {
-		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
 		
 		List<State> states = trajectory.getStates();
 		for (int i = 1; i < states.size(); i++) {
