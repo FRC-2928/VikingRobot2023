@@ -73,6 +73,7 @@ public class Drivetrain extends SubsystemBase {
 	private DifferentialDrivePoseEstimator m_poseEstimator;
 
 	private final Field2d field2d = new Field2d();
+	private final Field2d fieldEstimated = new Field2d();
 
 	private double yaw;
 
@@ -108,6 +109,9 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(getEncoderPose());
 		SmartDashboard.putData("Field", this.field2d);
+
+		this.fieldEstimated.setRobotPose(getEstimatedPose());
+		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
 	}
 
 	public void configureMotors() {
@@ -403,6 +407,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
 		field2d.setRobotPose(getEncoderPose());
+		fieldEstimated.setRobotPose(getEstimatedPose());
 
 		// SmartDashboard.putNumber("motor output", getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
