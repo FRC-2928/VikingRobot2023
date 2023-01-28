@@ -310,7 +310,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public Rotation2d readYawRot() {
-		return Rotation2d.fromRadians(this.readYaw());
+		return Rotation2d.fromDegrees(this.readYaw());
 	}
 
 	public double readYaw() {
