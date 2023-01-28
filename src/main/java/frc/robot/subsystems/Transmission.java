@@ -31,15 +31,25 @@ public class Transmission extends SubsystemBase {
 	}
 
 	public void setGearState(GearState state) {
+		if(this.gearState == state) return;
+
 		this.gearState = state;
 
 		switch (state) {
 			case HIGH:
-				this.setFalse();
+				// this.shiftPiston.set(false);
+				this.shiftPistonHigh.set(false);
+				this.shiftPistonLow.set(true);
+
+				Log.writeln("Transmission: HIGH");
 				break;
 
 			case LOW:
-				this. setTrue();
+				// this.shiftPiston.set(true);
+				this.shiftPistonHigh.set(true);
+				this.shiftPistonLow.set(false);
+
+				Log.writeln("Transmission: LOW");
 				break;
 		}
 	}
@@ -58,18 +68,6 @@ public class Transmission extends SubsystemBase {
 
 	public GearState getGearState() {
 		return this.gearState;
-	}
-
-	private void setTrue() {
-		// this.shiftPiston.set(true);
-		this.shiftPistonHigh.set(true);
-		this.shiftPistonLow.set(false);
-	}
-
-	private void setFalse() {
-		// this.shiftPiston.set(false);
-		this.shiftPistonHigh.set(false);
-		this.shiftPistonLow.set(true);
 	}
 
 	@Override
