@@ -17,7 +17,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -47,12 +46,9 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
-
 
 public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
@@ -79,35 +75,12 @@ public class Drivetrain extends SubsystemBase {
 
 	private final Field2d field2d = new Field2d();
 	private final Field2d fieldEstimated = new Field2d();
+	private final Field2d fieldLimelight = new Field2d();
 
 	private double yaw;
 
 	/* Object for simulated drivetrain. */	
-	// ------ Simulation classes to help us simulate our robot ---------
-    private final TalonFXSimCollection leftDriveSim = leftLeader.getSimCollection();
-    private final TalonFXSimCollection rightDriveSim = rightLeader.getSimCollection();
-    private final BasePigeonSimCollection pigeonSim = pigeon.getSimCollection();
-
-    // Simulation model of the drivetrain 
-	private DifferentialDrivetrainSim driveSim = new DifferentialDrivetrainSim(
-		DCMotor.getFalcon500(2),  //2 Falcon 500s on each side of the drivetrain.
-		DrivetrainConstants.lowGearRatio,               //Standard AndyMark Gearing reduction.
-		2.1,                      //MOI of 2.1 kg m^2 (from CAD model).
-		26.5,                     //Mass of the robot is 26.5 kg.
-        Units.inchesToMeters(3),  //Robot uses 3" radius (6" diameter) wheels.
-        // 0.546,                    //Distance between wheels is _ meters.
-		// DrivetrainConstants.kWheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
-		DrivetrainConstants.kTrackWidthMeters,                    //Distance between wheels is _ meters.
-
-		// The standard deviations for measurement noise:
-		// x and y:          0.001 m
-		// heading:          0.001 rad
-		// l and r velocity: 0.1   m/s
-		// l and r position: 0.005 m
-		null //VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005) //Uncomment this line to add measurement noise.
-	);
-
-	// DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
+	DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
 
 	/*
  	private final PIDController m_rightController =
@@ -127,13 +100,12 @@ public class Drivetrain extends SubsystemBase {
 
 		this.feedForward = DrivetrainConstants.kFeedForward;
 
-		this.yaw = readGyro()[0];
-
+		
 		this.resetEncoders();
 		this.zeroGyro();
 
 		// Start with default Pose2d(0, 0, 0)
-		this.odometry = new DifferentialDriveOdometry(new Rotation2d(yaw), 0, 0);
+		this.odometry = new DifferentialDriveOdometry(new Rotation2d(readYaw()), 0, 0);
 		m_poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, new Rotation2d(yaw), 0, 0, getLimelightPose());
 
 		this.field2d.setRobotPose(getEncoderPose());
@@ -141,7 +113,9 @@ public class Drivetrain extends SubsystemBase {
 
 		this.fieldEstimated.setRobotPose(getEstimatedPose());
 		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
-		
+
+		this.fieldLimelight.setRobotPose(getLimelightPose());
+		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
 	public void configureMotors() {
@@ -235,11 +209,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
-  public void updateOdometryFromLimelight(){
-    this.resetEncoders();
-    this.odometry.resetPosition(this.readYawRot(), 0, 0, getLimelightPose());
-  }
-
+//   
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// System.out.println("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
@@ -249,11 +219,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
 
-		// test comment 10/16 for auto crash
-		// System.out.println("right" + rightFeedForward);
-		// System.out.println("left" + leftFeedForward);
-		// this.rightFFEntry.setDouble(rightFeedForward);
-		// this.leftFFEntry.setDouble(leftFeedForward);
+		
 
 		// Convert meters per second to encoder ticks per second
 		GearState gearState = this.gearStateSupplier.get();
@@ -334,31 +300,16 @@ public class Drivetrain extends SubsystemBase {
 	 * @return pose using encoders and limelight
 	 */
 	public Pose2d getEstimatedPose(){
-		// Log.writeln("getEstimatedPose Timer " + Timer.getFPGATimestamp());
 		if (RobotBase.isReal()) {
 			return m_poseEstimator.getEstimatedPosition();
-		} else {
-			return getPose();
+		} 
+		else if (Timer.getFPGATimestamp() > 0.5) {
+			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
+		} 
+		else {
+			return new Pose2d(0.0,0.0, new Rotation2d());
 		}				
 	}
-
-	/** 
-	 * Returns if current robot estimated pose is left or right of the center
-	 * of the Charging Station taking the team alliance into account.
-	 * 
-	 * @return Is robot left or right of the center of the Charging Station
-	 */
-	public boolean isLeftOfChargingStation() {
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
-			return getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
-		} else {
-			return getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
-		}		
-	}
-
-	public boolean isRightOfChargingStation() {
-		return !isLeftOfChargingStation();
-	}		
 
 	public Rotation2d readYawRot() {
 		return Rotation2d.fromDegrees(this.readYaw());
@@ -425,6 +376,77 @@ public class Drivetrain extends SubsystemBase {
 		m_limelight.getPose()[1] + DrivetrainConstants.yOffsetField, rotation);
   }
 
+  /** 
+	 * Returns if current robot estimated pose is left or right of the center
+	 * of the Charging Station taking the team alliance into account.
+	 * 
+	 * @return Is robot left or right of the center of the Charging Station
+	 */
+	public boolean isLeftOfChargingStation() {
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			return getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
+		} else {
+			return getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
+		}		
+	}
+
+	public boolean isRightOfChargingStation() {
+		return !isLeftOfChargingStation();
+	}
+  /**
+   * 
+   * @param startPose pose where robot starts
+   * @param endPose pose where robot should end
+   * @param direction 0 for left, 1 for right, 2 for robot to decide
+   * @return
+   */
+  public Trajectory navigateToDropoff(Pose2d endPose, int direction){
+
+	Trajectory trajectory;
+	Pose2d startPose;
+
+	System.out.println ("End pose: " + endPose);
+	
+	startPose = getEstimatedPose();
+
+	DriverStation.Alliance color = DriverStation.getAlliance();
+
+	// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
+	// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
+	
+	if(color == DriverStation.Alliance.Red){
+		// for red, left and right
+		//if direction is specified left, or direction is unspecified and Y is on left side of field...
+		if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+			//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
+			List.of(),
+			endPose, DrivetrainConstants.kTrajectoryConfig);
+		} else {
+			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+				//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+				List.of(),
+				endPose, DrivetrainConstants.kTrajectoryConfig);
+		}
+	} else {
+		// for blue, left and right
+		if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+				//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+				List.of(),
+				endPose, DrivetrainConstants.kTrajectoryConfig);
+		} else {
+			trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+				//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+				List.of(),
+				endPose, DrivetrainConstants.kTrajectoryConfig);
+		}
+	}
+
+
+	return trajectory;
+  }
+
 	// ----------------------------------------------------
 	// Process Logic
 	// ----------------------------------------------------
@@ -433,36 +455,86 @@ public class Drivetrain extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		//if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
-		// if (m_limelight.getHasValidTargets() == 1){
-		// 	updateOdometryFromLimelight();
-		// } else {
-		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-		// }
-		if (RobotBase.isReal()) {
-			odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-			m_poseEstimator.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-			if (m_limelight.getHasValidTargets() == 1){
-				m_poseEstimator.addVisionMeasurement(getLimelightPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - .3);
-			}
+    
+		odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
+		m_poseEstimator.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
+		if (m_limelight.getHasValidTargets() == 1){
+			m_poseEstimator.addVisionMeasurement(getLimelightPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - .3);
 		}
-		publishTelemetry();
 
+		publishTelemetry();
 	}
 
 	public void publishTelemetry() {
 		SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
-		SmartDashboard.putNumber("Odometry Heading", odometry.getPoseMeters().getRotation().getDegrees());
+		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
+		SmartDashboard.putNumber("left encoder", leftLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("right encoder", rightLeader.getSelectedSensorPosition());
 		field2d.setRobotPose(getEncoderPose());
 		fieldEstimated.setRobotPose(getEstimatedPose());
+		fieldLimelight.setRobotPose(getLimelightPose());
 
 		// SmartDashboard.putNumber("motor output", getMotorOutput());	
-		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
-		// SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("poseX", getEncoderPose().getX());
 		// SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
+	
+	public Trajectory generateTrajectory(Pose2d endPose) {
+
+        Pose2d startPose = getEstimatedPose();
+        System.out.println("Initial Pose: " + startPose.getX());
+        SmartDashboard.putNumber("Start Pose X", startPose.getX());
+        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
+        SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
+    
+        SmartDashboard.putNumber("End Pose X", endPose.getX());
+        SmartDashboard.putNumber("End Pose Y", endPose.getY());
+        SmartDashboard.putNumber("End Pose Theta", endPose.getRotation().getDegrees());
+    
+        DriverStation.Alliance color = DriverStation.getAlliance();
+        
+        // if(color == DriverStation.Alliance.Red){
+        // 	// for red, left and right
+        // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
+        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 		//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
+        // 		List.of(),
+        // 		endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // } else {
+        // 	// for blue, left and right
+        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 			//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+        // 			List.of(),
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // }
+    
+        SmartDashboard.putNumber("Waypoint1 X", FieldConstants.Waypoints.rightBlue1.getX());
+        SmartDashboard.putNumber("Waypoint Y", FieldConstants.Waypoints.rightBlue1.getY());
+    
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+                List.of(FieldConstants.Waypoints.rightBlue1),
+                // List.of(),
+                endPose, DrivetrainConstants.kTrajectoryConfig);
+    
+        System.out.println("Traj: " + trajectory.getTotalTimeSeconds()); 
+
+        return trajectory;
+    }
 
 	// ----------------------------------------------------
 	// Simulation
@@ -470,68 +542,7 @@ public class Drivetrain extends SubsystemBase {
 
 	@Override
     public void simulationPeriodic() {
-        // this.driveSim.run();
-		// Set the inputs to the system. Note that we need to use
-		// the output voltage, NOT the percent output.
-		driveSim.setInputs(leftDriveSim.getMotorOutputLeadVoltage(),
-							-rightDriveSim.getMotorOutputLeadVoltage()); //Right side is inverted, so forward is negative voltage
-
-		// Advance the model by 20 ms. Note that if you are running this
-		// subsystem in a separate thread or have changed the nominal timestep
-		// of TimedRobot, this value needs to match it.
-        // Reduced from 0.02 to 0.008 to make sim smoother while running trajectories
-		driveSim.update(0.02); 
-
-		// Update all of our sensors.
-		leftDriveSim.setIntegratedSensorRawPosition(
-						distanceToNativeUnits(
-						driveSim.getLeftPositionMeters()));
-		leftDriveSim.setIntegratedSensorVelocity(
-						velocityToNativeUnits(
-						driveSim.getLeftVelocityMetersPerSecond()));
-		rightDriveSim.setIntegratedSensorRawPosition(
-						distanceToNativeUnits(
-						-driveSim.getRightPositionMeters()));
-		rightDriveSim.setIntegratedSensorVelocity(
-						velocityToNativeUnits(
-						-driveSim.getRightVelocityMetersPerSecond()));
-
-		pigeonSim.setRawHeading(-driveSim.getHeading().getDegrees()); // Had to negated gyro heading
-
-		//Update other inputs to Talons
-		leftDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
-		rightDriveSim.setBusVoltage(RobotController.getBatteryVoltage());
-
-		// This will get the simulated sensor readings that we set
-		// in the previous article while in simulation, but will use
-		// real values on the robot itself.
-		odometry.update(pigeon.getRotation2d(),
-							nativeUnitsToDistanceMeters(leftLeader.getSelectedSensorPosition()),
-							nativeUnitsToDistanceMeters(rightLeader.getSelectedSensorPosition()));
-		// field2d.setRobotPose(odometry.getPoseMeters());
+        this.driveSim.run();
     }
-
-	// Simulation helper methods to convert between meters and native units
-	private int distanceToNativeUnits(double positionMeters){
-		double wheelRotations = positionMeters/(Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
-		double motorRotations = wheelRotations * DrivetrainConstants.lowGearRatio;
-		int sensorCounts = (int)(motorRotations * DrivetrainConstants.encoderCPR);
-		return sensorCounts;
-	}
-
-	private int velocityToNativeUnits(double velocityMetersPerSecond){
-		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
-		double motorRotationsPerSecond = wheelRotationsPerSecond * DrivetrainConstants.lowGearRatio;
-		double motorRotationsPer100ms = motorRotationsPerSecond / 10;
-		int sensorCountsPer100ms = (int)(motorRotationsPer100ms * DrivetrainConstants.encoderCPR);
-		return sensorCountsPer100ms;
-	}
-
-	private double nativeUnitsToDistanceMeters(double sensorCounts){
-		double motorRotations = (double)sensorCounts / DrivetrainConstants.encoderCPR;
-		double wheelRotations = motorRotations / DrivetrainConstants.lowGearRatio;
-		double positionMeters = wheelRotations * (Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
-		return positionMeters;
-	}
 
 }
