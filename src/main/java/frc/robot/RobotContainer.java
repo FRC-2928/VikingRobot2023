@@ -2,31 +2,32 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
-import frc.robot.commands.DrivetrainCommands.GenerateTrajectory;
 import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
-import frc.robot.commands.DrivetrainCommands.RunDynamicRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.DynamicTrajectory;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -58,9 +60,15 @@ public class RobotContainer {
 	// Create SmartDashboard chooser for autonomous routines
 	private final SendableChooser<Command> chooser = new SendableChooser<>();
 
-	// Used for dynamic trajectories
-	// public static Trajectory dynamicTrajectory = new Trajectory();
-	public final DynamicTrajectory dynamicTrajectory = new DynamicTrajectory(drivetrain);
+	public static DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
+
+	// Direction around the Charger Station
+	public enum Direction {
+		Left,
+		Right,
+		Unspecified
+	}
+	Direction direction = Direction.Unspecified;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -80,6 +88,10 @@ public class RobotContainer {
 	 */
 	private void configureSubsystems() {
 		configureDrivetrain();
+	}
+
+	public void setAlliance(Alliance alliance) {
+		this.alliance = alliance;
 	}
 
 	public void configureDrivetrain() {
@@ -111,21 +123,18 @@ public class RobotContainer {
 		driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
 		
-		// driverOI.getGoToTag6Button().onTrue(new RunDynamicRamseteTrajectory(this.drivetrain, 
-		// 		() -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
-
+		driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
+		driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
+		driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
 	}
 
 
 	private void configureAutoChooser() {
-		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-		// 							navigateToDropoff(FieldConstants.tag6, 1)));
+		
+		// chooser.setDefaultOption("Test Dropoff",
+		// 	generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
 
-		chooser.setDefaultOption("Test Dropoff", 
-			new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
-
-
-		chooser.addOption(
+		chooser.setDefaultOption(
 			"Back up to balance",
 			new SequentialCommandGroup(
 				new WaitCommand(.2),
@@ -187,6 +196,38 @@ public class RobotContainer {
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
+	/**
+	 * Generate a trajectory following Ramsete command
+	 * 
+	 * This is very similar to the WPILib RamseteCommand example. It uses
+	 * constants defined in the Constants.java file. These constants were 
+	 * found empirically by using the frc-characterization tool.
+	 * 
+	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
+	 */
+  	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
+
+		RamseteCommand ramseteCommand = new RamseteCommand(
+			trajectory.get(),
+			drivetrain::getPose,
+			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+			DrivetrainConstants.kDriveKinematics,
+			drivetrain::setOutputMetersPerSecond,
+			drivetrain);
+
+		drivetrain.resetOdometry(trajectory.get().getInitialPose());
+
+		// Set up a sequence of commands
+		// First, we want to reset the drivetrain odometry
+		return new InstantCommand(() -> drivetrain.resetOdometry(trajectory.get().getInitialPose()), drivetrain)
+			// next, we run the actual ramsete command
+			.andThen(ramseteCommand)
+			// make sure that the robot stops
+			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain))
+			// set the direction back to unspecified
+			.andThen(new InstantCommand(() -> direction = Direction.Unspecified));
+	} 
+
 	public Trajectory loadTrajectory(String trajectoryJSON) {
 		Trajectory trajectory = new Trajectory();
 
@@ -227,66 +268,88 @@ public class RobotContainer {
 	 * @param direction 0 for left, 1 for right, 2 for robot to decide
 	 * @return
 	 */
-	public Trajectory navigateToDropoff(Pose2d endPose, int direction){
+	public Trajectory generateTrajectory(Pose2d endPose) {
 
+        Pose2d startPose = this.drivetrain.getEstimatedPose();
+
+        Log.writeln("Generate start Pose: " + startPose);
+        SmartDashboard.putNumber("Start Pose X", startPose.getX());
+        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
+        SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
+    
+        SmartDashboard.putNumber("End Pose X", endPose.getX());
+        SmartDashboard.putNumber("End Pose Y", endPose.getY());
+        SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
+        
 		Trajectory trajectory;
-		Pose2d startPose;
+		List<Translation2d> waypoints = new ArrayList<>();
+
+		Log.writeln("Alliance:" + alliance);
+        if(alliance == DriverStation.Alliance.Red){
+        	// for red, left and right
+        	//if direction is specified left, or direction is unspecified and Y is on left side of field...
+        	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))){
+				Log.writeln("Red left");
+        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
+					endPose, DrivetrainConstants.kTrajectoryConfig);
+        	} else {
+				Log.writeln("Red right");
+        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2), 
+					endPose, DrivetrainConstants.kTrajectoryConfig);
+        	}
+        } else {
+        	// for blue, left and right
+        	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))){
+        		Log.writeln("Blue left");
+				Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
+				if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
+					waypoints.add(FieldConstants.Waypoints.leftBlue1);
+				}
+				if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
+					waypoints.add(FieldConstants.Waypoints.leftBlue2);
+				}				
+
+				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					waypoints,
+        			endPose, DrivetrainConstants.kTrajectoryConfig);
+        	} else {
+				Log.writeln("Blue right");
+				if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
+					waypoints.add(FieldConstants.Waypoints.rightBlue1);
+				}		
+				if (startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
+					waypoints.add(FieldConstants.Waypoints.rightBlue2);
+				} 		
+				
+        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					waypoints,
+        			endPose, DrivetrainConstants.kTrajectoryConfig);
+        	}
+        }
+    	
+		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
+		Log.writeln("Waypoints:" + waypoints);
+		Log.writeln("End Pose:" + endPose);
+
+        printTrajectory(trajectory);
+
+        return trajectory;
+    }
+
+	public void printTrajectory(Trajectory trajectory) {
 		
-		startPose = this.drivetrain.getEstimatedPose();
-		startPose = new Pose2d(5.0,4.0, new Rotation2d(3.1));
-		// startPose = new Pose2d(0.0,0.0, new Rotation2d());
-		SmartDashboard.putNumber("Start Pose X", startPose.getX());
-		SmartDashboard.putNumber("Start Pose Y", startPose.getY());
-		SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
-
-		SmartDashboard.putNumber("End Pose X", endPose.getX());
-		SmartDashboard.putNumber("End Pose Y", endPose.getY());
-		SmartDashboard.putNumber("End Pose Theta", endPose.getRotation().getDegrees());
-
-		DriverStation.Alliance color = DriverStation.getAlliance();
-
-		// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
-		// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
-		
-		if(color == DriverStation.Alliance.Red){
-			// for red, left and right
-			//if direction is specified left, or direction is unspecified and Y is on left side of field...
-			if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
-				List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-			} else {
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			}
-		} else {
-			// for blue, left and right
-			if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			} else {
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			}
-		}
-
-		SmartDashboard.putNumber("Waypoint1 X", FieldConstants.Waypoints.rightBlue1.getX());
-		SmartDashboard.putNumber("Waypoint Y", FieldConstants.Waypoints.rightBlue1.getY());
-
-		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				List.of(FieldConstants.Waypoints.rightBlue1),
-				// List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-
-		return trajectory;
-	}
+		List<State> states = trajectory.getStates();
+		for (int i = 1; i < states.size(); i++) {
+			var state = states.get(i);
+			Log.writeln("Time:" + state.timeSeconds + 
+						" X:" + state.poseMeters.getX() +
+						" Y:" + state.poseMeters.getY() +
+						" Vel:" + state.velocityMetersPerSecond);
+		}  
+		System.out.println("Traj: " + trajectory.getTotalTimeSeconds()); 
+	}	
 
 	public Command getAutonomousCommand() {
 		return chooser.getSelected();

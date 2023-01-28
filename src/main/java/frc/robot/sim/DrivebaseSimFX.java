@@ -12,8 +12,11 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.wpilibj.RobotController;
 // import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants.DrivetrainConstants;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
@@ -24,8 +27,8 @@ public class DrivebaseSimFX {
 	private TalonFXSimCollection _leftMasterSim, _rightMasterSim;
 	private BasePigeonSimCollection _pidgeySim;
 
-	// private Field2d _field = new Field2d();
-	// private DifferentialDriveOdometry _odometry;
+	private Field2d _field = new Field2d();
+	private DifferentialDriveOdometry _odometry;
 
 	//These numbers are an example AndyMark Drivetrain with some additional weight.  This is a fairly light robot.
 	//Note you can utilize results from robot characterization instead of theoretical numbers.
@@ -74,7 +77,7 @@ public class DrivebaseSimFX {
 		// Creating odometry object. Here,
 		// our starting pose is 5 meters along the long end of the field and in the
 		// center of the field along the short end, facing forward.
-		// _odometry = new DifferentialDriveOdometry(_pidgey.getRotation2d(), 0, 0);
+		_odometry = new DifferentialDriveOdometry(_pidgey.getRotation2d(), 0, 0);
 	}
 
 	/**
@@ -113,7 +116,7 @@ public class DrivebaseSimFX {
 						velocityToNativeUnits(
 						-_driveSim.getRightVelocityMetersPerSecond()));
 
-		_pidgeySim.setRawHeading(-_driveSim.getHeading().getDegrees()); // Had to negated gyro heading
+		_pidgeySim.setRawHeading(_driveSim.getHeading().getDegrees()); // Had to negated gyro heading
 
 		//Update other inputs to Talons
 		_leftMasterSim.setBusVoltage(RobotController.getBatteryVoltage());
@@ -122,10 +125,11 @@ public class DrivebaseSimFX {
 		// This will get the simulated sensor readings that we set
 		// in the previous article while in simulation, but will use
 		// real values on the robot itself.
-		// _odometry.update(_pidgey.getRotation2d(),
-		// 					nativeUnitsToDistanceMeters(_leftMaster.getSelectedSensorPosition()),
-		// 					nativeUnitsToDistanceMeters(_rightMaster.getSelectedSensorPosition()));
-		// _field.setRobotPose(_odometry.getPoseMeters());
+		_odometry.update(_pidgey.getRotation2d(),
+							nativeUnitsToDistanceMeters(_leftMaster.getSelectedSensorPosition()),
+							nativeUnitsToDistanceMeters(_rightMaster.getSelectedSensorPosition()));
+		_field.setRobotPose(_odometry.getPoseMeters());
+		// SmartDashboard.putData("Field", _field);
 	}
 
 	// Helper methods to convert between meters and native units
