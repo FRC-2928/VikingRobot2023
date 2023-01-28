@@ -75,6 +75,7 @@ public class Drivetrain extends SubsystemBase {
 
 	private final Field2d field2d = new Field2d();
 	private final Field2d fieldEstimated = new Field2d();
+	private final Field2d fieldLimelight = new Field2d();
 
 	private double yaw;
 
@@ -99,13 +100,12 @@ public class Drivetrain extends SubsystemBase {
 
 		this.feedForward = DrivetrainConstants.kFeedForward;
 
-		this.yaw = readGyro()[0];
-
+		
 		this.resetEncoders();
 		this.zeroGyro();
 
 		// Start with default Pose2d(0, 0, 0)
-		this.odometry = new DifferentialDriveOdometry(new Rotation2d(yaw), 0, 0);
+		this.odometry = new DifferentialDriveOdometry(new Rotation2d(readYaw()), 0, 0);
 		m_poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, new Rotation2d(yaw), 0, 0, getLimelightPose());
 
 		this.field2d.setRobotPose(getEncoderPose());
@@ -113,6 +113,9 @@ public class Drivetrain extends SubsystemBase {
 
 		this.fieldEstimated.setRobotPose(getEstimatedPose());
 		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
+
+		this.fieldLimelight.setRobotPose(getLimelightPose());
+		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
 	public void configureMotors() {
@@ -206,11 +209,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
-  public void updateOdometryFromLimelight(){
-    this.resetEncoders();
-    this.odometry.resetPosition(this.readYawRot(), 0, 0, getLimelightPose());
-  }
-
+//   
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// System.out.println("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
@@ -220,11 +219,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
 
-		// test comment 10/16 for auto crash
-		// System.out.println("right" + rightFeedForward);
-		// System.out.println("left" + leftFeedForward);
-		// this.rightFFEntry.setDouble(rightFeedForward);
-		// this.leftFFEntry.setDouble(leftFeedForward);
+		
 
 		// Convert meters per second to encoder ticks per second
 		GearState gearState = this.gearStateSupplier.get();
@@ -307,9 +302,11 @@ public class Drivetrain extends SubsystemBase {
 	public Pose2d getEstimatedPose(){
 		if (RobotBase.isReal()) {
 			return m_poseEstimator.getEstimatedPosition();
-		} else if (Timer.getFPGATimestamp() > 0.5) {
+		} 
+		else if (Timer.getFPGATimestamp() > 0.5) {
 			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
-		} else {
+		} 
+		else {
 			return new Pose2d(0.0,0.0, new Rotation2d());
 		}				
 	}
@@ -458,13 +455,7 @@ public class Drivetrain extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-    //if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
-    // if (m_limelight.getHasValidTargets() == 1){
-	// 	updateOdometryFromLimelight();
-    // } else {
-	// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
-    // }
-
+    
 		odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		m_poseEstimator.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		if (m_limelight.getHasValidTargets() == 1){
@@ -478,12 +469,13 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Theta", odometry.getPoseMeters().getRotation().getDegrees());
+		SmartDashboard.putNumber("left encoder", leftLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("right encoder", rightLeader.getSelectedSensorPosition());
 		field2d.setRobotPose(getEncoderPose());
 		fieldEstimated.setRobotPose(getEstimatedPose());
+		fieldLimelight.setRobotPose(getLimelightPose());
 
 		// SmartDashboard.putNumber("motor output", getMotorOutput());	
-		// SmartDashboard.putNumber("right enoder ticks", rightLeader.getSelectedSensorPosition());
-		// SmartDashboard.putNumber("left enoder ticks", leftLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("poseX", getEncoderPose().getX());
 		// SmartDashboard.putNumber("botposeX", (m_limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
