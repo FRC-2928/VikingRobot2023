@@ -125,7 +125,10 @@ public class RobotContainer {
 		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
-		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(this.drivetrain::zeroGyro, this.drivetrain));
+		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
+			this.drivetrain.zeroGyro();
+			this.drivetrain.resetEncoders();
+		}, this.drivetrain));
 
 		this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
@@ -201,7 +204,7 @@ public class RobotContainer {
 		
 		// this.driverOI.getGoToTag6Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 		// this.driverOI.getGoToTag7Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
-		// this.driverOI.getGoToTag8Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
+		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
 	}
 
 
@@ -277,8 +280,9 @@ public class RobotContainer {
 			"Rotate 8", 
 			new SequentialCommandGroup( 
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
 			);
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
@@ -352,7 +356,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-        Pose2d startPose = this.drivetrain.getEstimatedPose();
+        Pose2d startPose = this.drivetrain.getLimelightPose();
 
         Log.writeln("Generate start Pose: " + startPose);
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
