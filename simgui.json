@@ -27,14 +27,11 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/AutoRoutineChooser": "String Chooser",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Estimated Pose": "Field2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Limelight Pose": "Field2d"
     },
     "windows": {
-      "/FMSInfo": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/AutoRoutineChooser": {
         "window": {
           "visible": true
