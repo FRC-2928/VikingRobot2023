@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -109,7 +110,7 @@ public final class FieldConstants {
         public static final Translation3d[] high3dTranslations = new Translation3d[nodeRowCount];
 
         static {
-            for (int i = 0; i < nodeRowCount; i++) {
+            for(int i = 0; i < nodeRowCount; i++) {
                 boolean isCube = i == 1 || i == 4 || i == 7;
                 lowTranslations[i] = new Translation2d(lowX, nodeFirstY + nodeSeparationY * i);
                 midTranslations[i] = new Translation2d(midX, nodeFirstY + nodeSeparationY * i);
@@ -192,7 +193,7 @@ public final class FieldConstants {
         public static final Translation2d[] translations = new Translation2d[4];
 
         static {
-            for (int i = 0; i < translations.length; i++) {
+            for(int i = 0; i < translations.length; i++) {
                 translations[i] = new Translation2d(positionX, firstY + (i * separationY));
             }
         }

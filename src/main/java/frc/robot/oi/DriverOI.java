@@ -2,6 +2,7 @@ package frc.robot.oi;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -10,11 +11,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Log;
 
-public class DriverOI {
-	private XboxController controller;
-
+public class DriverOI extends OIBase {
 	public DriverOI(XboxController controller) {
-		this.controller = controller;
+		super(controller);
 
 		this.debugAddButtonLog(XboxController.Button.kA.value, "A");
 		this.debugAddButtonLog(XboxController.Button.kB.value, "B");
@@ -76,6 +75,10 @@ public class DriverOI {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
+	public Trigger getTestButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kBack.value);
+	}
+	
 	public Trigger getGoToTag6Button(){
 		return new Trigger(() -> this.controller.getPOV() == 90);
 	}
