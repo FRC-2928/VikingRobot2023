@@ -78,6 +78,10 @@ public class DriverOI extends OIBase {
 	public Trigger getTestButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kBack.value);
 	}
+
+	public Trigger getStartButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
+	}
 	
 	public Trigger getGoToTag6Button(){
 		return new Trigger(() -> this.controller.getPOV() == 90);
