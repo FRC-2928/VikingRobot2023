@@ -247,8 +247,11 @@ public class Drivetrain extends SubsystemBase {
 			gearState
 		);
 
-		SmartDashboard.putNumber("left velocity ticks per second", leftVelocityTicksPerSec);
-		SmartDashboard.putNumber("right velocity ticks per second", rightVelocityTicksPerSec);
+		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
+		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
+
+		SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
+		SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
 
 		this.leftLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
