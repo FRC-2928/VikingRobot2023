@@ -273,7 +273,13 @@ public class RobotContainer {
 		// 	)
 		// );
 
-		chooser.setDefaultOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")));
+		chooser.setDefaultOption(
+			"Rotate 8", 
+			new SequentialCommandGroup( 
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+			);
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
