@@ -472,7 +472,7 @@ public class Drivetrain extends SubsystemBase {
    * @return offset angle between target and the turret
    */
   public double getTargetHorizontalOffset() {
-    return m_limelight.getHorizontalOffset();
+    return limelight.getHorizontalOffset();
     
   }
 
