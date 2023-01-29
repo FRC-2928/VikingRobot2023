@@ -208,39 +208,9 @@ public class RobotContainer {
 	private void configureAutoChooser() {
 		// this.chooser.setDefaultOption("Test Dropoff", this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 
-		this.chooser.setDefaultOption(
-			"trajectory",
-			new RunRamseteTrajectory(
-				this.drivetrain, 
-				this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)
-			)
-		);
+		
 		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
 		// 							navigateToDropoff(FieldConstants.tag6, 1)));
-
-		// chooser.addOption("Test Dropoff", 
-		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
-
-		chooser.addOption(
-			"Rotate 8",
-			new SequentialCommandGroup(
-				new WaitCommand(.2),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate81")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate82"))
-				
-			)
-		);
-
-		chooser.addOption(
-			"8 Forward",
-			new SequentialCommandGroup(
-				new WaitCommand(.2),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("8 Forward 1")),
-				new TurnDegrees(.5, 180, drivetrain),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("8 Forward 2"))
-				
-			)
-		);
 
 		// chooser.addOption(
 		// 	"Back up to balance",
@@ -303,8 +273,8 @@ public class RobotContainer {
 		// 	)
 		// );
 
+		chooser.setDefaultOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")));
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
-		//chooser.addOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
