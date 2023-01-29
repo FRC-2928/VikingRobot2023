@@ -124,9 +124,9 @@ public class RobotContainer {
 		driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
 		
-		driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
-		driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
-		driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
+		// driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
+		// driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
+		// driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
 	}
 
 
@@ -144,35 +144,33 @@ public class RobotContainer {
 		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
 
 
-		chooser.addOption(
-			"Back up to balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.2),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				// Todo: find right time/speed to get onto teeter totter
-				new DriveTime(-.4, .5, drivetrain),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
-			)
-		);
-		chooser.addOption(
-			"Curve right around Charging Station and balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-				// Todo: find right time/speed to get onto teeter totter
-				// new DriveTime(-.4, .5, this.drivetrain),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
-			)
-		);
-		chooser.addOption(
-			"test",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
-			)
-		);
+		// chooser.addOption(
+		// 	"Back up to balance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.2),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+		// 		// Todo: find right time/speed to get onto teeter totter
+		// 		new DriveTime(-.4, .5, drivetrain),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"Curve right around Charging Station and balance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
+		// 		// Todo: find right time/speed to get onto teeter totter
+		// 		// new DriveTime(-.4, .5, this.drivetrain),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"test",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
+		// 	)
+		// );
 		chooser.addOption(
 			"testing",
 			new SequentialCommandGroup(
@@ -180,29 +178,26 @@ public class RobotContainer {
 				new DriveTime(.5, 2, drivetrain)
 			)
 		);
-		chooser.addOption(
-			"backupbalance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				BalanceRollPID.auto(drivetrain, 7000),
-				BalancePID.auto(drivetrain, 7000)
-			)
-		);
+		// chooser.addOption(
+		// 	"backupbalance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
-		chooser.addOption(
-			"auto 3",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3"))
-				// Todo: find right time/speed to get onto teeter totter
-				// new DriveTime(-.4, .5, this.drivetrain),
-				// BalanceRollPID.auto(drivetrain, 7000),
-				// BalancePID.auto(drivetrain, 7000)
-			)
-		);
+		// chooser.addOption(
+		// 	"auto 3",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+		chooser.addOption("Rotate8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
@@ -245,7 +240,7 @@ public class RobotContainer {
 			Path trajectoryPath = Filesystem
 				.getDeployDirectory()
 				.toPath()
-				.resolve("paths/" + trajectoryJSON + ".wpilib.json");
+				.resolve("paths/output/" + trajectoryJSON + ".wpilib.json");
 			trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 		} catch (IOException ex) {
 			Log.error(ex);
@@ -343,7 +338,7 @@ public class RobotContainer {
 		Log.writeln("Waypoints:" + waypoints);
 		Log.writeln("End Pose:" + endPose);
 
-        printTrajectory(trajectory);
+        //printTrajectory(trajectory);
 
         return trajectory;
     }
