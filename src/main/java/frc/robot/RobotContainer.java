@@ -135,78 +135,72 @@ public class RobotContainer {
 		// chooser.setDefaultOption("Test Dropoff",
 		// 	generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
 
-		chooser.setDefaultOption("trajectory", new RunRamseteTrajectory(this.drivetrain, 
-		this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
-		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-		// 							navigateToDropoff(FieldConstants.tag6, 1)));
+		// chooser.setDefaultOption("trajectory", new RunRamseteTrajectory(this.drivetrain, 
+		// this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
 
-		// chooser.addOption("Test Dropoff", 
-		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
+		// chooser.addOption(
+		// 	"Back up to balance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.2),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+		// 		// Todo: find right time/speed to get onto teeter totter
+		// 		new DriveTime(-.4, .5, drivetrain),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"Curve right around Charging Station and balance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
+		// 		// Todo: find right time/speed to get onto teeter totter
+		// 		// new DriveTime(-.4, .5, this.drivetrain),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"test",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"testing",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new DriveTime(.5, 2, drivetrain)
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"backupbalance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
+		// chooser.addOption(
+		// 	"auto 3",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Back up to balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.2),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				// Todo: find right time/speed to get onto teeter totter
-				new DriveTime(-.4, .5, drivetrain),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
-		chooser.addOption(
-			"Curve right around Charging Station and balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-				// Todo: find right time/speed to get onto teeter totter
-				// new DriveTime(-.4, .5, this.drivetrain),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
-		chooser.addOption(
-			"test",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
-			)
-		);
-		chooser.addOption(
-			"testing",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new DriveTime(.5, 2, drivetrain)
-			)
-		);
-		chooser.addOption(
-			"backupbalance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
+		// chooser.addOption(
+		// 	"auto 2",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto2")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
-		chooser.addOption(
-			"auto 3",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
-
-		chooser.addOption(
-			"auto 2",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto2")),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
-
+		chooser.setDefaultOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")));
 		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
-		chooser.addOption("Rotate 8", new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate 8")));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
