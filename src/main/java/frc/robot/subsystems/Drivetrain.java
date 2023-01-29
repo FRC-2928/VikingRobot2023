@@ -96,6 +96,8 @@ public class Drivetrain extends SubsystemBase {
 		// Configure Talon motors
 		this.configureMotors();
 
+		this.setWheelPIDF();
+
 		this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
 
 		this.feedForward = DrivetrainConstants.kFeedForward;
@@ -170,6 +172,19 @@ public class Drivetrain extends SubsystemBase {
 
 		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
 	}
+
+	public void setWheelPIDF() {
+
+        // set the PID values for each individual wheel
+        for(TalonFX fx : new TalonFX[] {leftLeader, rightLeader}){
+            
+            fx.config_kP(0, DrivetrainConstants.GainsProfiled.P, 0);
+            fx.config_kI(0, DrivetrainConstants.GainsProfiled.I, 0);
+            fx.config_kD(0, DrivetrainConstants.GainsProfiled.D, 0);
+            fx.config_kF(0, DrivetrainConstants.GainsProfiled.F, 0);
+            // m_talonsMaster.config_IntegralZone(0, 30);
+        }
+    }
 
 	// -----------------------------------------------------------
 	// Control Input
