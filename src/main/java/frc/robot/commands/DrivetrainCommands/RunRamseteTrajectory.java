@@ -24,7 +24,7 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		);
 		this.drivetrain = drivetrain;
 		this.trajectory = trajectory;
-		addRequirements(drivetrain);
+		this.addRequirements(drivetrain);
 	}
 
 	public void initialize() {
@@ -54,5 +54,4 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		//SmartDashboard.putNumber("end heading", this.drivetrain.getHeading());
 		this.drivetrain.halt();
 	}
-
 }

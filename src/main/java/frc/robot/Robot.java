@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Log;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,7 +33,7 @@ public class Robot extends TimedRobot {
 		// and put our
 		// autonomous chooser on the dashboard.
 		this.compressor = new Compressor(1, PneumaticsModuleType.REVPH);
-		System.out.println(this.compressor.getCurrent());
+		Log.writeln(this.compressor.getCurrent());
 		this.compressor.enableDigital();
 		this.robotContainer = new RobotContainer();
 	}
@@ -60,25 +61,16 @@ public class Robot extends TimedRobot {
 		CommandScheduler.getInstance().run();
 	}
 
-	//@Override
-	//public void disabledInit() {}
-
-	//@Override
-	//public void disabledPeriodic() {}
-
 	@Override
 	public void autonomousInit() {
 		// Get selected routine from the SmartDashboard
-		autonomousCommand = robotContainer.getAutonomousCommand();
+		this.autonomousCommand = this.robotContainer.getAutonomousCommand();
 
 		// schedule the autonomous command (example)
-		if (autonomousCommand != null) {
-			autonomousCommand.schedule();
+		if(this.autonomousCommand != null) {
+			this.autonomousCommand.schedule();
 		}
 	}
-
-	//@Override
-	//public void autonomousPeriodic() {}
 
 	@Override
 	public void teleopInit() {
@@ -86,14 +78,14 @@ public class Robot extends TimedRobot {
 		// use the default command which is ArcadeDrive. If you want the autonomous
 		// to continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (autonomousCommand != null) {
-			autonomousCommand.cancel();
+		if(this.autonomousCommand != null) {
+			this.autonomousCommand.cancel();
 		}
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		double[] gyro = robotContainer.drivetrain.readGyro();
+		double[] gyro = this.robotContainer.drivetrain.readGyro();
 		SmartDashboard.putNumberArray("gyro", gyro);
 	}
 
@@ -101,7 +93,4 @@ public class Robot extends TimedRobot {
 	public void testInit() {
 		CommandScheduler.getInstance().cancelAll();
 	}
-
-	//@Override
-	//public void testPeriodic() {}
 }

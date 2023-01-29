@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.List;
@@ -25,7 +21,7 @@ public class DynamicTrajectory {
     public Trajectory generateTrajectory(Pose2d endPose) {
 
         Pose2d startPose = this.drivetrain.getEstimatedPose();
-        System.out.println("Initial Pose: " + startPose.getX());
+        Log.writeln("Initial Pose: " + startPose.getX());
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
         SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
@@ -73,7 +69,7 @@ public class DynamicTrajectory {
                 // List.of(),
                 endPose, DrivetrainConstants.kTrajectoryConfig);
     
-        System.out.println("Traj: " + trajectory.getTotalTimeSeconds()); 
+        Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 
 
         return trajectory;
     }

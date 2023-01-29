@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,19 +28,36 @@ public final class Log extends SubsystemBase {
 
 	/// Writes data to stderr, writes it to the buffer, and dirties
 	/// the network entry.
-	public static void write(String str) {
-		Log.writeFast(str);
+	public static void write(Object... input) {
+		Log.writeFast(input);
 		Log.trimExcessLeadingLines();
 	}
 
 	/// Writes a line to stderr, writes it to the buffer, trims old
 	/// leading lines, and dirties the network entry.
-	public static void writeln(String str) { Log.write(str + '\n'); }
+	public static void writeln(Object... input) { Log.write(input, '\n'); }
 
 	/// Writes to the buffer, does NOT trim any old leading lines, and
 	/// dirties the network entry.
 	/// Use this to buffer many line calls together before calling
 	/// `trimExcessLeadingLines` or `writeln`
+	public static void writeFast(Object... input) {
+		for(Object entry : input) {
+			if(entry.getClass().isArray()) {
+				Object[] array;
+				
+				if(entry instanceof int[]) array = Arrays.stream((int[])entry).boxed().toArray(Integer[]::new);
+				else if(entry instanceof long[]) array = Arrays.stream((long[])entry).boxed().toArray(Long[]::new);
+				else if(entry instanceof double[]) array = Arrays.stream((double[])entry).boxed().toArray(Double[]::new);
+				else array = (Object[])entry;
+				
+				Log.writeFast(array);
+			} else {
+				Log.writeFast(entry.toString());
+			}
+		}
+	}
+
 	public static void writeFast(String str) {
 		Log.instance.log.append(str);
 		Log.instance.lines += str.lines().count();
@@ -51,28 +70,24 @@ public final class Log extends SubsystemBase {
 	/// dirties the network entry.
 	/// Use this to buffer many line calls together before calling
 	/// `trimExcessLeadingLines` or `writeln`
-	public static void writelnFast(String str) { Log.writeFast(str + '\n'); }
+	public static void writelnFast(Object... input) { Log.writeFast(input, '\n'); }
 
 	/// Writes an error to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
 	public static void error(Exception error) {
 		DriverStation.reportError(error.getLocalizedMessage(), error.getStackTrace());
-		Log.writelnFast("❗ ERROR ❗");
-		Log.writelnFast(error.getLocalizedMessage());
-		Log.writeln("❗ More information has been printed in the Driver Station ❗");
+		Log.writeln("! ERROR !", '\n', error.getLocalizedMessage(), '\n', "! More information has been printed in the Driver Station !");
 	}
 
 	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
 	public static void warning(String warning) {
 		DriverStation.reportWarning(warning, Thread.currentThread().getStackTrace());
-		Log.writelnFast("⚠️ WARNING ⚠️");
-		Log.writelnFast(warning);
-		Log.writeln("⚠️ More information has been printed in the Driver Station ⚠️");
+		Log.writeln("Δ WARNING Δ", '\n', warning, '\n', "Δ More information has been printed in the Driver Station Δ`");
 	}
 
 	/// Trims as many leading lines is necessary so that the buffer contains less
 	/// than `lineLimit` lines long
 	public static void trimExcessLeadingLines() {
-		while (Log.instance.lines > Log.lineLimit) Log.instance.trimSingleLine();
+		while(Log.instance.lines > Log.lineLimit) Log.instance.trimSingleLine();
 	}
 
 	/// Unconditionally trims a single line off the front
@@ -84,7 +99,7 @@ public final class Log extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		if (this.dirty) {
+		if(this.dirty) {
 			SmartDashboard.putString("SystemLog", this.log.toString());
 			this.dirty = false;
 		}
