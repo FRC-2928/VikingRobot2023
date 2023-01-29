@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Log;
@@ -70,10 +71,6 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
 
-	public Trigger getGoToTag6Button(){
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	}
-
 	public Trigger getBalanceAuxButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
@@ -81,4 +78,17 @@ public class DriverOI extends OIBase {
 	public Trigger getTestButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kBack.value);
 	}
+	
+	public Trigger getGoToTag6Button(){
+		return new Trigger(() -> this.controller.getPOV() == 90);
+	}
+
+	public Trigger getGoToTag7Button(){
+		return new Trigger(() -> this.controller.getPOV() == 180);
+	}
+
+	public Trigger getGoToTag8Button(){
+		return new Trigger(() -> this.controller.getPOV() == 270);
+	}
+
 }
