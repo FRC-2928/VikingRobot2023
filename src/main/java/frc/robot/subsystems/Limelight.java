@@ -21,7 +21,6 @@ public class Limelight {
 	private double targetDistance;
 	private double skew;
 
-	private Pose3d pose;
 
 	private boolean m_targetFound;
 
