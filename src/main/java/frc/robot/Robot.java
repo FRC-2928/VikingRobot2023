@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -63,6 +64,9 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
+		// Set the team alliance
+		robotContainer.setAlliance(DriverStation.getAlliance());
+		
 		// Get selected routine from the SmartDashboard
 		this.autonomousCommand = this.robotContainer.getAutonomousCommand();
 

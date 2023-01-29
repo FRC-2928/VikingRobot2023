@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.subsystems.Transmission.GearState;
@@ -69,6 +70,8 @@ public class Drivetrain extends SubsystemBase {
 	private DifferentialDrivePoseEstimator poseEstimator;
 
 	private final Field2d field2d = new Field2d();
+	private final Field2d fieldEstimated = new Field2d();
+	private final Field2d fieldLimelight = new Field2d();
 
 	/* Object for simulated drivetrain. */	
 	private DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
@@ -95,6 +98,12 @@ public class Drivetrain extends SubsystemBase {
 
 		this.field2d.setRobotPose(this.getEncoderPose());
 		SmartDashboard.putData("Field", this.field2d);
+
+		this.fieldEstimated.setRobotPose(getEstimatedPose());
+		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
+
+		this.fieldLimelight.setRobotPose(getLimelightPose());
+		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
 	public void configureMotors() {
@@ -188,11 +197,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
-	public void updateOdometryFromLimelight(){
-		this.resetEncoders();
-		this.odometry.resetPosition(this.readYawRot(), 0, 0, this.getLimelightPose());
-	}
-
+//   
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// Log.writeln("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
@@ -201,12 +206,6 @@ public class Drivetrain extends SubsystemBase {
 
 		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
-
-		// test comment 10/16 for auto crash
-		// Log.writeln("right" + rightFeedForward);
-		// Log.writeln("left" + leftFeedForward);
-		// this.rightFFEntry.setDouble(rightFeedForward);
-		// this.leftFFEntry.setDouble(leftFeedForward);
 
 		// Convert meters per second to encoder ticks per second
 		GearState gearState = this.gearStateSupplier.get();
@@ -291,13 +290,14 @@ public class Drivetrain extends SubsystemBase {
 			return this.poseEstimator.getEstimatedPosition();
 		} else if(Timer.getFPGATimestamp() > 0.5) {
 			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
-		} else {
+		} 
+		else {
 			return new Pose2d(0.0,0.0, new Rotation2d());
 		}				
 	}
 
 	public Rotation2d readYawRot() {
-		return Rotation2d.fromRadians(this.readYaw());
+		return Rotation2d.fromDegrees(this.readYaw());
 	}
 
 	public double readYaw() {
@@ -350,12 +350,84 @@ public class Drivetrain extends SubsystemBase {
 
 	// calculations are in meters
 	public Pose2d getLimelightPose(){
-		Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
+		// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
+		Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
 		return new Pose2d(
 			this.limelight.getPose()[0] + DrivetrainConstants.xOffsetField, 
 			this.limelight.getPose()[1] + DrivetrainConstants.yOffsetField,
 			rotation
 		);
+	}
+
+  	/** 
+	 * Returns if current robot estimated pose is left or right of the center
+	 * of the Charging Station taking the team alliance into account.
+	 * 
+	 * @return Is robot left or right of the center of the Charging Station
+	 */
+	public boolean isLeftOfChargingStation() {
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			return this.getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
+		} else {
+			return this.getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
+		}		
+	}
+
+	public boolean isRightOfChargingStation() {
+		return !this.isLeftOfChargingStation();
+	}
+
+	/**
+	 * 
+	 * @param startPose pose where robot starts
+	 * @param endPose pose where robot should end
+	 * @param direction 0 for left, 1 for right, 2 for robot to decide
+	 * @return
+	 */
+	public Trajectory navigateToDropoff(Pose2d endPose, int direction){
+		Trajectory trajectory;
+		Pose2d startPose;
+
+		Log.writeln("End pose: " + endPose);
+		
+		startPose = this.getEstimatedPose();
+
+		DriverStation.Alliance color = DriverStation.getAlliance();
+
+		// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
+		// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
+		
+		if(color == DriverStation.Alliance.Red){
+			// for red, left and right
+			//if direction is specified left, or direction is unspecified and Y is on left side of field...
+			if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+				//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
+				List.of(),
+				endPose, DrivetrainConstants.kTrajectoryConfig);
+			} else {
+				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
+					List.of(),
+					endPose, DrivetrainConstants.kTrajectoryConfig);
+			}
+		} else {
+			// for blue, left and right
+			if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
+					List.of(),
+					endPose, DrivetrainConstants.kTrajectoryConfig);
+			} else {
+				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
+					List.of(),
+					endPose, DrivetrainConstants.kTrajectoryConfig);
+			}
+		}
+
+
+		return trajectory;
 	}
 
 	// ----------------------------------------------------
@@ -384,7 +456,12 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
+		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("limelight X", this.limelight.getPose()[0]);
 		this.field2d.setRobotPose(this.getEncoderPose());
+		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
+		this.fieldLimelight.setRobotPose(this.getLimelightPose());
 
 		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
