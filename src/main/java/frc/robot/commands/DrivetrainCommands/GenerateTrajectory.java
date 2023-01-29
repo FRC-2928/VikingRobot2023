@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.DrivetrainCommands;
 
 import java.util.List;
@@ -16,28 +12,24 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Log;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class GenerateTrajectory extends InstantCommand {
-  Drivetrain drivetrain;
-  Pose2d endPose;
-  int direction;
+	Drivetrain drivetrain;
+	Pose2d endPose;
+	int direction;
 
-  public GenerateTrajectory(Drivetrain drivetrain, Pose2d endPose, int direction) {
-    this.drivetrain = drivetrain;
-    this.endPose = endPose;
-    this.direction = direction;
-    addRequirements(drivetrain);
-  }
+	public GenerateTrajectory(Drivetrain drivetrain, Pose2d endPose, int direction) {
+		this.drivetrain = drivetrain;
+		this.endPose = endPose;
+		this.direction = direction;
+		this.addRequirements(drivetrain);
+	}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    
+	@Override
+	public void initialize() {
 		Pose2d startPose = this.drivetrain.getEstimatedPose();
-		System.out.println("Initial Pose: " + startPose.getX());
+		Log.writeln("Initial Pose: " + startPose.getX());
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
 		SmartDashboard.putNumber("Start Pose Y", startPose.getY());
 		SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
@@ -85,6 +77,6 @@ public class GenerateTrajectory extends InstantCommand {
 		// 		// List.of(),
 		// 		endPose, DrivetrainConstants.kTrajectoryConfig);
 
-    // System.out.println("Traj: " + RobotContainer.dynamicTrajectory.getTotalTimeSeconds());    
-  }
+	// Log.writeln("Traj: " + RobotContainer.dynamicTrajectory.getTotalTimeSeconds());    
+	}
 }
