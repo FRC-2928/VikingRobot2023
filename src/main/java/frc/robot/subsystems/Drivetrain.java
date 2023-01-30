@@ -33,6 +33,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
+import frc.robot.sim.PhysicsSim;
 import frc.robot.subsystems.Transmission.GearState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -526,8 +527,14 @@ public class Drivetrain extends SubsystemBase {
 	// Simulation
 	// ----------------------------------------------------
 
+	public void simulationInit() {
+		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
+		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+	}
+	
 	@Override
     public void simulationPeriodic() {
+		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
 }
