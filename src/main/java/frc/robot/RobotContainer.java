@@ -202,8 +202,6 @@ public class RobotContainer {
 			)
 		));
 		
-		// this.driverOI.getGoToTag6Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
-		// this.driverOI.getGoToTag7Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
 		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
 	}
 
@@ -211,30 +209,6 @@ public class RobotContainer {
 	private void configureAutoChooser() {
 		// this.chooser.setDefaultOption("Test Dropoff", this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 
-		
-		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-		// 							navigateToDropoff(FieldConstants.tag6, 1)));
-
-		// chooser.addOption(
-		// 	"Back up to balance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.2),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-		// 		// Todo: find right time/speed to get onto teeter totter
-		// 		new DriveTime(-.4, .5, drivetrain),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
-		// chooser.addOption(
-		// 	"Curve right around Charging Station and balance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-		// 		// Todo: find right time/speed to get onto teeter totter
-		// 		// new DriveTime(-.4, .5, this.drivetrain),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
 		// chooser.addOption(
 		// 	"test",
 		// 	new SequentialCommandGroup(
@@ -247,14 +221,6 @@ public class RobotContainer {
 		// 	new SequentialCommandGroup(
 		// 		new WaitCommand(.1),
 		// 		new DriveTime(.5, 2, drivetrain)
-		// 	)
-		// );
-		// chooser.addOption(
-		// 	"backupbalance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-		// 		new BalanceAUX(drivetrain, false, 15)
 		// 	)
 		// );
 
@@ -284,7 +250,30 @@ public class RobotContainer {
 				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
 			);
-		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+
+		chooser.addOption("Calibrate Trajectory", 
+			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+
+		chooser.addOption(
+			"Back up and balance",
+			new SequentialCommandGroup(
+				new WaitCommand(.1),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+				new BalanceAUX(drivetrain, false, 15)
+			)
+		);
+
+		chooser.addOption(
+			"Curve right around Charging Station and balance",
+			new SequentialCommandGroup(
+				new WaitCommand(.1),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
+				// Todo: find right time/speed to get onto teeter totter
+				// new DriveTime(-.4, .5, this.drivetrain),
+				new BalanceAUX(drivetrain, false, 15)
+			)
+		);
+
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
