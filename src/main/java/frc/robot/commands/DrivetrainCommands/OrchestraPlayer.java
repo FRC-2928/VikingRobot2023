@@ -44,4 +44,9 @@ public class OrchestraPlayer extends CommandBase {
 	public boolean isFinished() {
 		return !this.player.isPlaying();
 	}
+
+	@Override
+	public boolean runsWhenDisabled() {
+		return true;
+	}
 }

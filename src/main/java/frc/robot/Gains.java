@@ -21,18 +21,18 @@ public class Gains {
 	// Integral Zone can be used to auto clear the integral accumulator if the sensor position
 	// is too far from the target. This prevent unstable oscillation if the kI is too large. 
 	// Value is in sensor units.
-	public final int kIzone;
+	public final int iZone;
 
 	// Absolute max motor output during closed-loop control modes only. 
 	// A value of ‘1’ represents full output in both directions.
-	public final double kPeakOutput;
+	public final double peakOutput;
 	
 	public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput) {
-		P = _kP;
-		I = _kI;
-		D = _kD;
-		F = _kF;
-		kIzone = _kIzone;
-		kPeakOutput = _kPeakOutput;
+		this.P = _kP;
+		this.I = _kI;
+		this.D = _kD;
+		this.F = _kF;
+		this.iZone = _kIzone;
+		this.peakOutput = _kPeakOutput;
 	}
 }
