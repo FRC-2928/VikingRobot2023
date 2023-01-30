@@ -237,15 +237,17 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
 
 		// Convert meters per second to encoder ticks per second
-		GearState gearState = this.gearStateSupplier.get();
-		double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-			this.metersToWheelRotations(leftMetersPerSecond),
-			gearState
-		);
-		double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-			this.metersToWheelRotations(rightMetersPerSecond),
-			gearState
-		);
+		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
+		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
+		// GearState gearState = this.gearStateSupplier.get();
+		// double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
+		// 	this.metersToWheelRotations(leftMetersPerSecond),
+		// 	gearState
+		// );
+		// double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
+		// 	this.metersToWheelRotations(rightMetersPerSecond),
+		// 	gearState
+		// );
 
 		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
 		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
