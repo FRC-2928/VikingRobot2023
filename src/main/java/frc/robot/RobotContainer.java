@@ -242,13 +242,22 @@ public class RobotContainer {
 		// 	)
 		// );
 
+		// chooser.setDefaultOption(
+		// 	"Rotate 8", 
+		// 	new SequentialCommandGroup( 
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
+		// 		// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+		// 		// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
+		// 	);
+
 		chooser.setDefaultOption(
-			"Rotate 8", 
+			"Tag6 Routines1", 
 			new SequentialCommandGroup( 
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
-				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
 				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")))
 			);
 
 		chooser.addOption("Calibrate Trajectory", 
