@@ -125,7 +125,10 @@ public class RobotContainer {
 		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
-		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(this.drivetrain::zeroGyro, this.drivetrain));
+		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
+			this.drivetrain.zeroGyro();
+			this.drivetrain.resetEncoders();
+		}, this.drivetrain));
 
 		this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
@@ -208,30 +211,6 @@ public class RobotContainer {
 	private void configureAutoChooser() {
 		// this.chooser.setDefaultOption("Test Dropoff", this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 
-		
-		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-		// 							navigateToDropoff(FieldConstants.tag6, 1)));
-
-		// chooser.addOption(
-		// 	"Back up to balance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.2),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-		// 		// Todo: find right time/speed to get onto teeter totter
-		// 		new DriveTime(-.4, .5, drivetrain),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
-		// chooser.addOption(
-		// 	"Curve right around Charging Station and balance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-		// 		// Todo: find right time/speed to get onto teeter totter
-		// 		// new DriveTime(-.4, .5, this.drivetrain),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
 		// chooser.addOption(
 		// 	"test",
 		// 	new SequentialCommandGroup(
@@ -244,14 +223,6 @@ public class RobotContainer {
 		// 	new SequentialCommandGroup(
 		// 		new WaitCommand(.1),
 		// 		new DriveTime(.5, 2, drivetrain)
-		// 	)
-		// );
-		// chooser.addOption(
-		// 	"backupbalance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-		// 		new BalanceAUX(drivetrain, false, 15)
 		// 	)
 		// );
 
@@ -277,10 +248,34 @@ public class RobotContainer {
 			"Rotate 8", 
 			new SequentialCommandGroup( 
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
 			);
-		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+
+		chooser.addOption("Calibrate Trajectory", 
+			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+
+		chooser.addOption(
+			"Back up and balance",
+			new SequentialCommandGroup(
+				new WaitCommand(.1),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
+				new BalanceAUX(drivetrain, false, 15)
+			)
+		);
+
+		chooser.addOption(
+			"Curve right around Charging Station and balance",
+			new SequentialCommandGroup(
+				new WaitCommand(.1),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
+				// Todo: find right time/speed to get onto teeter totter
+				// new DriveTime(-.4, .5, this.drivetrain),
+				new BalanceAUX(drivetrain, false, 15)
+			)
+		);
+
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
@@ -352,7 +347,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-        Pose2d startPose = this.drivetrain.getEstimatedPose();
+        Pose2d startPose = this.drivetrain.getLimelightPose();
 
         Log.writeln("Generate start Pose: " + startPose);
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
