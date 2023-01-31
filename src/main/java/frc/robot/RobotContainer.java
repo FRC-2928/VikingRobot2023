@@ -257,10 +257,23 @@ public class RobotContainer {
 			"Tag6 Routines1", 
 			new SequentialCommandGroup( 
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
+				//new TurnDegrees(.5, 0, drivetrain),
+				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
 				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")))
-			);
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
+		);
+
+		chooser.addOption(
+			"Tag7 Routines1", 
+			new SequentialCommandGroup( 
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag7-Rotate3")),
+				//new TurnDegrees(.5, 0, drivetrain),
+				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
+		);
 
 		chooser.addOption("Calibrate Trajectory", 
 			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
