@@ -237,15 +237,17 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
 
 		// Convert meters per second to encoder ticks per second
-		GearState gearState = this.gearStateSupplier.get();
-		double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-			this.metersToWheelRotations(leftMetersPerSecond),
-			gearState
-		);
-		double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-			this.metersToWheelRotations(rightMetersPerSecond),
-			gearState
-		);
+		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
+		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
+		// GearState gearState = this.gearStateSupplier.get();
+		// double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
+		// 	this.metersToWheelRotations(leftMetersPerSecond),
+		// 	gearState
+		// );
+		// double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
+		// 	this.metersToWheelRotations(rightMetersPerSecond),
+		// 	gearState
+		// );
 
 		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
 		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
@@ -415,66 +417,13 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	/**
-	 * 
-	 * @param startPose pose where robot starts
-	 * @param endPose pose where robot should end
-	 * @param direction 0 for left, 1 for right, 2 for robot to decide
-	 * @return
+	 * Gets the angle of the target relative to the turret
+	 * @return offset angle between target and the turret
 	 */
-	public Trajectory navigateToDropoff(Pose2d endPose, int direction){
-		Trajectory trajectory;
-		Pose2d startPose;
-
-		Log.writeln("End pose: " + endPose);
+	public double getTargetHorizontalOffset() {
+		return limelight.getHorizontalOffset();
 		
-		startPose = this.getEstimatedPose();
-
-		DriverStation.Alliance color = DriverStation.getAlliance();
-
-		// trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of (new Translation2d(1, 0)),
-		// 									new Pose2d(2, 0, new Rotation2d(0)), DrivetrainConstants.kTrajectoryConfig);
-		
-		if(color == DriverStation.Alliance.Red){
-			// for red, left and right
-			//if direction is specified left, or direction is unspecified and Y is on left side of field...
-			if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-				//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
-				List.of(),
-				endPose, DrivetrainConstants.kTrajectoryConfig);
-			} else {
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			}
-		} else {
-			// for blue, left and right
-			if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			} else {
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
-					List.of(),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-			}
-		}
-
-
-		return trajectory;
 	}
-
-  /**
-   * Gets the angle of the target relative to the turret
-   * @return offset angle between target and the turret
-   */
-  public double getTargetHorizontalOffset() {
-    return limelight.getHorizontalOffset();
-    
-  }
 
 	// ----------------------------------------------------
 	// Process Logic
