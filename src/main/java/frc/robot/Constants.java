@@ -110,7 +110,7 @@ public final class Constants {
 		// (acceleration) terms
 		// whereas the Talon SRX / Spark MAX kF is only a kV (velocity) feedforward.
 		// kp, ki, kd, kf, iz, peak output
-		public static final Gains GainsProfiled = new Gains(0.16, 0, 0, 0, 0, 1.00);
+		public static final Gains GainsProfiled = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
 
 		/**
 		 * PID Gains may have to be adjusted based on the responsiveness of control
