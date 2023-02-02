@@ -6,11 +6,8 @@ import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.wpilibj.RobotController;
-// import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants.DrivetrainConstants;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,7 +29,7 @@ public class DrivebaseSimFX {
 	// private final int kCountsPerRev = 2048;  //Encoder counts per revolution of the motor shaft.
 	// private final double kSensorGearRatio = 1; //Gear ratio is the ratio between the *encoder* and the wheels.  On the AndyMark drivetrain, encoders mount 1:1 with the gearbox shaft.
 	// private final double kGearRatio = 10.71; //Switch kSensorGearRatio to this gear ratio if encoder is on the motor instead of on the gearbox.
-	private final double kWheelRadiusInches = 3;
+	// private final double kWheelRadiusInches = 3;
 	// private final int k100msPerSecond = 10;
 
 	//Simulation model of the drivetrain
