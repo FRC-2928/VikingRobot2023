@@ -58,9 +58,13 @@ public final class Constants {
 		public static final double kRamseteZeta = 0.7;
 	}
 
-	public static final class DrivetrainConstants {
+	public static final class LimelightConstants {
 
-		
+		public static final double tagGoalY = 8.25;
+		public static final double tagGoalX = 0;
+	}
+
+	public static final class DrivetrainConstants {
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
 		public static final double ksVolts = 0.6024;
@@ -125,7 +129,8 @@ public final class Constants {
 		public static final Gains GainsBalance = new Gains(0.075, 0.0, 0.0, 0, 0, 0.3);
 		public static final Gains GainsRollBalance = new Gains(1, 0, 0.03, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(1,0,0.02,0.0,0,0.3);
-
+		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
+		public static final Gains GainsApproach = new Gains(.65,0.016,0.0,0.0,0,0.3);
 		// public static final double kDistanceToleranceMeters = 0.1;
 		// public static final double kVelocityToleranceMeters = 0.1;
 
