@@ -473,6 +473,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("limelight X", this.limelight.getPoseX());
+		
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPose());
