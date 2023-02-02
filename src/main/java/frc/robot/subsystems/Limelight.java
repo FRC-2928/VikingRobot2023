@@ -1,119 +1,180 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-//import frc.robot.Constants.LimelightConstants;
 
 /**
- * Limelight utility is responsible for I/O with both Limelight 2+
+ * Limelight utility is responsible for I/O with both Limelight 3
  * Feeds turret limelight to flywheel/hood/turret and operator shuffleboard
  * Feeds base limelight to intake vision tracking and driver shuffleboard
  */
-public class Limelight{
-  //Pulls values from network tables
-  private NetworkTable m_limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
+public class Limelight {
+	// Pulls values from network tables
+	private NetworkTable m_limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
 
-  //Creates variables to assign
-  private double m_horizontalOffset;
-  private double m_verticalOffset;
-  private double m_area;
-  private double m_targetDistance;
-  private double m_skew;
-
-  private Pose3d m_pose;
-
-  private boolean m_targetFound;
+	// Creates variables to assign
+	// private double horizontalOffset;
+	// private double verticalOffset;
+	// private double area;
+	// private double targetDistance;
+	// private double skew;
 
 
-  // -----------------------------------------------------------
-  // Initialization
-  // -----------------------------------------------------------
-  public Limelight() {
-    setStream(0);
-  }
+	// private boolean m_targetFound;
 
-  public LimelightData getLimelightData() {
-    updateReadings();
-    return new LimelightData(m_horizontalOffset, m_verticalOffset, m_targetDistance, m_targetFound, m_skew);
-  }
 
-  // -----------------------------------------------------------
-  // Control Input
-  // -----------------------------------------------------------
-  public void updateReadings() {
-    m_horizontalOffset = getHorizontalOffset();
-    m_verticalOffset = getVerticalOffset();
-    //m_targetDistance = getTargetDistance();
-    m_targetFound = isTargetFound();
-    m_skew = getSkew();
-  }
+	// -----------------------------------------------------------
+	// Initialization
+	// -----------------------------------------------------------
+	public Limelight() {
+		this.setStream(0);
+	}
 
-  public void setStream(int stream) {
-    m_limelightNI.getEntry("stream").setNumber(stream);
-  }
-  
-  // -----------------------------------------------------------
-  // System State
-  // -----------------------------------------------------------
-  public double getSkew() {
-    return m_limelightNI.getEntry("ts").getDouble(0);
-  }
+	// -----------------------------------------------------------
+	// Control Input
+	// -----------------------------------------------------------
+	// public void updateReadings() {
+	// 	this.horizontalOffset = this.getHorizontalOffset();
+	// 	this.verticalOffset = this.getVerticalOffset();
+	// 	//this.m_targetDistance = this.getTargetDistance();
+	// 	this.m_targetFound = this.isTargetFound();
+	// 	this.skew = this.getSkew();
+	// }
 
-  public double getHasValidTargets(){
-    return m_limelightNI.getEntry("tv").getDouble(0);
-  }
+	public void setStream(int stream) {
+		this.m_limelightNI.getEntry("stream").setNumber(stream);
+	}
+	
+	// -----------------------------------------------------------
+	// System State
+	// -----------------------------------------------------------
+	
+	// Whether the limelight has any valid targets (0 or 1)
+	public boolean getHasValidTargets(){
+		return this.m_limelightNI.getEntry("tv").getDouble(0) == 1;
+	}
 
-  public double[] getPose(){
-    double[] pose = m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
-    if(pose.length == 0) {
-      return new double[6]; 
-    }
-    else {
-      return pose;
-    }
-  }
+	// ------------------------------------------------------------------------
+	// Poses using reflective tape
+	// ------------------------------------------------------------------------
 
-  public double getPoseX(){
-    double pose = m_limelightNI.getEntry("botpose").getDouble(0);
-    return pose;
-  }
+	// Horizontal Offset From Crosshair To Target (LL1: -27 degrees to 27 degrees | LL2: -29.8 to 29.8 degrees)
+	public double getHorizontalOffset() {
+		return this.m_limelightNI.getEntry("tx").getDouble(0.0);
+	}
 
-  // public double getTargetDistance(){
-  //   double h = (LimelightConstants.kHighGoalHeight - LimelightConstants.kHighLimelightHeight) / 12;
-  //   return h/Math.tan(Math.toRadians(getVerticalOffset() + LimelightConstants.kHighLimelightMountAngle));
-  // }
+	// Vertical Offset From Crosshair To Target (LL1: -20.5 degrees to 20.5 degrees | LL2: -24.85 to 24.85 degrees)
+	public double getVerticalOffset() {
+		return this.m_limelightNI.getEntry("ty").getDouble(0.0);
+	}
 
-  public double getHorizontalOffset() {
-    NetworkTableEntry tx = m_limelightNI.getEntry("tx");
-    m_horizontalOffset = tx.getDouble(0.0);
-    return m_horizontalOffset;
-  }
+	// Target Area (0% of image to 100% of image)
+	public double getArea() {
+		return this.m_limelightNI.getEntry("ta").getDouble(0.0);
+	}
 
-  public double getVerticalOffset() {
-    NetworkTableEntry ty = m_limelightNI.getEntry("ty");
-    m_verticalOffset = ty.getDouble(0.0);
-    return m_verticalOffset;
-  }
+	public double getSkew() {
+		return this.m_limelightNI.getEntry("ts").getDouble(0);
+	}
 
-  public double getArea() {
-    return m_area;
-  }
+	// ------------------------------------------------------------------------
+	// Localization Poses using AprilTags
+	// ------------------------------------------------------------------------
+	// // Robot transform in field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
+	// public double[] getPose(){
+	// 	double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
+	// 	if(pose.length == 0) {
+	// 		return new double[6]; 
+	// 	}
+	// 	else {
+	// 		return pose;
+	// 	}
+	// }
 
-  public boolean isTargetFound() {
-    if (m_limelightNI.getEntry("tv").getDouble(0.0) == 0.0) {
-      m_targetFound = false;
-    }
-    else{
-      m_targetFound = true;
-    }
-    return m_targetFound;
-  }
+	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
+	public Pose3d getPose3d(){
+		double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
+		if(pose.length == 0) {
+			return new Pose3d(); 
+		}
+		else {
+			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+							  new Rotation3d(pose[3], pose[4], pose[5]));
+		}
+	}
+
+	// Robot transform in 2D field-space. Translation (X,Y) Rotation(Z)
+	public Pose2d getPose2d(){
+		return getPose3d().toPose2d();
+	}
+
+	// Robot transform in field-space. Translation (X)
+	public double getPoseX(){
+		return getPose2d().getX();
+	}
+
+	// Robot transform in field-space. Translation (Y)
+	public double getPoseY(){
+		return getPose2d().getY();
+	}
+
+	// Robot transform in field-space (blue driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
+	public Pose3d getBluePose3d(){
+		double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+		if(pose.length == 0) {
+			return new Pose3d(); 
+		}
+		else {
+			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+							  new Rotation3d(pose[3], pose[4], pose[5]));
+		}
+	}
+
+	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
+	public Pose3d getRedPose3d(){
+		double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+		if(pose.length == 0) {
+			return new Pose3d(); 
+		}
+		else {
+			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+							  new Rotation3d(pose[3], pose[4], pose[5]));
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	// Pose relative to the primary in-view AprilTag
+	// ------------------------------------------------------------------------
+
+	// 3D transform of the primary in-view AprilTag in the coordinate system of the Robot (array (6))
+	public Pose3d getRobotTagPose3d() {
+		double[] pose = this.m_limelightNI.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+		if(pose.length == 0) {
+			return new Pose3d(); 
+		}
+		else {
+			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+							  new Rotation3d(pose[3], pose[4], pose[5]));
+		}
+	}
+
+	// 3D transform of the primary in-view AprilTag in the coordinate system of the Camera (array (6))
+	public Pose3d getCameraTagPose3d() {
+		double[] pose = this.m_limelightNI.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
+		if(pose.length == 0) {
+			return new Pose3d(); 
+		}
+		else {
+			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+							  new Rotation3d(pose[3], pose[4], pose[5]));
+		}
+	}
+	
 }
 

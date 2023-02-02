@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.sim;
 
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
@@ -45,9 +41,9 @@ public class DrivebaseSimFX {
 		DrivetrainConstants.lowGearRatio,               //Standard AndyMark Gearing reduction.
 		2.1,                      //MOI of 2.1 kg m^2 (from CAD model).
 		26.5,                     //Mass of the robot is 26.5 kg.
-        Units.inchesToMeters(kWheelRadiusInches),  //Robot uses 3" radius (6" diameter) wheels.
+        // Units.inchesToMeters(kWheelRadiusInches),  //Robot uses 3" radius (6" diameter) wheels.
         // 0.546,                    //Distance between wheels is _ meters.
-		// DrivetrainConstants.kWheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
+		DrivetrainConstants.kWheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
 		DrivetrainConstants.kTrackWidthMeters,                    //Distance between wheels is _ meters.
 
 		// The standard deviations for measurement noise:

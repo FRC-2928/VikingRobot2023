@@ -21,12 +21,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
-import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
+import frc.robot.commands.POVSelector.Tree;
+import frc.robot.commands.DrivetrainCommands.TurnDegrees;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
@@ -50,37 +52,38 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+	// Direction around the Charger Station
+	public static enum Direction {
+		Left,
+		Right,
+		Unspecified
+	}
+
 	// The Robot's Subsystems
 	public final Transmission transmission = new Transmission();
-	public final Drivetrain drivetrain = new Drivetrain(transmission::getGearState);
+	public final Drivetrain drivetrain = new Drivetrain(this.transmission::getGearState);
 
 	// XBox Controllers
 	private final XboxController driverController = new XboxController(0);
-	private final DriverOI driverOI = new DriverOI(driverController);
+	private final DriverOI driverOI = new DriverOI(this.driverController);
 
 	// Create SmartDashboard chooser for autonomous routines
 	private final SendableChooser<Command> chooser = new SendableChooser<>();
 
 	public static DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
 
-	// Direction around the Charger Station
-	public enum Direction {
-		Left,
-		Right,
-		Unspecified
-	}
-	Direction direction = Direction.Unspecified;
+	private Direction direction = Direction.Unspecified;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-		configureAutoChooser();
+		this.configureAutoChooser();
 
 		// Configure default commands, button bindings, and shuffleboard
-		configureSubsystems();
-		SmartDashboard.putNumber("Tag6 X",FieldConstants.aprilTags.get(6).toPose2d().getX());
-		SmartDashboard.putNumber("Tag6 Y",FieldConstants.aprilTags.get(6).toPose2d().getY());
+		this.configureSubsystems();
+		SmartDashboard.putNumber("Tag6 X", FieldConstants.aprilTags.get(6).toPose2d().getX());
+		SmartDashboard.putNumber("Tag6 Y", FieldConstants.aprilTags.get(6).toPose2d().getY());
 	}
 
 	/**
@@ -88,11 +91,11 @@ public class RobotContainer {
 	 * and Shuffleboard output
 	 */
 	private void configureSubsystems() {
-		configureDrivetrain();
+		this.configureDrivetrain();
 	}
 
 	public void setAlliance(Alliance alliance) {
-		this.alliance = alliance;
+		RobotContainer.alliance = alliance;
 	}
 
 	public void configureDrivetrain() {
@@ -100,60 +103,166 @@ public class RobotContainer {
 		// Set the default drive command to split-stick arcade drive
 		// A split-stick arcade command, with forward/backward controlled by the left
 		// stick, and turning controlled by the right.
-		drivetrain.setDefaultCommand(
+		this.drivetrain.setDefaultCommand(
 			new RunCommand(
-				() -> drivetrain.diffDrive.arcadeDrive(
-					driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
-					driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier
+				() -> this.drivetrain.diffDrive.arcadeDrive(
+					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
+					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier
 				),
-				drivetrain
+				this.drivetrain
 			)
 		);
 
 		// Configure button commands
-		driverOI.getShiftLowButton().onTrue(new InstantCommand(transmission::setLow, transmission));
-		driverOI.getShiftHighButton().onTrue(new InstantCommand(transmission::setHigh, transmission));
-		driverOI.getOrchestraButton().whileTrue(
+		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
+		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
+		this.driverOI.getOrchestraButton().whileTrue(
 			new OrchestraPlayer(
-				drivetrain,
+				this.drivetrain,
 				Filesystem.getDeployDirectory().toPath().resolve("homedepot.chrp").toString()
 			)
 		);
-		driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
-		driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
-		driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
-		driverOI.getResetGyroButton().onTrue(new InstantCommand(drivetrain::zeroGyro, drivetrain));
+		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
+		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
+		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
+		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
+			this.drivetrain.zeroGyro();
+			this.drivetrain.resetEncoders();
+		}, this.drivetrain));
+
+		this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
+			this.driverOI,
+			path -> Log.writeln("POV Selector step: ", String.join(",", path)),
+			(str, path) -> Log.writeln("POV Selector finish: ", str, " (", String.join(",", path), ')'),
+			new Tree("Deposit",
+				new Tree("Center Station",
+					new Tree("Center Position",
+						new Tree("Top", new int[] { 2, 2, 3 }),
+						new Tree("Middle", new int[] { 2, 2, 2 }),
+						new Tree("Bottom", new int[] { 2, 2, 1 }),
+						new Tree("Top", new int[] { 2, 2, 3 })
+					),
+					new Tree("Right Position",
+						new Tree("Top", new int[] { 2, 3, 3 }),
+						new Tree("Middle", new int[] { 2, 3, 2 }),
+						new Tree("Bottom", new int[] { 2, 3, 1 }),
+						new Tree("Top", new int[] { 2, 3, 3 })
+					),
+					new Tree(),
+					new Tree("Left Position",
+						new Tree("Top", new int[] { 2, 1, 3 }),
+						new Tree("Middle", new int[] { 2, 1, 2 }),
+						new Tree("Bottom", new int[] { 2, 1, 1 }),
+						new Tree("Top", new int[] { 2, 1, 3 })
+					)
+				),
+				new Tree("Right Station",
+					new Tree("Center Position",
+						new Tree("Top", new int[] { 3, 2, 3 }),
+						new Tree("Middle", new int[] { 3, 2, 2 }),
+						new Tree("Bottom", new int[] { 3, 2, 1 }),
+						new Tree("Top", new int[] { 3, 2, 3 })
+					),
+					new Tree("Right Position",
+						new Tree("Top", new int[] { 3, 3, 3 }),
+						new Tree("Middle", new int[] { 3, 3, 2 }),
+						new Tree("Bottom", new int[] { 3, 3, 1 }),
+						new Tree("Top", new int[] { 3, 3, 3 })
+					),
+					new Tree(),
+					new Tree("Left Position",
+						new Tree("Top", new int[] { 3, 1, 3 }),
+						new Tree("Middle", new int[] { 3, 1, 2 }),
+						new Tree("Bottom", new int[] { 3, 1, 1 }),
+						new Tree("Top", new int[] { 3, 1, 3 })
+					)
+				),
+				new Tree(),
+				new Tree("Left Station",
+					new Tree("Center Position",
+						new Tree("Top", new int[] { 1, 2, 3 }),
+						new Tree("Middle", new int[] { 1, 2, 2 }),
+						new Tree("Bottom", new int[] { 1, 2, 1 }),
+						new Tree("Top", new int[] { 1, 2, 3 })
+					),
+					new Tree("Right Position",
+						new Tree("Top", new int[] { 1, 3, 3 }),
+						new Tree("Middle", new int[] { 1, 3, 2 }),
+						new Tree("Bottom", new int[] { 1, 3, 1 }),
+						new Tree("Top", new int[] { 1, 3, 3 })
+					),
+					new Tree(),
+					new Tree("Left Position",
+						new Tree("Top", new int[] { 1, 1, 3 }),
+						new Tree("Middle", new int[] { 1, 1, 2 }),
+						new Tree("Bottom", new int[] { 1, 1, 1 }),
+						new Tree("Top", new int[] { 1, 1, 3 })
+					)
+				)
+			)
+		));
 		
-		driverOI.getGoToTag6Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
-		driverOI.getGoToTag7Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag7)));
-		driverOI.getGoToTag8Button().onTrue(generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag8)));
+		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
 	}
 
 
 	private void configureAutoChooser() {
-		
-		// chooser.setDefaultOption("Test Dropoff",
-		// 	generateRamseteCommand(() -> generateTrajectory(FieldConstants.tag6)));
+		// this.chooser.setDefaultOption("Test Dropoff", this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 
-		chooser.setDefaultOption("trajectory", new RunRamseteTrajectory(this.drivetrain, 
-		this.drivetrain.navigateToDropoff(FieldConstants.aprilTags.get(6).toPose2d().plus(new Transform2d(new Translation2d(.5, 0), new Rotation2d())), 1)));
-		// chooser.setDefaultOption("testing dropoff", new RunRamseteTrajectory(this.drivetrain, 
-		// 							navigateToDropoff(FieldConstants.tag6, 1)));
+		// chooser.addOption(
+		// 	"test",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
+		// 	)
+		// );
+		// chooser.addOption(
+		// 	"testing",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new DriveTime(.5, 2, drivetrain)
+		// 	)
+		// );
 
-		// chooser.addOption("Test Dropoff", 
-		// 	new RunDynamicRamseteTrajectory(this.drivetrain, () -> this.drivetrain.generateTrajectory(FieldConstants.tag6)));
+		// chooser.addOption(
+		// 	"auto 3",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
+		// chooser.addOption(
+		// 	"auto 2",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto2")),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
+
+		chooser.setDefaultOption(
+			"Rotate 8", 
+			new SequentialCommandGroup( 
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
+			);
+
+		chooser.addOption("Calibrate Trajectory", 
+			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 
 		chooser.addOption(
-			"Back up to balance",
+			"Back up and balance",
 			new SequentialCommandGroup(
-				new WaitCommand(.2),
+				new WaitCommand(.1),
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				// Todo: find right time/speed to get onto teeter totter
-				new DriveTime(-.4, .5, drivetrain),
 				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
+
 		chooser.addOption(
 			"Curve right around Charging Station and balance",
 			new SequentialCommandGroup(
@@ -164,39 +273,7 @@ public class RobotContainer {
 				new BalanceAUX(drivetrain, false, 15)
 			)
 		);
-		chooser.addOption(
-			"test",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
-			)
-		);
-		chooser.addOption(
-			"testing",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new DriveTime(.5, 2, drivetrain)
-			)
-		);
-		chooser.addOption(
-			"backupbalance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
 
-		chooser.addOption(
-			"auto 3",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
-
-		chooser.addOption("Calibrate Trajectory", new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
@@ -210,7 +287,6 @@ public class RobotContainer {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
-
 		RamseteCommand ramseteCommand = new RamseteCommand(
 			trajectory.get(),
 			drivetrain::getPose,
@@ -233,38 +309,34 @@ public class RobotContainer {
 	} 
 
 	public Trajectory loadTrajectory(String trajectoryJSON) {
-		Trajectory trajectory = new Trajectory();
-
+		Path trajectoryPath = Filesystem
+			.getDeployDirectory()
+			.toPath()
+			.resolve("paths/output/" + trajectoryJSON + ".wpilib.json");
+		
 		try {
-			Path trajectoryPath = Filesystem
-				.getDeployDirectory()
-				.toPath()
-				.resolve("paths/" + trajectoryJSON + ".wpilib.json");
-			trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+			return TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 		} catch (IOException ex) {
 			Log.error(ex);
+			return null;
 		}
-		return trajectory;
 	}
 
 	/**
-   * Drives a straight line 2 meters so as you can calibrate your Romi
-   * You should make sure that the robot ends up right on the 2 meter mark.
-   *
-   */
-  public Trajectory calibrateTrajectory() {
-    
-    // Note that all coordinates are in meters, and follow NWU conventions.
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // List.of(new Translation2d(2.0, 0.0)) 
-		List.of(),
-        new Pose2d(4.0, 0.0, new Rotation2d(0)), // left
-        DrivetrainConstants.kTrajectoryConfig);
-
-    return trajectory;
-  }
+	 * Drives a straight line 2 meters so as you can calibrate your Romi
+	 * You should make sure that the robot ends up right on the 2 meter mark.
+	 *
+	 */
+  	public Trajectory calibrateTrajectory() {
+		// Note that all coordinates are in meters, and follow NWU conventions.
+		return TrajectoryGenerator.generateTrajectory(
+			// Start at the origin facing the +X direction
+			new Pose2d(0, 0, new Rotation2d(0)),
+			// List.of(new Translation2d(2.0, 0.0)) 
+			List.of(),
+			new Pose2d(4.0, 0.0, new Rotation2d(0)), // left
+			DrivetrainConstants.kTrajectoryConfig);
+  	}
 
 	/**
 	 * 
@@ -273,8 +345,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-
-        Pose2d startPose = this.drivetrain.getEstimatedPose();
+        Pose2d startPose = this.drivetrain.getLimelightPose();
 
         Log.writeln("Generate start Pose: " + startPose);
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
@@ -337,14 +408,14 @@ public class RobotContainer {
 		Log.writeln("Waypoints:" + waypoints);
 		Log.writeln("End Pose:" + endPose);
 
-        printTrajectory(trajectory);
+        //printTrajectory(trajectory);
 
         return trajectory;
     }
 
 	public void printTrajectory(Trajectory trajectory) {
-		
 		List<State> states = trajectory.getStates();
+
 		for (int i = 1; i < states.size(); i++) {
 			var state = states.get(i);
 			Log.writeln("Time:" + state.timeSeconds + 
@@ -352,10 +423,11 @@ public class RobotContainer {
 						" Y:" + state.poseMeters.getY() +
 						" Vel:" + state.velocityMetersPerSecond);
 		}  
-		System.out.println("Traj: " + trajectory.getTotalTimeSeconds()); 
+
+		Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 
 	}	
 
 	public Command getAutonomousCommand() {
-		return chooser.getSelected();
+		return this.chooser.getSelected();
 	}
 }
