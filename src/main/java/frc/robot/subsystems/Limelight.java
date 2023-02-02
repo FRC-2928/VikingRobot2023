@@ -18,17 +18,7 @@ public class Limelight {
 	// Pulls values from network tables
 	private NetworkTable m_limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
 
-	// Creates variables to assign
-	// private double horizontalOffset;
-	// private double verticalOffset;
-	// private double area;
-	// private double targetDistance;
-	// private double skew;
-
-
-	// private boolean m_targetFound;
-
-
+	
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
@@ -39,14 +29,7 @@ public class Limelight {
 	// -----------------------------------------------------------
 	// Control Input
 	// -----------------------------------------------------------
-	// public void updateReadings() {
-	// 	this.horizontalOffset = this.getHorizontalOffset();
-	// 	this.verticalOffset = this.getVerticalOffset();
-	// 	//this.m_targetDistance = this.getTargetDistance();
-	// 	this.m_targetFound = this.isTargetFound();
-	// 	this.skew = this.getSkew();
-	// }
-
+	
 	public void setStream(int stream) {
 		this.m_limelightNI.getEntry("stream").setNumber(stream);
 	}
