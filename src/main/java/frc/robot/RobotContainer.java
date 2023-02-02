@@ -130,77 +130,78 @@ public class RobotContainer {
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
 
-		this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
-			this.driverOI,
-			path -> Log.writeln("POV Selector step: ", String.join(",", path)),
-			(str, path) -> Log.writeln("POV Selector finish: ", str, " (", String.join(",", path), ')'),
-			new Tree("Deposit",
-				new Tree("Center Station",
-					new Tree("Center Position",
-						new Tree("Top", new int[] { 2, 2, 3 }),
-						new Tree("Middle", new int[] { 2, 2, 2 }),
-						new Tree("Bottom", new int[] { 2, 2, 1 }),
-						new Tree("Top", new int[] { 2, 2, 3 })
-					),
-					new Tree("Right Position",
-						new Tree("Top", new int[] { 2, 3, 3 }),
-						new Tree("Middle", new int[] { 2, 3, 2 }),
-						new Tree("Bottom", new int[] { 2, 3, 1 }),
-						new Tree("Top", new int[] { 2, 3, 3 })
-					),
-					new Tree(),
-					new Tree("Left Position",
-						new Tree("Top", new int[] { 2, 1, 3 }),
-						new Tree("Middle", new int[] { 2, 1, 2 }),
-						new Tree("Bottom", new int[] { 2, 1, 1 }),
-						new Tree("Top", new int[] { 2, 1, 3 })
-					)
-				),
-				new Tree("Right Station",
-					new Tree("Center Position",
-						new Tree("Top", new int[] { 3, 2, 3 }),
-						new Tree("Middle", new int[] { 3, 2, 2 }),
-						new Tree("Bottom", new int[] { 3, 2, 1 }),
-						new Tree("Top", new int[] { 3, 2, 3 })
-					),
-					new Tree("Right Position",
-						new Tree("Top", new int[] { 3, 3, 3 }),
-						new Tree("Middle", new int[] { 3, 3, 2 }),
-						new Tree("Bottom", new int[] { 3, 3, 1 }),
-						new Tree("Top", new int[] { 3, 3, 3 })
-					),
-					new Tree(),
-					new Tree("Left Position",
-						new Tree("Top", new int[] { 3, 1, 3 }),
-						new Tree("Middle", new int[] { 3, 1, 2 }),
-						new Tree("Bottom", new int[] { 3, 1, 1 }),
-						new Tree("Top", new int[] { 3, 1, 3 })
-					)
-				),
-				new Tree(),
-				new Tree("Left Station",
-					new Tree("Center Position",
-						new Tree("Top", new int[] { 1, 2, 3 }),
-						new Tree("Middle", new int[] { 1, 2, 2 }),
-						new Tree("Bottom", new int[] { 1, 2, 1 }),
-						new Tree("Top", new int[] { 1, 2, 3 })
-					),
-					new Tree("Right Position",
-						new Tree("Top", new int[] { 1, 3, 3 }),
-						new Tree("Middle", new int[] { 1, 3, 2 }),
-						new Tree("Bottom", new int[] { 1, 3, 1 }),
-						new Tree("Top", new int[] { 1, 3, 3 })
-					),
-					new Tree(),
-					new Tree("Left Position",
-						new Tree("Top", new int[] { 1, 1, 3 }),
-						new Tree("Middle", new int[] { 1, 1, 2 }),
-						new Tree("Bottom", new int[] { 1, 1, 1 }),
-						new Tree("Top", new int[] { 1, 1, 3 })
-					)
-				)
-			)
-		));
+		//POV tree for dynamic trajectories? (use TBD)
+		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
+		// 	this.driverOI,
+		// 	path -> Log.writeln("POV Selector step: ", String.join(",", path)),
+		// 	(str, path) -> Log.writeln("POV Selector finish: ", str, " (", String.join(",", path), ')'),
+		// 	new Tree("Deposit",
+		// 		new Tree("Center Station",
+		// 			new Tree("Center Position",
+		// 				new Tree("Top", new int[] { 2, 2, 3 }),
+		// 				new Tree("Middle", new int[] { 2, 2, 2 }),
+		// 				new Tree("Bottom", new int[] { 2, 2, 1 }),
+		// 				new Tree("Top", new int[] { 2, 2, 3 })
+		// 			),
+		// 			new Tree("Right Position",
+		// 				new Tree("Top", new int[] { 2, 3, 3 }),
+		// 				new Tree("Middle", new int[] { 2, 3, 2 }),
+		// 				new Tree("Bottom", new int[] { 2, 3, 1 }),
+		// 				new Tree("Top", new int[] { 2, 3, 3 })
+		// 			),
+		// 			new Tree(),
+		// 			new Tree("Left Position",
+		// 				new Tree("Top", new int[] { 2, 1, 3 }),
+		// 				new Tree("Middle", new int[] { 2, 1, 2 }),
+		// 				new Tree("Bottom", new int[] { 2, 1, 1 }),
+		// 				new Tree("Top", new int[] { 2, 1, 3 })
+		// 			)
+		// 		),
+		// 		new Tree("Right Station",
+		// 			new Tree("Center Position",
+		// 				new Tree("Top", new int[] { 3, 2, 3 }),
+		// 				new Tree("Middle", new int[] { 3, 2, 2 }),
+		// 				new Tree("Bottom", new int[] { 3, 2, 1 }),
+		// 				new Tree("Top", new int[] { 3, 2, 3 })
+		// 			),
+		// 			new Tree("Right Position",
+		// 				new Tree("Top", new int[] { 3, 3, 3 }),
+		// 				new Tree("Middle", new int[] { 3, 3, 2 }),
+		// 				new Tree("Bottom", new int[] { 3, 3, 1 }),
+		// 				new Tree("Top", new int[] { 3, 3, 3 })
+		// 			),
+		// 			new Tree(),
+		// 			new Tree("Left Position",
+		// 				new Tree("Top", new int[] { 3, 1, 3 }),
+		// 				new Tree("Middle", new int[] { 3, 1, 2 }),
+		// 				new Tree("Bottom", new int[] { 3, 1, 1 }),
+		// 				new Tree("Top", new int[] { 3, 1, 3 })
+		// 			)
+		// 		),
+		// 		new Tree(),
+		// 		new Tree("Left Station",
+		// 			new Tree("Center Position",
+		// 				new Tree("Top", new int[] { 1, 2, 3 }),
+		// 				new Tree("Middle", new int[] { 1, 2, 2 }),
+		// 				new Tree("Bottom", new int[] { 1, 2, 1 }),
+		// 				new Tree("Top", new int[] { 1, 2, 3 })
+		// 			),
+		// 			new Tree("Right Position",
+		// 				new Tree("Top", new int[] { 1, 3, 3 }),
+		// 				new Tree("Middle", new int[] { 1, 3, 2 }),
+		// 				new Tree("Bottom", new int[] { 1, 3, 1 }),
+		// 				new Tree("Top", new int[] { 1, 3, 3 })
+		// 			),
+		// 			new Tree(),
+		// 			new Tree("Left Position",
+		// 				new Tree("Top", new int[] { 1, 1, 3 }),
+		// 				new Tree("Middle", new int[] { 1, 1, 2 }),
+		// 				new Tree("Bottom", new int[] { 1, 1, 1 }),
+		// 				new Tree("Top", new int[] { 1, 1, 3 })
+		// 			)
+		// 		)
+		// 	)
+		// ));
 		
 		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
 		// this.driverOI.getGoToTag7Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
