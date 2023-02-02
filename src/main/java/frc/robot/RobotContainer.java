@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.POVSelector;
+import frc.robot.commands.DrivetrainCommands.ApproachTag;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
@@ -123,7 +124,8 @@ public class RobotContainer {
 			)
 		);
 		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
-		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
+		//this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
+		this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
 			this.drivetrain.zeroGyro();

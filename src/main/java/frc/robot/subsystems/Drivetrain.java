@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,6 +33,7 @@ import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.subsystems.Transmission.GearState;
@@ -64,6 +66,9 @@ public class Drivetrain extends SubsystemBase {
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
+
+	private double offset;
+	MedianFilter m_verticalFilter = new MedianFilter(10);
 
 	// Drivetrain odometry to keep track of our position on the field
 	private DifferentialDriveOdometry odometry;
@@ -442,6 +447,13 @@ public class Drivetrain extends SubsystemBase {
 	 */
 	public double getTargetHorizontalOffset() {
 		return limelight.getHorizontalOffset();		
+	}
+
+	public double getTargetVerticalOffset(){
+		if (limelight.getVerticalOffset() != 0){
+			offset = limelight.getVerticalOffset();
+		} 
+		return m_verticalFilter.calculate(offset);
 	}
 
 	// ----------------------------------------------------
