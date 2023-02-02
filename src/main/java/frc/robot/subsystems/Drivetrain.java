@@ -33,6 +33,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
+import frc.robot.sim.PhysicsSim;
 import frc.robot.subsystems.Transmission.GearState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -388,14 +389,33 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	// calculations are in meters
+	public Pose3d getLimelightPose3d(){
+		return this.limelight.getPose3d();
+	}
+
+	// calculations are in meters
+	public Pose2d getLimelightPose2d() {
+		return this.limelight.getPose2d();
+	}
+
+	// Original method - gets rotation from the pideon
 	public Pose2d getLimelightPose(){
 		// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
 		Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
 		return new Pose2d(
-			this.limelight.getPose()[0] + DrivetrainConstants.xOffsetField, 
-			this.limelight.getPose()[1] + DrivetrainConstants.yOffsetField,
+			this.limelight.getPoseX() + DrivetrainConstants.xOffsetField, 
+			this.limelight.getPoseY()  + DrivetrainConstants.yOffsetField,
 			rotation
 		);
+	}
+
+	// Robot transform in field-space with the alliance driverstation at the origin
+	public Pose2d getLimelightPoseRelative(){
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			return this.limelight.getRedPose3d().toPose2d();
+		} else {
+			return this.limelight.getBluePose3d().toPose2d();
+		}		
 	}
 
   	/** 
@@ -417,12 +437,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	/**
-	 * Gets the angle of the target relative to the turret
-	 * @return offset angle between target and the turret
+	 * Gets the angle of the target relative to the robot
+	 * @return offset angle between target and the robot
 	 */
 	public double getTargetHorizontalOffset() {
-		return limelight.getHorizontalOffset();
-		
+		return limelight.getHorizontalOffset();		
 	}
 
 	// ----------------------------------------------------
@@ -440,7 +459,7 @@ public class Drivetrain extends SubsystemBase {
 
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
-		if(this.limelight.getHasValidTargets() == 1) {
+		if(this.limelight.getHasValidTargets()) {
 			poseEstimator.addVisionMeasurement(this.getLimelightPose(), Timer.getFPGATimestamp() - 0.3);
 		}
 
@@ -453,7 +472,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
 		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("limelight X", this.limelight.getPose()[0]);
+		SmartDashboard.putNumber("limelight X", this.limelight.getPoseX());
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPose());
@@ -526,8 +545,14 @@ public class Drivetrain extends SubsystemBase {
 	// Simulation
 	// ----------------------------------------------------
 
+	public void simulationInit() {
+		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
+		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+	}
+	
 	@Override
     public void simulationPeriodic() {
+		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
 }
