@@ -202,7 +202,9 @@ public class RobotContainer {
 			)
 		));
 		
-		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
+		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
+		// this.driverOI.getGoToTag7Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
+		// this.driverOI.getGoToTag8Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
 	}
 
 
