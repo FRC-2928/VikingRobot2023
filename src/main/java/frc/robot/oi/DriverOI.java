@@ -61,7 +61,11 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
 	}
 
-	public Trigger getRollButton() {
+	// public Trigger getRollButton() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+	// }
+
+	public Trigger getApproachTagButton(){
 		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
 	}
 
