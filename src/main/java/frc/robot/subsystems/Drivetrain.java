@@ -23,7 +23,6 @@ import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.subsystems.Transmission.GearState;
@@ -192,21 +191,7 @@ public class Drivetrain extends SubsystemBase {
 		// Feed motor safety to assert that we're in control
 		this.diffDrive.feed();
 	}
-	public Pose3d readTarget(int number){
-		if(number<10){
-				return FieldConstants.targets.get(number);
-		}
-		if(number<9 & number<19){
-				return FieldConstants.targets2.get(number);
-		}
-		if(number>18 & number < 28){
-				return FieldConstants.targets3.get(number);
-		}
-		else{
-			return null;
-		}
 
-}
 	public void zeroGyro() {
 		this.pigeon.setYaw(0);
 		this.pigeon.reset();
