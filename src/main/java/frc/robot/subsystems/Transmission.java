@@ -28,6 +28,8 @@ public class Transmission extends SubsystemBase {
 		this.shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
 
 		this.gearState = GearState.LOW;
+
+		Telemetry.track("Gear", () -> this.gearState.toString(), false);
 	}
 
 	public void setGearState(GearState state) {
@@ -68,10 +70,5 @@ public class Transmission extends SubsystemBase {
 
 	public GearState getGearState() {
 		return this.gearState;
-	}
-
-	@Override
-	public void periodic() {
-		SmartDashboard.putString("Gear", this.gearState.toString());
 	}
 }

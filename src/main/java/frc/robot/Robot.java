@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Log;
+import frc.robot.subsystems.Telemetry;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,9 +33,10 @@ public class Robot extends TimedRobot {
 		// and put our
 		// autonomous chooser on the dashboard.
 		this.compressor = new Compressor(1, PneumaticsModuleType.REVPH);
-		Log.writeln(this.compressor.getCurrent());
 		this.compressor.enableDigital();
 		this.robotContainer = new RobotContainer();
+
+		Telemetry.track("Gyroscope", this.robotContainer.drivetrain::readGyro, false);
 	}
 
 	/**
@@ -85,12 +85,6 @@ public class Robot extends TimedRobot {
 		if(this.autonomousCommand != null) {
 			this.autonomousCommand.cancel();
 		}
-	}
-
-	@Override
-	public void teleopPeriodic() {
-		double[] gyro = this.robotContainer.drivetrain.readGyro();
-		SmartDashboard.putNumberArray("gyro", gyro);
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.Log;
+import frc.robot.subsystems.Telemetry;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all.
@@ -22,6 +24,9 @@ public final class Main {
 		Log.start();
 		Log.lineLimit = 50;
 		Log.writeln("Robot starting...");
+
+		// publish telemetry to smartdashboard by default
+		Telemetry.start(NetworkTableInstance.getDefault().getTable("SmartDashboard"));
 
 		DriverStation.silenceJoystickConnectionWarning(true);
 
