@@ -381,56 +381,60 @@ public class RobotContainer {
 		Trajectory trajectory;
 		List<Translation2d> waypoints = new ArrayList<>();
 
-		Log.writeln("Alliance:" + alliance);
-        if(alliance == DriverStation.Alliance.Red){
-        	// for red, left and right
-        	//if direction is specified left, or direction is unspecified and Y is on left side of field...
-        	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))){
-				Log.writeln("Red left");
-        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-        	} else {
-				Log.writeln("Red right");
-        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2), 
-					endPose, DrivetrainConstants.kTrajectoryConfig);
-        	}
-        } else {
-        	// for blue, left and right
-        	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))){
-        		Log.writeln("Blue left");
-				Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
-				if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
-					waypoints.add(FieldConstants.Waypoints.leftBlue1);
-				}
-				if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
-					waypoints.add(FieldConstants.Waypoints.leftBlue2);
-				}				
+		// Log.writeln("Alliance:" + alliance);
+        // if(alliance == DriverStation.Alliance.Red){
+        // 	// for red, left and right
+        // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
+        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))){
+		// 		Log.writeln("Red left");
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 			List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
+		// 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+		// 		Log.writeln("Red right");
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 			List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2), 
+		// 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // } else {
+        // 	// for blue, left and right
+        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))){
+        // 		Log.writeln("Blue left");
+		// 		Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
+		// 		if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
+		// 			waypoints.add(FieldConstants.Waypoints.leftBlue1);
+		// 		}
+		// 		if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
+		// 			waypoints.add(FieldConstants.Waypoints.leftBlue2);
+		// 		}				
 
-				trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-					waypoints,
-        			endPose, DrivetrainConstants.kTrajectoryConfig);
-        	} else {
-				Log.writeln("Blue right");
-				if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
-					waypoints.add(FieldConstants.Waypoints.rightBlue1);
-				}		
-				if (startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
-					waypoints.add(FieldConstants.Waypoints.rightBlue2);
-				} 		
+		// 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 			waypoints,
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	} else {
+		// 		Log.writeln("Blue right");
+		// 		if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
+		// 			waypoints.add(FieldConstants.Waypoints.rightBlue1);
+		// 		}		
+		// 		if (startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
+		// 			waypoints.add(FieldConstants.Waypoints.rightBlue2);
+		// 		} 		
 				
-        		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 			waypoints,
+        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
+        // 	}
+        // }
+    	
+		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, DrivetrainConstants.kTrajectoryConfig);
-        	}
-        }
-    	
+
 		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
 		Log.writeln("Waypoints:" + waypoints);
 		Log.writeln("End Pose:" + endPose);
 
-        //printTrajectory(trajectory);
+        printTrajectory(trajectory);
 
         return trajectory;
     }
