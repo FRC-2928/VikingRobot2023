@@ -127,6 +127,9 @@ public class RobotContainer {
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
 
+		this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
+		// this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
+
 		//POV tree for dynamic trajectories? (use TBD)
 		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
 		// 	this.driverOI,
@@ -200,9 +203,6 @@ public class RobotContainer {
 		// 	)
 		// ));
 		
-		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
-		// this.driverOI.getGoToTag7Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
-		// this.driverOI.getGoToTag8Button().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag8)));
 	}
 
 
