@@ -67,7 +67,7 @@ public final class Constants {
 	public static final class DrivetrainConstants {
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
-		public static final double ksVolts = 0.6024;
+		public static final double ksVolts = 0.3024;
 		public static final double kvVoltSecondsPerMeter = 0.21907;
 		public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
 
@@ -85,6 +85,14 @@ public final class Constants {
 				kDriveKinematics,
 				k_MaxVolts);
 
+		public static final double kMaxSpeedMetersPerSecond = 1.0;
+		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
+
+		public static final TrajectoryConfig kTrajectoryConfig = 
+				new TrajectoryConfig(kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared)
+				.setKinematics(kDriveKinematics)
+				.addConstraint(kAutoVoltageConstraint);
+
 		public static final boolean kGyroReversed = true;
 
 		public static final int encoderCPR = 2048;
@@ -100,9 +108,6 @@ public final class Constants {
 		public static final double highGearRatio = 5;
 		public static final double lowGearRatio = 10.71;
 
-		public static final double kMaxSpeedMetersPerSecond = 2.0;
-		public static final double kMaxAccelMetersPerSecondSquared = 2.0;
-
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
 				kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared);
 
@@ -111,8 +116,8 @@ public final class Constants {
 		// (acceleration) terms
 		// whereas the Talon SRX / Spark MAX kF is only a kV (velocity) feedforward.
 		// kp, ki, kd, kf, iz, peak output
-		public static final Gains GainsProfiled = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
-
+		// public static final Gains GainsProfiled = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
+		public static final Gains GainsProfiled = new Gains(0.04, 0.001, 0, 0, 0, 1.00);
 		/**
 		 * PID Gains may have to be adjusted based on the responsiveness of control
 		 * loop.
@@ -146,11 +151,6 @@ public final class Constants {
 		//offset for limelight and length of robot
 		public static final double xOffsetField = 6.718 + .91;
 		public static final double arcadeDriveMultiplier = 0.8;
-
-		public static final TrajectoryConfig kTrajectoryConfig = 
-			new TrajectoryConfig(kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared)
-			.setKinematics(kDriveKinematics)
-			.addConstraint(kAutoVoltageConstraint);
 
 	}
 }
