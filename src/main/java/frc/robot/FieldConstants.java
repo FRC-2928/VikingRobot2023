@@ -255,7 +255,7 @@ public final class FieldConstants {
 				.plus(new Transform2d(new Translation2d(0.5, 0), 
 				      new Rotation2d(Math.PI)));  // 0.5 meters in front
 	public static final Pose2d tag7 = aprilTags.get(7).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.5, 0), 
+				.plus(new Transform2d(new Translation2d(0.75, 0), 
 					new Rotation2d(Math.PI)));  // 0.5 meters in front 
 	public static final Pose2d tag8 = aprilTags.get(8).toPose2d()
 				.plus(new Transform2d(new Translation2d(0.5, 0), 

@@ -2,10 +2,13 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Limelight utility is responsible for I/O with both Limelight 3
@@ -95,16 +98,9 @@ public class Limelight {
 		return getPose3d().toPose2d();
 	}
 
-	// Robot transform in field-space. Translation (X)
-	public double getPoseX(){
-		return getPose2d().getX();
-	}
-
-	// Robot transform in field-space. Translation (Y)
-	public double getPoseY(){
-		return getPose2d().getY();
-	}
-
+	// ---------------------------------------------------------------------
+	// Blue Pose
+	// ---------------------------------------------------------------------
 	// Robot transform in field-space (blue driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getBluePose3d(){
 		double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
@@ -117,6 +113,55 @@ public class Limelight {
 		}
 	}
 
+	// public Pose2d getBluePose2d(){
+	// 	return getBluePose3d().toPose2d();
+	// }
+
+	public Pose2d getBluePose2d(){
+		double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+		SmartDashboard.putNumber("pose 0", pose[0]);
+		SmartDashboard.putNumber("pose 1", pose[1]);
+		SmartDashboard.putNumber("pose 5", pose[5]);
+		if(pose.length == 0) {
+			return new Pose2d(); 
+		}
+		else {
+			return new Pose2d(pose[0], pose[1], 
+							  new Rotation2d(pose[5] * Math.PI / 180));
+		}
+	}
+
+	// Robot transform in field-space. Translation (X)
+	public double getPoseX(){
+		return getPose2d().getX();
+	}
+
+	// Robot transform in field-space. Translation (Y)
+	public double getPoseY(){
+		return getPose2d().getY();
+	}
+
+	// ---------------------------------------------------------------------
+	// Red Pose
+	// ---------------------------------------------------------------------
+	public Pose2d getRedPose2d(){
+		return getRedPose3d().toPose2d();
+	}
+
+	// public Pose2d getRedPose2dRadians() {
+	// 	Pose2d pose = new Pose2d(getRedPose2d().getTranslation(),
+	// 								new Rotation2d(getRedPose2d().getRotation().getRadians()));
+	// 	return pose;
+	// }
+
+	// public Pose2d getBluePose2dRadians() {
+	// 	Pose2d pose = new Pose2d(getBluePose2d().getTranslation(),
+	// 	 							new Rotation2d(getBluePose2d().getRotation().getRadians()));
+	// 	// Pose2d pose = new Pose2d(getBluePose2d().getTranslation(),
+	// 	// 							new Rotation2d(getBluePose2d().getRotation().getRadians()));
+	// 	return pose;
+	// }
+
 	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getRedPose3d(){
 		double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
@@ -127,6 +172,16 @@ public class Limelight {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
 							  new Rotation3d(pose[3], pose[4], pose[5]));
 		}
+	}
+
+	// Robot transform in field-space. Translation (X)
+	public double getPoseXRed(){
+		return getRedPose3d().getX();
+	}
+
+	// Robot transform in field-space. Translation (X)
+	public double getPoseXBlue(){
+		return getBluePose3d().getX();
 	}
 
 	// ------------------------------------------------------------------------
