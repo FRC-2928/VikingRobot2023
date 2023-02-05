@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
@@ -90,7 +93,7 @@ public class RobotContainer {
 		this.configureDrivetrain();
 	}
 
-	public void setAlliance(Alliance alliance) {
+	public static void setAlliance(Alliance alliance) {
 		RobotContainer.alliance = alliance;
 	}
 
@@ -127,8 +130,8 @@ public class RobotContainer {
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
 
-		this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
-		// this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
+		// this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
+		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
 
 		//POV tree for dynamic trajectories? (use TBD)
 		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
@@ -273,8 +276,8 @@ public class RobotContainer {
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
 		);
 
-		chooser.addOption("Calibrate Trajectory", 
-			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+		// chooser.addOption("Calibrate Trajectory", 
+		// 	new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 
 		chooser.addOption(
 			"Back up and balance",
@@ -367,7 +370,9 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-        Pose2d startPose = this.drivetrain.getLimelightPose();
+		// Pose2d startPose = new Pose2d(this.drivetrain.getLimelightPoseRelative().getTranslation(),
+		// 							 new Rotation2d(this.drivetrain.getLimelightPoseRelative().getRotation().getRadians()));
+        Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 
         Log.writeln("Generate start Pose: " + startPose);
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
@@ -425,7 +430,8 @@ public class RobotContainer {
         // 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	}
         // }
-    	
+		Translation2d w = new Translation2d(endPose.getX() + 0.5, endPose.getY());
+    	// waypoints.add(w);
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, DrivetrainConstants.kTrajectoryConfig);
