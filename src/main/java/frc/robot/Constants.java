@@ -120,7 +120,7 @@ public final class Constants {
 	public static final class AutoConstants {
 
 		// public static final Gains GainsAuto = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
-		public static final Gains GainsAuto = new Gains(0.04, 0.001, 0, 0, 0, 1.00);
+		public static final Gains GainsAuto = new Gains(0.06, 0.001, 0, 0, 0, 1.00);
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
 		public static final double ksVolts = 0.3024;
@@ -137,7 +137,7 @@ public final class Constants {
 				DrivetrainConstants.kDriveKinematics,
 				k_MaxVolts);
 
-		public static final double kMaxSpeedMetersPerSecond = 1.0;
+		public static final double kMaxSpeedMetersPerSecond = 0.3;
 		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
 
 		// Setup trajectory constraints

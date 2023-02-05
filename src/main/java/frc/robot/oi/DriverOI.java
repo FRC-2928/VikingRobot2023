@@ -61,9 +61,9 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
 	}
 
-	// public Trigger getRollButton() {
-	// 	return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
-	// }
+	public Trigger getRollButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+	}
 
 	public Trigger getApproachTagButton(){
 		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
@@ -72,6 +72,10 @@ public class DriverOI extends OIBase {
 	public Trigger getResetGyroButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
+
+    public Trigger getHaltButton() {
+        return new JoystickButton(this.controller, XboxController.Button.kBack.value);
+    }
 
 	public Trigger getBalanceAuxButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
@@ -96,5 +100,4 @@ public class DriverOI extends OIBase {
 	public Trigger getGoToTag8Button(){
 		return new Trigger(() -> this.controller.getPOV() == 270);
 	}
-
 }
