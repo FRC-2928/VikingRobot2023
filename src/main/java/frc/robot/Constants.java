@@ -44,20 +44,7 @@ public final class Constants {
 		public static final int kPigeonIMU = 0;
 	}
 
-	public static final class AutoConstants {
-		// Setup trajectory constraints
-		public static final TrajectoryConfig kTrajectoryConfig = new TrajectoryConfig(
-				DrivetrainConstants.kMaxSpeedMetersPerSecond,
-				DrivetrainConstants.kMaxAccelMetersPerSecondSquared)
-				.setKinematics(DrivetrainConstants.kDriveKinematics)
-				.addConstraint(DrivetrainConstants.kAutoVoltageConstraint);
-
-		// Reasonable baseline values for a RAMSETE follower in units of meters and
-		// seconds
-		public static final double kRamseteB = 2;
-		public static final double kRamseteZeta = 0.7;
-	}
-
+	
 	public static final class LimelightConstants {
 
 		public static final double tagGoalY = 8.25;
@@ -66,32 +53,9 @@ public final class Constants {
 
 	public static final class DrivetrainConstants {
 
-		// kS (static friction), kV (velocity), and kA (acceleration)
-		public static final double ksVolts = 0.3024;
-		public static final double kvVoltSecondsPerMeter = 0.21907;
-		public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
-
-		// Feedforward contraints
-		public static final SimpleMotorFeedforward kFeedForward = new SimpleMotorFeedforward(ksVolts,
-				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
-
 		public static final double kTrackWidthMeters = 0.7; // Placeholder
 		public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
 				kTrackWidthMeters);
-
-		public static final double k_MaxVolts = 10;
-		public static final DifferentialDriveVoltageConstraint kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-				kFeedForward,
-				kDriveKinematics,
-				k_MaxVolts);
-
-		public static final double kMaxSpeedMetersPerSecond = 1.0;
-		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
-
-		public static final TrajectoryConfig kTrajectoryConfig = 
-				new TrajectoryConfig(kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared)
-				.setKinematics(kDriveKinematics)
-				.addConstraint(kAutoVoltageConstraint);
 
 		public static final boolean kGyroReversed = true;
 
@@ -109,15 +73,14 @@ public final class Constants {
 		public static final double lowGearRatio = 10.71;
 
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
-				kMaxSpeedMetersPerSecond, kMaxAccelMetersPerSecondSquared);
+				AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelMetersPerSecondSquared);
 
 		// PID Constants
 		// The WPILib feedforward has kS (static friction), kV (velocity), and kA
 		// (acceleration) terms
 		// whereas the Talon SRX / Spark MAX kF is only a kV (velocity) feedforward.
 		// kp, ki, kd, kf, iz, peak output
-		// public static final Gains GainsProfiled = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
-		public static final Gains GainsProfiled = new Gains(0.04, 0.001, 0, 0, 0, 1.00);
+		
 		/**
 		 * PID Gains may have to be adjusted based on the responsiveness of control
 		 * loop.
@@ -153,4 +116,41 @@ public final class Constants {
 		public static final double arcadeDriveMultiplier = 0.8;
 
 	}
+
+	public static final class AutoConstants {
+
+		// public static final Gains GainsAuto = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
+		public static final Gains GainsAuto = new Gains(0.04, 0.001, 0, 0, 0, 1.00);
+
+		// kS (static friction), kV (velocity), and kA (acceleration)
+		public static final double ksVolts = 0.3024;
+		public static final double kvVoltSecondsPerMeter = 0.21907;
+		public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
+
+		// Feedforward contraints
+		public static final SimpleMotorFeedforward kFeedForward = new SimpleMotorFeedforward(ksVolts,
+				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
+
+		public static final double k_MaxVolts = 10;
+		public static final DifferentialDriveVoltageConstraint kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+				kFeedForward,
+				DrivetrainConstants.kDriveKinematics,
+				k_MaxVolts);
+
+		public static final double kMaxSpeedMetersPerSecond = 1.0;
+		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
+
+		// Setup trajectory constraints
+		public static final TrajectoryConfig kTrajectoryConfig = new TrajectoryConfig(
+				kMaxSpeedMetersPerSecond,
+				kMaxAccelMetersPerSecondSquared)
+				.setKinematics(DrivetrainConstants.kDriveKinematics)
+				.addConstraint(kAutoVoltageConstraint);
+
+		// Reasonable baseline values for a RAMSETE follower in units of meters and
+		// seconds
+		public static final double kRamseteB = 2;
+		public static final double kRamseteZeta = 0.7;
+	}
+
 }
