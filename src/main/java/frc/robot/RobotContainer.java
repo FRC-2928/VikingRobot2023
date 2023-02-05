@@ -360,7 +360,7 @@ public class RobotContainer {
 			// List.of(new Translation2d(2.0, 0.0)) 
 			List.of(),
 			new Pose2d(4.0, 0.0, new Rotation2d(0)), // left
-			DrivetrainConstants.kTrajectoryConfig);
+			AutoConstants.kTrajectoryConfig);
   	}
 
 	/**
@@ -370,8 +370,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-		// Pose2d startPose = new Pose2d(this.drivetrain.getLimelightPoseRelative().getTranslation(),
-		// 							 new Rotation2d(this.drivetrain.getLimelightPoseRelative().getRotation().getRadians()));
+
         Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 
         Log.writeln("Generate start Pose: " + startPose);
@@ -434,7 +433,7 @@ public class RobotContainer {
     	// waypoints.add(w);
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
-        			endPose, DrivetrainConstants.kTrajectoryConfig);
+        			endPose, AutoConstants.kTrajectoryConfig);
 
 		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
 		Log.writeln("Waypoints:" + waypoints);

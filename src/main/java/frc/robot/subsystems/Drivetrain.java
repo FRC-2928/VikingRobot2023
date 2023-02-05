@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.sim.PhysicsSim;
@@ -88,22 +89,23 @@ public class Drivetrain extends SubsystemBase {
 
 		this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
 
-		this.feedForward = DrivetrainConstants.kFeedForward;
+		this.feedForward = AutoConstants.kFeedForward;
 
 		this.resetEncoders();
 		this.zeroGyro();
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
-		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose());
+		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, 
+									new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose2d());
 
 		this.field2d.setRobotPose(this.getEncoderPose());
-		SmartDashboard.putData("Field", this.field2d);
+		SmartDashboard.putData("Encoder Pose", this.field2d);
 
 		this.fieldEstimated.setRobotPose(getEstimatedPose());
 		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
 
-		this.fieldLimelight.setRobotPose(getLimelightPose());
+		this.fieldLimelight.setRobotPose(getLimelightPose2d());
 		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
@@ -165,10 +167,10 @@ public class Drivetrain extends SubsystemBase {
         // set the PID values for each individual wheel
         for(TalonFX fx : new TalonFX[] {leftLeader, rightLeader}){
             
-            fx.config_kP(0, DrivetrainConstants.GainsProfiled.P, 0);
-            fx.config_kI(0, DrivetrainConstants.GainsProfiled.I, 0);
-            fx.config_kD(0, DrivetrainConstants.GainsProfiled.D, 0);
-            fx.config_kF(0, DrivetrainConstants.GainsProfiled.F, 0);
+            fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
+            fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
+            fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
+            fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
             // m_talonsMaster.config_IntegralZone(0, 30);
         }
     }
@@ -243,11 +245,11 @@ public class Drivetrain extends SubsystemBase {
 		this.leftLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				leftFeedForward * 0.1 / DrivetrainConstants.k_MaxVolts);
+				leftFeedForward * 0.1 / AutoConstants.k_MaxVolts);
 		this.rightLeader.set(ControlMode.Velocity,
 				rightVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				rightFeedForward * 0.1 / DrivetrainConstants.k_MaxVolts);
+				rightFeedForward * 0.1 / AutoConstants.k_MaxVolts);
 
 		this.diffDrive.feed();
 	}
@@ -372,52 +374,48 @@ public class Drivetrain extends SubsystemBase {
 		return this.pigeon.getYaw();
 	}
 
-	// calculations are in meters
+	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
+	// using "botpose"
 	public Pose3d getLimelightPose3d(){
 		return this.limelight.getPose3d();
 	}
 
-	// calculations are in meters
+	// Robot transform in 2D field-space. Translation (X,Y) Rotation(Z)
+	// using "botpose"
 	public Pose2d getLimelightPose2d() {
 		return this.limelight.getPose2d();
 	}
 
-	// botpose - gets rotation from the pideon
-	public Pose2d getLimelightPose(){
-		// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
-		// Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
-		return new Pose2d(
-			getLimelightPose2d().getX() + DrivetrainConstants.xOffsetField, 
-			getLimelightPose2d().getY()  + DrivetrainConstants.yOffsetField,
-			Rotation2d.fromDegrees(180).minus(getLimelightPose2d().getRotation())
-		);
-		// return this.limelight.getPose2d();
-	}
+	// // botpose - gets rotation from the pideon
+	// public Pose2d getLimelightPose(){
+	// 	// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
+	// 	// Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
+	// 	return new Pose2d(
+	// 		getLimelightPose2d().getX() + DrivetrainConstants.xOffsetField, 
+	// 		getLimelightPose2d().getY()  + DrivetrainConstants.yOffsetField,
+	// 		Rotation2d.fromDegrees(180).minus(getLimelightPose2d().getRotation())
+	// 	);
+	// 	// return this.limelight.getPose2d();
+	// }
 
 	// Robot transform in field-space with the alliance driverstation at the origin
-	// botpose_wpired, botpose_wpiblue
+	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative(){
 		if(RobotContainer.alliance == DriverStation.Alliance.Red){
-			// return this.limelight.getRedPose3d().toPose2d();
 			return this.limelight.getRedPose2d();
 		} else {
 			return this.limelight.getBluePose2d();
-		// 	return new Pose2d(
-		// 		this.limelight.getBluePose2dRadians().getX(), 
-		// 		this.limelight.getBluePose2dRadians().getY(),
-		// 		Rotation2d.fromDegrees(180).plus(this.limelight.getBluePose2dRadians().getRotation())
-		// );
 		}	
 	}
 
-	public Pose2d getLimelightPoseRelativeDegrees(){
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
-			return this.limelight.getRedPose3d().toPose2d();
+	// public Pose2d getLimelightPoseRelativeDegrees(){
+	// 	if(RobotContainer.alliance == DriverStation.Alliance.Red){
+	// 		return this.limelight.getRedPose3d().toPose2d();
 			
-		} else {
-			return this.limelight.getBluePose3d().toPose2d();
-		}	
-	}
+	// 	} else {
+	// 		return this.limelight.getBluePose3d().toPose2d();
+	// 	}	
+	// }
 
 
   	/** 
@@ -470,7 +468,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		if(this.limelight.getHasValidTargets()) {
-			poseEstimator.addVisionMeasurement(this.getLimelightPose(), Timer.getFPGATimestamp() - 0.3);
+			poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
 
 		this.publishTelemetry();
@@ -483,14 +481,13 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
 
-		SmartDashboard.putNumber("limelight X", this.getLimelightPoseRelative().getX());	
-		SmartDashboard.putNumber("limelight Y", this.getLimelightPoseRelative().getY());
-		SmartDashboard.putNumber("limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
-		SmartDashboard.putNumber("limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
+		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());	
+		SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
+		SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
+		SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
 		
-		this.field2d.setRobotPose(getLimelightPose());
-		// this.field2d.setRobotPose(this.getEncoderPose());
-		this.fieldEstimated.setRobotPose(this.getLimelightPoseRelativeDegrees());
+		this.field2d.setRobotPose(this.getEncoderPose());
+		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
 
 		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	

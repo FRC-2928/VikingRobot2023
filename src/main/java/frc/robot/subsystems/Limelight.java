@@ -70,16 +70,6 @@ public class Limelight {
 	// ------------------------------------------------------------------------
 	// Localization Poses using AprilTags
 	// ------------------------------------------------------------------------
-	// // Robot transform in field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
-	// public double[] getPose(){
-	// 	double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
-	// 	if(pose.length == 0) {
-	// 		return new double[6]; 
-	// 	}
-	// 	else {
-	// 		return pose;
-	// 	}
-	// }
 
 	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getPose3d(){
@@ -89,7 +79,9 @@ public class Limelight {
 		}
 		else {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3], pose[4], pose[5]));
+							  new Rotation3d(pose[3] * Math.PI / 180, 
+							  				 pose[4] * Math.PI / 180, 
+											 pose[5] * Math.PI / 180));
 		}
 	}
 
@@ -109,27 +101,29 @@ public class Limelight {
 		}
 		else {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3], pose[4], pose[5]));
+							  new Rotation3d(pose[3] * Math.PI / 180, 
+							  				 pose[4] * Math.PI / 180, 
+											 pose[5] * Math.PI / 180));
 		}
+	}
+
+	public Pose2d getBluePose2d(){
+		return getBluePose3d().toPose2d();
 	}
 
 	// public Pose2d getBluePose2d(){
-	// 	return getBluePose3d().toPose2d();
+	// 	double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+	// 	SmartDashboard.putNumber("pose 0", pose[0]);
+	// 	SmartDashboard.putNumber("pose 1", pose[1]);
+	// 	SmartDashboard.putNumber("pose 5", pose[5]);
+	// 	if(pose.length == 0) {
+	// 		return new Pose2d(); 
+	// 	}
+	// 	else {
+	// 		return new Pose2d(pose[0], pose[1], 
+	// 						  new Rotation2d(pose[5] * Math.PI / 180));
+	// 	}
 	// }
-
-	public Pose2d getBluePose2d(){
-		double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-		SmartDashboard.putNumber("pose 0", pose[0]);
-		SmartDashboard.putNumber("pose 1", pose[1]);
-		SmartDashboard.putNumber("pose 5", pose[5]);
-		if(pose.length == 0) {
-			return new Pose2d(); 
-		}
-		else {
-			return new Pose2d(pose[0], pose[1], 
-							  new Rotation2d(pose[5] * Math.PI / 180));
-		}
-	}
 
 	// Robot transform in field-space. Translation (X)
 	public double getPoseX(){
@@ -148,20 +142,6 @@ public class Limelight {
 		return getRedPose3d().toPose2d();
 	}
 
-	// public Pose2d getRedPose2dRadians() {
-	// 	Pose2d pose = new Pose2d(getRedPose2d().getTranslation(),
-	// 								new Rotation2d(getRedPose2d().getRotation().getRadians()));
-	// 	return pose;
-	// }
-
-	// public Pose2d getBluePose2dRadians() {
-	// 	Pose2d pose = new Pose2d(getBluePose2d().getTranslation(),
-	// 	 							new Rotation2d(getBluePose2d().getRotation().getRadians()));
-	// 	// Pose2d pose = new Pose2d(getBluePose2d().getTranslation(),
-	// 	// 							new Rotation2d(getBluePose2d().getRotation().getRadians()));
-	// 	return pose;
-	// }
-
 	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getRedPose3d(){
 		double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
@@ -170,7 +150,9 @@ public class Limelight {
 		}
 		else {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3], pose[4], pose[5]));
+							  new Rotation3d(pose[3]  * Math.PI / 180, 
+							  				 pose[4] * Math.PI / 180, 
+											 pose[5] * Math.PI / 180));
 		}
 	}
 
@@ -196,7 +178,9 @@ public class Limelight {
 		}
 		else {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3], pose[4], pose[5]));
+							  new Rotation3d(pose[3] * Math.PI / 180, 
+							  				 pose[4] * Math.PI / 180, 
+											 pose[5] * Math.PI / 180));
 		}
 	}
 
@@ -208,7 +192,9 @@ public class Limelight {
 		}
 		else {
 			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3], pose[4], pose[5]));
+							  new Rotation3d(pose[3] * Math.PI / 180, 
+							  				 pose[4] * Math.PI / 180, 
+											 pose[5] * Math.PI / 180));
 		}
 	}
 	
