@@ -27,6 +27,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/AutoRoutineChooser": "String Chooser",
+      "/SmartDashboard/Encoder Pose": "Field2d",
       "/SmartDashboard/Estimated Pose": "Field2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Limelight Pose": "Field2d"

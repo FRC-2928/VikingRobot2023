@@ -226,15 +226,6 @@ public class Drivetrain extends SubsystemBase {
 		// Convert meters per second to encoder ticks per second
 		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
 		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
-		// GearState gearState = this.gearStateSupplier.get();
-		// double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-		// 	this.metersToWheelRotations(leftMetersPerSecond),
-		// 	gearState
-		// );
-		// double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-		// 	this.metersToWheelRotations(rightMetersPerSecond),
-		// 	gearState
-		// );
 
 		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
 		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
@@ -245,11 +236,11 @@ public class Drivetrain extends SubsystemBase {
 		this.leftLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				leftFeedForward * 0.1 / AutoConstants.k_MaxVolts);
+				leftFeedForward / AutoConstants.k_MaxVolts);
 		this.rightLeader.set(ControlMode.Velocity,
 				rightVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				rightFeedForward * 0.1 / AutoConstants.k_MaxVolts);
+				rightFeedForward / AutoConstants.k_MaxVolts);
 
 		this.diffDrive.feed();
 	}
@@ -451,6 +442,14 @@ public class Drivetrain extends SubsystemBase {
 		return m_verticalFilter.calculate(offset);
 	}
 
+	public boolean hasValidLimelightTarget() {
+		return this.limelight.getHasValidTargets();
+	}
+
+	public double getAprilTagID() {
+		return this.limelight.getAprilTagID();
+	}
+
 	// ----------------------------------------------------
 	// Process Logic
 	// ----------------------------------------------------
@@ -490,6 +489,8 @@ public class Drivetrain extends SubsystemBase {
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
 
+		SmartDashboard.putNumber("April Tag", getAprilTagID());
+
 		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("left enoder ticks", this.leftLeader.getSelectedSensorPosition());
@@ -511,4 +512,8 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
+
+	public Pose2d getLimelightPoseRelativeSim(Pose2d endPose){
+		return endPose.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
+	}		
 }
