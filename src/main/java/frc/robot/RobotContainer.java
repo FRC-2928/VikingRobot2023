@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DrivetrainCommands.ApproachTag;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
+import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.oi.DriverOI;
@@ -34,6 +36,7 @@ import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Transmission;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -115,23 +118,35 @@ public class RobotContainer {
 		// Configure button commands
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
+		
+		/*
 		this.driverOI.getOrchestraButton().whileTrue(
 			new OrchestraPlayer(
 				this.drivetrain,
 				Filesystem.getDeployDirectory().toPath().resolve("homedepot.chrp").toString()
 			)
 		);
+		*/
+
 		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
-		//this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
-		this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
+		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
+		//this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
 			this.drivetrain.zeroGyro();
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
+		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
+			Log.writeln("[HALT]");
+			this.drivetrain.halt();
+			CommandScheduler.getInstance().cancelAll();
+		}));
 
 		// this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
-		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag7)));
+		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> {
+			Log.writeln("dyn traj");
+			return this.generateTrajectory(FieldConstants.tag7);
+		}));
 
 		//POV tree for dynamic trajectories? (use TBD)
 		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
@@ -312,6 +327,10 @@ public class RobotContainer {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
+		if (drivetrain.hasValidLimelightTarget() && trajectory.get().getInitialPose().getX() < 1.5) {
+			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
+		}
+
 		RamseteCommand ramseteCommand = new RamseteCommand(
 			trajectory.get(),
 			drivetrain::getPose,
@@ -320,11 +339,22 @@ public class RobotContainer {
 			drivetrain::setOutputMetersPerSecond,
 			drivetrain);
 
-		drivetrain.resetOdometry(trajectory.get().getInitialPose());
+		// drivetrain.resetOdometry(trajectory.get().getInitialPose());
 
 		// Set up a sequence of commands
 		// First, we want to reset the drivetrain odometry
-		return new InstantCommand(() -> drivetrain.resetOdometry(trajectory.get().getInitialPose()), drivetrain)
+		return new InstantCommand(() -> {
+			try {
+				Field field = ramseteCommand.getClass().getDeclaredField("m_trajectory");
+				field.setAccessible(true);
+				field.set(ramseteCommand, trajectory.get());
+				Log.writeln("field", field, trajectory.get());
+				Log.writeln("fields", ramseteCommand.getClass().getFields());
+			} catch(Exception e) {
+				Log.error(e);
+			}
+			this.drivetrain.resetOdometry(trajectory.get().getInitialPose());
+		}, this.drivetrain)
 			// next, we run the actual ramsete command
 			.andThen(ramseteCommand)
 			// make sure that the robot stops
@@ -370,7 +400,6 @@ public class RobotContainer {
 	 * @return
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
-
         Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 
         Log.writeln("Generate start Pose: " + startPose);
@@ -429,8 +458,8 @@ public class RobotContainer {
         // 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	}
         // }
-		Translation2d w = new Translation2d(endPose.getX() + 0.5, endPose.getY());
-    	// waypoints.add(w);
+
+    	waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, AutoConstants.kTrajectoryConfig);
@@ -439,10 +468,43 @@ public class RobotContainer {
 		Log.writeln("Waypoints:" + waypoints);
 		Log.writeln("End Pose:" + endPose);
 
-        printTrajectory(trajectory);
+        this.printTrajectory(trajectory);
 
         return trajectory;
     }
+
+	public Trajectory generateLocalTrajectory() {
+
+		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
+		double aprilTagID = this.drivetrain.getAprilTagID();
+		// Now get the pose
+		Pose2d endPose = new Pose2d();
+
+		SmartDashboard.putNumber("Start Pose X", startPose.getX());
+        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
+        SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
+    
+        SmartDashboard.putNumber("End Pose X", endPose.getX());
+        SmartDashboard.putNumber("End Pose Y", endPose.getY());
+        SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
+        
+		Trajectory trajectory;
+		List<Translation2d> waypoints = new ArrayList<>();
+
+		waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
+		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					waypoints,
+        			endPose, AutoConstants.kTrajectoryConfig);
+
+		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
+		Log.writeln("Waypoints:" + waypoints);
+		Log.writeln("End Pose:" + endPose);
+
+        this.printTrajectory(trajectory);
+
+        return trajectory;
+
+	}
 
 	public void printTrajectory(Trajectory trajectory) {
 		List<State> states = trajectory.getStates();
@@ -452,7 +514,8 @@ public class RobotContainer {
 			Log.writeln("Time:" + state.timeSeconds + 
 						" X:" + state.poseMeters.getX() +
 						" Y:" + state.poseMeters.getY() +
-						" Vel:" + state.velocityMetersPerSecond);
+						" Vel:" + state.velocityMetersPerSecond +
+						" Curvature:" + state.curvatureRadPerMeter);
 		}  
 
 		Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 

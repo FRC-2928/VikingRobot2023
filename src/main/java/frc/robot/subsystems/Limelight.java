@@ -41,6 +41,14 @@ public class Limelight {
 		return this.m_limelightNI.getEntry("tv").getDouble(0) == 1;
 	}
 
+	public LimelightResults getResults() {
+		return LimelightHelpers.getLatestResults("");
+	}
+
+	public double getAprilTagID() {
+		return LimelightHelpers.getFiducialID(null);
+	}
+
 	// ------------------------------------------------------------------------
 	// Poses using reflective tape
 	// ------------------------------------------------------------------------
