@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -477,8 +478,9 @@ public class RobotContainer {
 
 		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 		double aprilTagID = this.drivetrain.getAprilTagID();
+		Pose3d tag = FieldConstants.aprilTags.get((int)aprilTagID);
 		// Now get the pose
-		Pose2d endPose = new Pose2d();
+		Pose2d endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI))); 
 
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
@@ -491,7 +493,7 @@ public class RobotContainer {
 		Trajectory trajectory;
 		List<Translation2d> waypoints = new ArrayList<>();
 
-		waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
+		// waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, AutoConstants.kTrajectoryConfig);
