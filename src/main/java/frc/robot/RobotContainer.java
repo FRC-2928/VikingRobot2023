@@ -19,6 +19,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
@@ -59,7 +60,7 @@ public class RobotContainer {
 	public static enum Direction {
 		Left,
 		Right,
-		Unspecified
+		Center
 	}
 
 	// The Robot's Subsystems
@@ -75,7 +76,7 @@ public class RobotContainer {
 
 	public static DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
 
-	private Direction direction = Direction.Unspecified;
+	private Direction direction = Direction.Center;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -146,7 +147,7 @@ public class RobotContainer {
 		// this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
 		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> {
 			Log.writeln("dyn traj");
-			return this.generateTrajectory(FieldConstants.tag7);
+			return this.generateLocalTrajectory(Direction.Right);
 		}));
 
 		//POV tree for dynamic trajectories? (use TBD)
@@ -328,7 +329,7 @@ public class RobotContainer {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
-		if (drivetrain.hasValidLimelightTarget() && trajectory.get().getInitialPose().getX() < 1.5) {
+		if (trajectory.get() == null) {
 			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
 		}
 
@@ -351,17 +352,17 @@ public class RobotContainer {
 				field.set(ramseteCommand, trajectory.get());
 				Log.writeln("field", field, trajectory.get());
 				Log.writeln("fields", ramseteCommand.getClass().getFields());
+				this.drivetrain.resetOdometry(trajectory.get().getInitialPose());
 			} catch(Exception e) {
 				Log.error(e);
 			}
-			this.drivetrain.resetOdometry(trajectory.get().getInitialPose());
 		}, this.drivetrain)
 			// next, we run the actual ramsete command
 			.andThen(ramseteCommand)
 			// make sure that the robot stops
 			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain))
 			// set the direction back to unspecified
-			.andThen(new InstantCommand(() -> direction = Direction.Unspecified));
+			.andThen(new InstantCommand(() -> direction = Direction.Center));
 	} 
 
 	public Trajectory loadTrajectory(String trajectoryJSON) {
@@ -474,13 +475,31 @@ public class RobotContainer {
         return trajectory;
     }
 
-	public Trajectory generateLocalTrajectory() {
+	public Trajectory generateLocalTrajectory(Direction direction) {
+		if (!this.drivetrain.hasValidLimelightTarget()) {
+			return null;
+		}
 
 		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 		double aprilTagID = this.drivetrain.getAprilTagID();
+		if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)){
+			return null;
+		}
 		Pose3d tag = FieldConstants.aprilTags.get((int)aprilTagID);
+		Pose2d endPose;
+		switch(direction){
+			case Left:
+			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+			break;
+			case Right:
+			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+			break;
+			default:
+			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));	
+			break;
+			
+		}
 		// Now get the pose
-		Pose2d endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI))); 
 
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
