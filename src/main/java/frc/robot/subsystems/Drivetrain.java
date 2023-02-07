@@ -442,6 +442,14 @@ public class Drivetrain extends SubsystemBase {
 		return m_verticalFilter.calculate(offset);
 	}
 
+	public boolean hasValidLimelightTarget() {
+		return this.limelight.getHasValidTargets();
+	}
+
+	public double getAprilTagID() {
+		return this.limelight.getAprilTagID();
+	}
+
 	// ----------------------------------------------------
 	// Process Logic
 	// ----------------------------------------------------
@@ -481,6 +489,8 @@ public class Drivetrain extends SubsystemBase {
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
 
+		SmartDashboard.putNumber("April Tag", getAprilTagID());
+
 		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("left enoder ticks", this.leftLeader.getSelectedSensorPosition());
@@ -502,4 +512,8 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
+
+	public Pose2d getLimelightPoseRelativeSim(Pose2d endPose){
+		return endPose.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
+	}		
 }

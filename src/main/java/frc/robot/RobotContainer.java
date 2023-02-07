@@ -327,7 +327,7 @@ public class RobotContainer {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
-		if (trajectory.get().getInitialPose().getX() < 1.5) {
+		if (drivetrain.hasValidLimelightTarget() && trajectory.get().getInitialPose().getX() < 1.5) {
 			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
 		}
 
@@ -472,6 +472,39 @@ public class RobotContainer {
 
         return trajectory;
     }
+
+	public Trajectory generateLocalTrajectory() {
+
+		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
+		double aprilTagID = this.drivetrain.getAprilTagID();
+		// Now get the pose
+		Pose2d endPose = new Pose2d();
+
+		SmartDashboard.putNumber("Start Pose X", startPose.getX());
+        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
+        SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
+    
+        SmartDashboard.putNumber("End Pose X", endPose.getX());
+        SmartDashboard.putNumber("End Pose Y", endPose.getY());
+        SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
+        
+		Trajectory trajectory;
+		List<Translation2d> waypoints = new ArrayList<>();
+
+		waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
+		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+					waypoints,
+        			endPose, AutoConstants.kTrajectoryConfig);
+
+		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
+		Log.writeln("Waypoints:" + waypoints);
+		Log.writeln("End Pose:" + endPose);
+
+        this.printTrajectory(trajectory);
+
+        return trajectory;
+
+	}
 
 	public void printTrajectory(Trajectory trajectory) {
 		List<State> states = trajectory.getStates();
