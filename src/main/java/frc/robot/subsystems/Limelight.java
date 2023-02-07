@@ -2,13 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Limelight utility is responsible for I/O with both Limelight 3
@@ -20,7 +17,7 @@ public class Limelight {
 	private NetworkTable m_limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
 
 	
-	// -----------------------------------------------------------
+	// ----------------------------------- ------------------------
 	// Initialization
 	// -----------------------------------------------------------
 	public Limelight() {
