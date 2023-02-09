@@ -1,31 +1,35 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
 
-public class Intake extends SubsystemBase {
+public class Arm extends SubsystemBase {
 
-  public final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
-  private double m_output = 0;
+  public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
+	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+
+  Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   
-  /** Creates a new Intake. */
-  public Intake() {
+  /** Creates a new Arm. */
+  public Arm() {
     configureMotors();
   }
 
   public void configureMotors() {
 		// Configure the motors
-		for(TalonSRX fx : new TalonSRX[] { this.intakeTalon}) {
+		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -60,22 +64,14 @@ public class Intake extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
+
+    talonFollower.follow(talonLeader);
 	}
 
   
 
-  /**
-   * 
-   * @param output on a scale of -1 to 1
-   */
-  public void setOutput(double output){
-    m_output = output;
-  }
-
-  public void runOutput(){
-    intakeTalon.set(ControlMode.PercentOutput, m_output);
-  }
-
   @Override
-  public void periodic() {}
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }
