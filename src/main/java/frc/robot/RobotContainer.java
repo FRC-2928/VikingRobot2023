@@ -24,9 +24,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
-import frc.robot.commands.DrivetrainCommands.BalancePID;
-import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
-import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
@@ -81,8 +78,6 @@ public class RobotContainer {
 	private final SendableChooser<Command> chooser = new SendableChooser<>();
 
 	public static DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
-
-	private Direction direction = Direction.Center;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -139,8 +134,8 @@ public class RobotContainer {
 		// 	)
 		// );
 
-		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
-		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
+		//this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
+		//this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		//this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
@@ -389,9 +384,7 @@ public class RobotContainer {
 			// next, we run the actual ramsete command
 			.andThen(ramseteCommand)
 			// make sure that the robot stops
-			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain))
-			// set the direction back to unspecified
-			.andThen(new InstantCommand(() -> direction = Direction.Center));
+			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
 	} 
 
 	public Trajectory loadTrajectory(String trajectoryJSON) {
