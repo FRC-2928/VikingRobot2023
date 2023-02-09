@@ -227,7 +227,7 @@ public class RobotContainer {
 
 
 	private void configureAutoChooser() {
-		// this.chooser.setDefaultOption("Test Dropoff", this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.tag6)));
+		// this.chooser.setDefaultOption("Run Local Trajectory", this.generateRamseteCommand(() -> generateLocalTrajectory(Direction.Right)));
 
 		// chooser.addOption(
 		// 	"test",
@@ -330,6 +330,7 @@ public class RobotContainer {
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
 		if (trajectory.get() == null) {
+			Log.writeln("generateRamseteCommand: Got null trajectory!");
 			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
 		}
 
@@ -476,30 +477,36 @@ public class RobotContainer {
     }
 
 	public Trajectory generateLocalTrajectory(Direction direction) {
-		if (!this.drivetrain.hasValidLimelightTarget()) {
+		if (this.drivetrain.hasNoLimelightTarget()) {
+			Log.writeln("generateLocalTrajectory: No Limelight target!");
 			return null;
 		}
 
+		// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
 		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
 		double aprilTagID = this.drivetrain.getAprilTagID();
 		if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)){
+			Log.writeln("generateRamseteCommand: No valid aprilTag!" + aprilTagID);
 			return null;
 		}
-		Pose3d tag = FieldConstants.aprilTags.get((int)aprilTagID);
+
+		// Now get the pose
+		Pose2d tag = FieldConstants.aprilTags.get((int)aprilTagID).toPose2d();
 		Pose2d endPose;
 		switch(direction){
 			case Left:
-			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
+			endPose = tag.plus(FieldConstants.leftOffset);	
 			break;
 			case Right:
-			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+			endPose = tag.plus(FieldConstants.rightOffset);	
 			break;
 			default:
-			endPose = tag.toPose2d().plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));	
-			break;
-			
+			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));
+			endPose = tag.plus(FieldConstants.centerOffset);		
+			break;		
 		}
-		// Now get the pose
 
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());

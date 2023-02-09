@@ -377,18 +377,6 @@ public class Drivetrain extends SubsystemBase {
 		return this.limelight.getPose2d();
 	}
 
-	// // botpose - gets rotation from the pideon
-	// public Pose2d getLimelightPose(){
-	// 	// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
-	// 	// Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
-	// 	return new Pose2d(
-	// 		getLimelightPose2d().getX() + DrivetrainConstants.xOffsetField, 
-	// 		getLimelightPose2d().getY()  + DrivetrainConstants.yOffsetField,
-	// 		Rotation2d.fromDegrees(180).minus(getLimelightPose2d().getRotation())
-	// 	);
-	// 	// return this.limelight.getPose2d();
-	// }
-
 	// Robot transform in field-space with the alliance driverstation at the origin
 	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative(){
@@ -398,16 +386,6 @@ public class Drivetrain extends SubsystemBase {
 			return this.limelight.getBluePose2d();
 		}	
 	}
-
-	// public Pose2d getLimelightPoseRelativeDegrees(){
-	// 	if(RobotContainer.alliance == DriverStation.Alliance.Red){
-	// 		return this.limelight.getRedPose3d().toPose2d();
-			
-	// 	} else {
-	// 		return this.limelight.getBluePose3d().toPose2d();
-	// 	}	
-	// }
-
 
   	/** 
 	 * Returns if current robot estimated pose is left or right of the center
@@ -444,6 +422,10 @@ public class Drivetrain extends SubsystemBase {
 
 	public boolean hasValidLimelightTarget() {
 		return this.limelight.getHasValidTargets();
+	}
+
+	public boolean hasNoLimelightTarget() {
+		return !this.hasValidLimelightTarget();
 	}
 
 	public double getAprilTagID() {
@@ -512,8 +494,4 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
-
-	public Pose2d getLimelightPoseRelativeSim(Pose2d endPose){
-		return endPose.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
-	}		
 }
