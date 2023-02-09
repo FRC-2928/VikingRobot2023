@@ -137,7 +137,7 @@ public final class Constants {
 				DrivetrainConstants.kDriveKinematics,
 				k_MaxVolts);
 
-		public static final double kMaxSpeedMetersPerSecond = 0.3;
+		public static final double kMaxSpeedMetersPerSecond = 1.0;
 		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
 
 		// Setup trajectory constraints

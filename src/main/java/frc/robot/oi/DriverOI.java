@@ -10,6 +10,29 @@ import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Log;
 
 public class DriverOI extends OIBase {
+	/*
+	
+	A - balance aux
+	B - (maybe)switch between coast and brake
+	X - shift low
+	Y - shift high
+
+	Start(left) - halt
+	Back(right) - start pov selector for tag approaching
+
+	LB
+	RB
+	
+	LT
+	RT
+
+	LS - y-move
+	RS - x-rotate
+	
+	LS Click - shift high
+	RS Click - shift low
+
+	*/
 	public DriverOI(XboxController controller) {
 		super(controller);
 
@@ -27,15 +50,21 @@ public class DriverOI extends OIBase {
 
 	private void debugAddButtonLog(int id, String message) {
 		new JoystickButton(this.controller, id)
-			.onTrue(new InstantCommand(() -> Log.writeln("press " + message)))
-			.onFalse(new InstantCommand(() -> Log.writeln("release " + message)));
+			.onTrue(new InstantCommand(() -> Log.writeln("Pressed " + message)))
+			.onFalse(new InstantCommand(() -> Log.writeln("Released " + message)));
 	}
 
 	// ---------------- Drivetrain ----------------------------
 
+	public DoubleSupplier getMoveSupplier() {
+		return () -> -this.controller.getLeftY();
+	}
+
 	public DoubleSupplier getRotateSupplier() {
 		return () -> this.controller.getRightX();
 	}
+
+	// Shifting
 
 	public Trigger getShiftLowButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
@@ -45,17 +74,7 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
-	public Trigger getOrchestraButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
-	}
-
-	public DoubleSupplier getMoveSupplier() {
-		return () -> -this.controller.getLeftY();
-	}
-
-	public Trigger getIsAtHighSpeed() {
-		return new Trigger(() -> Math.abs(this.controller.getLeftY()) > .85);
-	}
+	// Balance
 
 	public Trigger getBalanceButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
@@ -65,8 +84,14 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
 	}
 
+	public Trigger getBalanceAuxButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	}
+
+	// Misc
+
 	public Trigger getApproachTagButton(){
-		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
 	}
 
 	public Trigger getResetGyroButton() {
@@ -77,27 +102,7 @@ public class DriverOI extends OIBase {
         return new JoystickButton(this.controller, XboxController.Button.kBack.value);
     }
 
-	public Trigger getBalanceAuxButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	}
-
-	public Trigger getTestButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kBack.value);
-	}
-
-	public Trigger getStartButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
-	}
-	
-	public Trigger getGoToTag6Button(){
-		return new Trigger(() -> this.controller.getPOV() == 90);
-	}
-
-	public Trigger getGoToTag7Button(){
-		return new Trigger(() -> this.controller.getPOV() == 180);
-	}
-
-	public Trigger getGoToTag8Button(){
-		return new Trigger(() -> this.controller.getPOV() == 270);
+	public Trigger getOrchestraButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kLeftStick.value);
 	}
 }
