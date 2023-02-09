@@ -2,10 +2,15 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.FieldConstants;
 
 /**
  * Limelight utility is responsible for I/O with both Limelight 3
@@ -38,7 +43,12 @@ public class Limelight {
 	
 	// Whether the limelight has any valid targets (0 or 1)
 	public boolean getHasValidTargets(){
-		return this.m_limelightNI.getEntry("tv").getDouble(0) == 1;
+		if(RobotBase.isReal()) {
+			return this.m_limelightNI.getEntry("tv").getDouble(0) == 1;
+		} else {
+			// return this value in simulation
+			return true;
+		}		
 	}
 
 	public LimelightResults getResults() {
@@ -113,22 +123,14 @@ public class Limelight {
 	}
 
 	public Pose2d getBluePose2d(){
-		return getBluePose3d().toPose2d();
+		if(RobotBase.isReal()) {
+			return getBluePose3d().toPose2d();
+		} else {
+			Pose2d tag = FieldConstants.aprilTags.get(6).toPose2d();
+			return tag.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
+			// return new Pose2d();
+		}	
 	}
-
-	// public Pose2d getBluePose2d(){
-	// 	double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-	// 	SmartDashboard.putNumber("pose 0", pose[0]);
-	// 	SmartDashboard.putNumber("pose 1", pose[1]);
-	// 	SmartDashboard.putNumber("pose 5", pose[5]);
-	// 	if(pose.length == 0) {
-	// 		return new Pose2d(); 
-	// 	}
-	// 	else {
-	// 		return new Pose2d(pose[0], pose[1], 
-	// 						  new Rotation2d(pose[5] * Math.PI / 180));
-	// 	}
-	// }
 
 	// Robot transform in field-space. Translation (X)
 	public double getPoseX(){
@@ -144,7 +146,13 @@ public class Limelight {
 	// Red Pose
 	// ---------------------------------------------------------------------
 	public Pose2d getRedPose2d(){
-		return getRedPose3d().toPose2d();
+		if(RobotBase.isReal()) {
+			return getRedPose3d().toPose2d();
+		} else {
+			Pose2d tag = FieldConstants.aprilTags.get(2).toPose2d();
+			return tag.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
+			// return new Pose2d();
+		}				
 	}
 
 	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
