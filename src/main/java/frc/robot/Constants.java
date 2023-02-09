@@ -23,7 +23,7 @@ public final class Constants {
 		// Solenoids
 		// public static final int kDrivetrainShiftSolenoid = 0;
 		public static final int kRampSolenoid = 1;
-		public static final int kClimberSolenoid = 2;
+		public static final int kArmSolenoid = 2;
 
 		public static final int kDrivetrainShiftSolenoidLow = 2;
 		public static final int kDrivetrainShiftSolenoidHigh = 3;
@@ -40,6 +40,15 @@ public final class Constants {
 		public static final int DrivetrainLeftFrontTalonFX = 14;
 		public static final int DrivetrainLeftBackTalonFX = 15;
 
+		//Arm
+		public static final int ArmTalon1 = 5;
+		public static final int ArmTalon2 = 5;
+
+		//Intake
+		public static final int IntakeTalon1 = 5;
+		
+		public static final int ElevatorTalon1 = 5;
+
 		// Sensors
 		public static final int kPigeonIMU = 0;
 	}
@@ -49,6 +58,11 @@ public final class Constants {
 
 		public static final double tagGoalY = 8.25;
 		public static final double tagGoalX = 0;
+	}
+
+	public static final class IntakeConstants {
+		public static final double intakePower = .3;
+		public static final double shootPower = .5;
 	}
 
 	public static final class DrivetrainConstants {
