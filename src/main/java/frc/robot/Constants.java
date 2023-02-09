@@ -62,6 +62,7 @@ public final class Constants {
 
 	public static final class IntakeConstants {
 		public static final double intakePower = .3;
+		public static final double shootPower = .5;
 	}
 
 	public static final class DrivetrainConstants {

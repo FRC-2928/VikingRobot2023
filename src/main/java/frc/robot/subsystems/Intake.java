@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -19,6 +20,7 @@ import frc.robot.Constants.IntakeConstants;
 public class Intake extends SubsystemBase {
 
   public final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
+  private double m_output = 0;
   
   /** Creates a new Intake. */
   public Intake() {
@@ -64,15 +66,18 @@ public class Intake extends SubsystemBase {
 		}
 	}
 
+  
+
   /**
-   * sets intake velocity to its default constant power
+   * 
+   * @param output on a scale of -1 to 1
    */
-  public void setVelocity(){
-    intakeTalon.set(IntakeConstants.intakePower);
+  public void setOutput(double output){
+    m_output = output;
   }
 
-  public void setVelocity(double power){
-    intakeTalon.set(power);
+  public void runOutput(){
+    intakeTalon.set(ControlMode.PercentOutput, m_output);
   }
 
   @Override
