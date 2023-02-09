@@ -8,26 +8,28 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
 
-public class Intake extends SubsystemBase {
+public class Arm extends SubsystemBase {
 
-  public final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
+  public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
+	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+
+  Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   
-  /** Creates a new Intake. */
-  public Intake() {
+  /** Creates a new Arm. */
+  public Arm() {
     configureMotors();
   }
 
   public void configureMotors() {
 		// Configure the motors
-		for(TalonSRX fx : new TalonSRX[] { this.intakeTalon}) {
+		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -62,18 +64,11 @@ public class Intake extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
+
+    talonFollower.follow(talonLeader);
 	}
 
-  /**
-   * sets intake velocity to its default constant power
-   */
-  public void setVelocity(){
-    intakeTalon.set(IntakeConstants.intakePower);
-  }
-
-  public void setVelocity(double power){
-    intakeTalon.set(power);
-  }
+  
 
   @Override
   public void periodic() {

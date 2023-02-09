@@ -8,26 +8,28 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
 
-public class Intake extends SubsystemBase {
+public class Elevator extends SubsystemBase {
 
-  public final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
+  public final WPI_TalonFX talon1 = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
+  Solenoid m_elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   
-  /** Creates a new Intake. */
-  public Intake() {
+  
+  /** Creates a new Elevator. */
+  public Elevator() {
     configureMotors();
+    setSolenoidBrake();
   }
 
   public void configureMotors() {
 		// Configure the motors
-		for(TalonSRX fx : new TalonSRX[] { this.intakeTalon}) {
+		for(TalonFX fx : new TalonFX[] { this.talon1}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -62,19 +64,21 @@ public class Intake extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
+    
 	}
 
-  /**
-   * sets intake velocity to its default constant power
-   */
-  public void setVelocity(){
-    intakeTalon.set(IntakeConstants.intakePower);
+  public void setPower(double volts){
+    talon1.setVoltage(volts);
   }
 
-  public void setVelocity(double power){
-    intakeTalon.set(power);
+  public void setSolenoidBrake(){
+    m_elevatorSolenoid.set(false);
   }
 
+  public void setSolenoidMove(){
+    m_elevatorSolenoid.set(true);
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
