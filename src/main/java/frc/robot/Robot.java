@@ -22,11 +22,6 @@ public class Robot extends TimedRobot {
 	private Compressor compressor;
 	private RobotContainer robotContainer;
 
-	/**
-	 * This function is run when the robot is first started up and should be used
-	 * for any
-	 * initialization code.
-	 */
 	@Override
 	public void robotInit() {
 		// Instantiate our RobotContainer. This will perform all our button bindings,
@@ -39,17 +34,6 @@ public class Robot extends TimedRobot {
 		Telemetry.track("Gyroscope", this.robotContainer.drivetrain::readGyro, false);
 	}
 
-	/**
-	 * This function is called every robot packet, no matter the mode. Use this for
-	 * items like
-	 * diagnostics that you want ran during disabled, autonomous, teleoperated and
-	 * test.
-	 *
-	 * <p>
-	 * This runs after the mode specific periodic functions, but before LiveWindow
-	 * and
-	 * SmartDashboard integrated updating.
-	 */
 	@Override
 	public void robotPeriodic() {
 		// Runs the Scheduler. This is responsible for polling buttons, adding
@@ -65,7 +49,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		// Set the team alliance
-		robotContainer.setAlliance(DriverStation.getAlliance());
+		RobotContainer.setAlliance(DriverStation.getAlliance());
 		
 		// Get selected routine from the SmartDashboard
 		this.autonomousCommand = this.robotContainer.getAutonomousCommand();

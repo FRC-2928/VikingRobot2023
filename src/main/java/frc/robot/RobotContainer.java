@@ -9,29 +9,25 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.Trajectory.State;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.DrivetrainCommands.ApproachTag;
+import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.BalanceRollPID;
 import frc.robot.commands.DrivetrainCommands.OrchestraPlayer;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
+import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
@@ -121,14 +117,12 @@ public class RobotContainer {
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 		
-		/*
-		this.driverOI.getOrchestraButton().whileTrue(
-			new OrchestraPlayer(
-				this.drivetrain,
-				Filesystem.getDeployDirectory().toPath().resolve("homedepot.chrp").toString()
-			)
-		);
-		*/
+		// this.driverOI.getOrchestraButton().whileTrue(
+		// 	new OrchestraPlayer(
+		// 		this.drivetrain,
+		// 		Filesystem.getDeployDirectory().toPath().resolve("homedepot.chrp").toString()
+		// 	)
+		// );
 
 		this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
@@ -145,10 +139,27 @@ public class RobotContainer {
 		}));
 
 		// this.driverOI.getStartButton().onTrue(new InstantCommand(()->this.generateTrajectory(FieldConstants.tag6)));
-		this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> {
-			Log.writeln("dyn traj");
-			return this.generateLocalTrajectory(Direction.Right);
-		}));
+		// this.driverOI.getStartButton().onTrue(this.generateRamseteCommand(() -> {
+		// 	Log.writeln("dyn traj");
+		// 	return this.generateLocalTrajectory(Direction.Right);
+		// }));
+
+		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
+			this.driverOI,
+			null,
+			(dir, __) -> {
+				CommandScheduler
+					.getInstance()
+					.schedule(this.generateRamseteCommand(() -> this.generateLocalTrajectory((Direction)dir)));
+			},
+			new Tree(
+				"Select tag offset",
+				new Tree("Center", Direction.Center),
+				new Tree("Right", Direction.Right),
+				new Tree(),
+				new Tree("Left", Direction.Left)
+			)
+		));
 
 		//POV tree for dynamic trajectories? (use TBD)
 		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
@@ -279,7 +290,9 @@ public class RobotContainer {
 				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
 				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+			)
 		);
 
 		chooser.addOption(
@@ -462,7 +475,7 @@ public class RobotContainer {
         // 	}
         // }
 
-    	waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
+    	waypoints.add(new Translation2d(endPose.getX() + 2, endPose.getY() + 0.1));
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, AutoConstants.kTrajectoryConfig);

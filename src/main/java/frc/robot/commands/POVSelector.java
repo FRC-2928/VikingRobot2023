@@ -153,10 +153,10 @@ public class POVSelector extends CommandBase {
             
             String[] names = this.state.stream().map(tree -> tree.name).toArray(String[]::new);
 
-            this.hook.accept(names);
+            if(this.hook != null) this.hook.accept(names);
 
             if(next.discrim == Tree.Discriminator.Leaf) {
-                this.finished.accept(next.leaf, names);
+                if(this.finished != null) this.finished.accept(next.leaf, names);
                 this.cancel();
             } else if(next.discrim == Tree.Discriminator.Cancel) {
                 this.cancel();
