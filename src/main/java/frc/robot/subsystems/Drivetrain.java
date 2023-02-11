@@ -53,6 +53,8 @@ public class Drivetrain extends SubsystemBase {
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
+	private SimpleMotorFeedforward feedForwardL;
+	private SimpleMotorFeedforward feedForwardR;
 
 	private double offset;
 	MedianFilter m_verticalFilter = new MedianFilter(10);
@@ -85,6 +87,8 @@ public class Drivetrain extends SubsystemBase {
 		this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
 
 		this.feedForward = AutoConstants.kFeedForward;
+		this.feedForwardL = AutoConstants.kFeedForwardL;
+		this.feedForwardR = AutoConstants.kFeedForwardR;
 
 		this.resetEncoders();
 		this.zeroGyro();
@@ -212,8 +216,8 @@ public class Drivetrain extends SubsystemBase {
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// Log.writeln("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
-		double leftFeedForward = this.feedForward.calculate(leftMetersPerSecond);
-		double rightFeedForward = this.feedForward.calculate(rightMetersPerSecond);
+		double leftFeedForward = this.feedForwardL.calculate(leftMetersPerSecond);
+		double rightFeedForward = this.feedForwardR.calculate(rightMetersPerSecond);
 
 		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
