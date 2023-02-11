@@ -24,6 +24,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
+import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
@@ -294,7 +295,7 @@ public class RobotContainer {
 		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
 		// 	);
 
-		chooser.setDefaultOption(
+		chooser.addOption(
 			"Tag6 Routines1", 
 			new SequentialCommandGroup( 
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
@@ -318,8 +319,15 @@ public class RobotContainer {
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
 		);
 
-		// chooser.addOption("Calibrate Trajectory", 
-		// 	new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
+		chooser.setDefaultOption("Tag7 over platform",
+			new SequentialCommandGroup(
+				// new DriveDistance(-.35, 4, drivetrain),
+				this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.cargo.get(7).toPose2d()))
+			)
+		);
+
+		chooser.addOption("Calibrate Trajectory", 
+			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
 
 		chooser.addOption(
 			"Back up and balance",
@@ -404,7 +412,7 @@ public class RobotContainer {
 	}
 
 	/**
-	 * Drives a straight line 2 meters so as you can calibrate your Romi
+	 * Drives a straight line 4 meters so as you can calibrate your Romi
 	 * You should make sure that the robot ends up right on the 2 meter mark.
 	 *
 	 */
@@ -415,7 +423,7 @@ public class RobotContainer {
 			new Pose2d(0, 0, new Rotation2d(0)),
 			// List.of(new Translation2d(2.0, 0.0)) 
 			List.of(),
-			new Pose2d(4.0, 0.0, new Rotation2d(0)), // left
+			new Pose2d(4, 0.0, new Rotation2d(0)), // left
 			AutoConstants.kTrajectoryConfig);
   	}
 
@@ -485,7 +493,7 @@ public class RobotContainer {
         // 	}
         // }
 
-    	waypoints.add(new Translation2d(endPose.getX() + 2, endPose.getY() + 0.1));
+    	// waypoints.add(new Translation2d(endPose.getX() + 2, endPose.getY() + 0.1));
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
         			endPose, AutoConstants.kTrajectoryConfig);

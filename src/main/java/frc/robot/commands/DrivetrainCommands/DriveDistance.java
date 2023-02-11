@@ -31,7 +31,8 @@ public class DriveDistance extends CommandBase {
 
 	@Override
 	public void execute() {
-		this.drivetrain.diffDrive.arcadeDrive(this.speed, 0);
+		this.drivetrain.tankDriveVolts(speed * 12 * .95, speed * 12);
+		// this.drivetrain.diffDrive.arcadeDrive(this.speed, 0);
 	}
 
 	@Override
