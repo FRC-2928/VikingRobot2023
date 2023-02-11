@@ -137,9 +137,13 @@ public final class Constants {
 		public static final Gains GainsAuto = new Gains(0.06, 0.001, 0, 0, 0, 1.00);
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
-		public static final double ksVolts = 0.3024;
-		public static final double kvVoltSecondsPerMeter = 0.21907;
-		public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
+		// public static final double ksVolts = 0.3024;
+		// public static final double kvVoltSecondsPerMeter = 0.21907;
+		// public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
+
+		public static final double ksVolts = 0.022649;
+		public static final double kvVoltSecondsPerMeter = 0.54389;
+		public static final double kaVoltSecondsSquaredPerMeter = 0.023529;
 
 		// Feedforward contraints
 		public static final SimpleMotorFeedforward kFeedForward = new SimpleMotorFeedforward(ksVolts,

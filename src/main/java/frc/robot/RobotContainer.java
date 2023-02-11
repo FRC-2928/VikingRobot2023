@@ -28,10 +28,7 @@ import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +40,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
+// Mechanism Subsystems
+// import frc.robot.subsystems.Elevator;
+// import frc.robot.subsystems.Intake;
+// import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -64,9 +66,9 @@ public class RobotContainer {
 	// The Robot's Subsystems
 	public final Transmission transmission = new Transmission();
 	public final Drivetrain drivetrain = new Drivetrain(this.transmission::getGearState);
-	public final Intake intake = new Intake();
-	public final Elevator elevator = new Elevator();
-	public final Arm arm = new Arm();
+	// public final Intake intake = new Intake();
+	// public final Elevator elevator = new Elevator();
+	// public final Arm arm = new Arm();
 
 	// XBox Controllers
 	private final XboxController driverController = new XboxController(0);
@@ -119,9 +121,9 @@ public class RobotContainer {
 		);
 
 		//operator buttons
-		this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
-		this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
-		this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
+		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
+		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
+		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
 
 		// Configure driver button commands
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
