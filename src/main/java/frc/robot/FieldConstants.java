@@ -251,6 +251,35 @@ public final class FieldConstants {
 		    Units.inchesToMeters(18.22),
 		    new Rotation3d()));
 
+	// Cargo locations (do not flip for red alliance)
+    public static final Map<Integer, Pose3d> cargo = Map.of(
+	    6,
+	    new Pose3d(
+		    6.831,
+		    3.331,
+		    0,
+		    new Rotation3d(0.0, 0.0, 0)),
+	    7,
+	    new Pose3d(
+		    6.831,
+		    2.138,
+		    0,
+		    new Rotation3d(0.0, 0.0, 0)),
+	    2,
+	    new Pose3d(
+		    9.668,
+		    2.127, 
+		    0,
+		    new Rotation3d(0.0, 0.0, Math.PI)),
+	    
+	    3,
+	    new Pose3d(
+		    9.668,
+		    3.331,
+		    0,
+		    new Rotation3d(0.0, 0.0, Math.PI)));
+	
+
 	public static final Pose2d tag6 = aprilTags.get(6).toPose2d()
 				.plus(new Transform2d(new Translation2d(0.5, 0), 
 				      new Rotation2d(Math.PI)));  // 0.5 meters in front
