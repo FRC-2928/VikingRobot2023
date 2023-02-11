@@ -134,7 +134,7 @@ public final class Constants {
 	public static final class AutoConstants {
 
 		// public static final Gains GainsAuto = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
-		public static final Gains GainsAuto = new Gains(0.06, 0.001, 0, 0, 0, 1.00);
+		public static final Gains GainsAuto = new Gains(0.06, 0.001, 0.04, 0, 0, 1.00);
 
 		// kS (static friction), kV (velocity), and kA (acceleration)
 		// public static final double ksVolts = 0.3024;
@@ -148,7 +148,10 @@ public final class Constants {
 		// Feedforward contraints
 		public static final SimpleMotorFeedforward kFeedForward = new SimpleMotorFeedforward(ksVolts,
 				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
-
+		public static final SimpleMotorFeedforward kFeedForwardL = new SimpleMotorFeedforward(ksVolts,
+				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
+		public static final SimpleMotorFeedforward kFeedForwardR = new SimpleMotorFeedforward(ksVolts,
+				kvVoltSecondsPerMeter*.95, kaVoltSecondsSquaredPerMeter);
 		public static final double k_MaxVolts = 10;
 		public static final DifferentialDriveVoltageConstraint kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
 				kFeedForward,
