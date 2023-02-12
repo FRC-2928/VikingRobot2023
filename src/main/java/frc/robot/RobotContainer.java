@@ -24,6 +24,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
+import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
@@ -142,6 +143,7 @@ public class RobotContainer {
 		//this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		//this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
+		this.driverOI.getBalanceAuxButton().onTrue((new SequentialCommandGroup(new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain))));
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
 			this.drivetrain.zeroGyro();
 			this.drivetrain.resetEncoders();
