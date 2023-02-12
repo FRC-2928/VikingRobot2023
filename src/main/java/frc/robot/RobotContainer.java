@@ -252,8 +252,6 @@ public class RobotContainer {
 
 
 	private void configureAutoChooser() {
-		// this.chooser.setDefaultOption("Run Local Trajectory", this.generateRamseteCommand(() -> generateLocalTrajectory(Direction.Right)));
-
 		// chooser.addOption(
 		// 	"test",
 		// 	new SequentialCommandGroup(
@@ -309,6 +307,20 @@ public class RobotContainer {
 			)
 		);
 
+		// more success with this than routines1
+		chooser.addOption(
+			"Tag6 Routines2", 
+			new SequentialCommandGroup( 
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3.0")),
+				//new TurnDegrees(.5, 0, drivetrain),
+				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0-Tag6")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+			)
+		);
+
 		chooser.addOption(
 			"Tag7 Routines1", 
 			new SequentialCommandGroup( 
@@ -317,7 +329,8 @@ public class RobotContainer {
 				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
 				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)))
 		);
 
 		chooser.setDefaultOption("Tag7 over platform",
@@ -331,6 +344,11 @@ public class RobotContainer {
 				new BalanceAUX(drivetrain, false, 15000)
 			)
 		);
+
+		chooser.addOption("Tag8 Routines1",
+			new SequentialCommandGroup(
+					
+			));
 
 		chooser.addOption("Calibrate Trajectory", 
 			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
@@ -368,6 +386,7 @@ public class RobotContainer {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	private Command generateRamseteCommand(Supplier<Trajectory> trajectory) {
+		Log.writeln("generateramsetecommand");
 		if (trajectory.get() == null) {
 			Log.writeln("generateRamseteCommand: Got null trajectory!");
 			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
@@ -514,6 +533,7 @@ public class RobotContainer {
     }
 
 	public Trajectory generateLocalTrajectory(Direction direction) {
+		Log.writeln("generateLocalTrajectory");
 		if (this.drivetrain.hasNoLimelightTarget()) {
 			Log.writeln("generateLocalTrajectory: No Limelight target!");
 			return null;
