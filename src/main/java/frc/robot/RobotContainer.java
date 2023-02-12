@@ -354,6 +354,20 @@ public class RobotContainer {
 			)
 		);
 
+		// chooser.addOption("Tag6 Balance", 
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
+		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+		// 	)	
+		// );
+
+		// chooser.addOption("Tag8 Balance", 
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
+		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+		// 	)	
+		// );
+
 		// chooser.addOption("Tag8 Routines1",
 		// 	new SequentialCommandGroup(
 		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
