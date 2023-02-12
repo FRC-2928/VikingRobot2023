@@ -347,7 +347,10 @@ public class RobotContainer {
 
 		chooser.addOption("Tag8 Routines1",
 			new SequentialCommandGroup(
-					
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
 			));
 
 		chooser.addOption("Calibrate Trajectory", 
