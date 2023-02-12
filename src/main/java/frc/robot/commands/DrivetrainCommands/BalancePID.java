@@ -23,7 +23,7 @@ public class BalancePID extends PIDCommand {
 				DrivetrainConstants.GainsBalance.D
 			),
 			() -> drivetrain.readPitch(),
-			0,
+			-5,
 			output -> drivetrain.tankDriveVolts(-output, -output)
 		);
 
