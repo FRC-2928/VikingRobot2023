@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -19,7 +20,9 @@ public class Elevator extends SubsystemBase {
 
   public final WPI_TalonFX talon1 = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
   Solenoid m_elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
+  private boolean isFound = false;
   
+  // ------------ Initialization -----------------------------
   
   /** Creates a new Elevator. */
   public Elevator() {
@@ -67,8 +70,10 @@ public class Elevator extends SubsystemBase {
     
 	}
 
-  public void setPower(double volts){
-    talon1.setVoltage(volts);
+// --------------- Control Input ---------------------
+
+  public void setPower(double power){
+	talon1.set(ControlMode.PercentOutput, power);
   }
 
   public void setSolenoidBrake(){
@@ -77,6 +82,28 @@ public class Elevator extends SubsystemBase {
 
   public void setSolenoidMove(){
     m_elevatorSolenoid.set(true);
+  }
+
+  /**
+   * 
+   * @param found whether the elevator knows its position
+   */
+  public void isFound(boolean found){
+	isFound = found;
+  }
+
+  // ------------- System State -------------------
+
+  public double getEncoderTicks() {
+	return talon1.getSelectedSensorPosition();
+  }
+
+  /**
+   * 
+   * @return whether the elevator knows where it is
+   */
+  public boolean isFound(){
+	return isFound;
   }
   
   @Override
