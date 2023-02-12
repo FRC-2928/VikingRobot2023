@@ -99,7 +99,7 @@ public final class Log extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		if(this.dirty) {
+		if(this.dirty || true) {
 			SmartDashboard.putString("SystemLog", this.log.toString());
 			this.dirty = false;
 		}
