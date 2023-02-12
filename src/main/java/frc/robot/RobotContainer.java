@@ -354,6 +354,8 @@ public class RobotContainer {
 			)
 		);
 
+		//----- commented because paths haven't saved as json files yet ---------
+
 		// chooser.addOption("Tag6 Balance", 
 		// 	new SequentialCommandGroup(
 		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
