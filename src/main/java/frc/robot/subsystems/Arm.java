@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -18,7 +19,7 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
 
   public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
-	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+  public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 
   Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   
@@ -66,7 +67,26 @@ public class Arm extends SubsystemBase {
 		}
 
     talonFollower.follow(talonLeader);
-	}
+  }
+
+  // -------------- System State ---------------------
+
+  // TODO: use absolute encoder thingy
+  public double getPosition(){
+
+	return 0;
+  }
+
+  // -------------- Control Input --------------------
+
+  /**
+   * 
+   * @param power the power for the arm from -1 to 1
+   */
+  public void setPower(double power){
+	talonLeader.set(ControlMode.PercentOutput, power);
+  }
+
 
   
 

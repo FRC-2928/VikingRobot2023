@@ -65,6 +65,22 @@ public final class Constants {
 		public static final double shootPower = .5;
 	}
 
+	public static final class ElevatorConstants {
+		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
+		public static final double lowHeight = 0;
+		public static final double midHeight = 0;
+		public static final double highHeight = 0;
+		public static final double defaultPower = .4;
+	}
+
+	public static final class ArmConstants {
+		public static final Gains armGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
+		public static final double lowHeight = 0;
+		public static final double midHeight = 0;
+		public static final double highHeight = 0;
+		public static final double defaultPower = .4;
+	}
+
 	public static final class DrivetrainConstants {
 
 		public static final double kTrackWidthMeters = 0.7; // Placeholder
