@@ -142,7 +142,7 @@ public class RobotContainer {
 		//this.driverOI.getBalanceButton().whileTrue(BalancePID.manual(this.drivetrain));
 		//this.driverOI.getRollButton().whileTrue(BalanceRollPID.manual(this.drivetrain));
 		//this.driverOI.getApproachTagButton().whileTrue(ApproachTag.manual(this.drivetrain));
-		this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
+		// this.driverOI.getBalanceAuxButton().whileTrue(BalanceAUX.manual(this.drivetrain));
 		this.driverOI.getBalanceAuxButton().onTrue((new SequentialCommandGroup(new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain))));
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
 			this.drivetrain.zeroGyro();
@@ -347,13 +347,20 @@ public class RobotContainer {
 			)
 		);
 
-		chooser.addOption("Tag8 Routines1",
+		chooser.addOption("Tag7 Balance",
 			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-			));
+				new DriveTime(-.38, 4, drivetrain),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)
+		);
+
+		// chooser.addOption("Tag8 Routines1",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
+		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+		// ));
 
 		chooser.addOption("Calibrate Trajectory", 
 			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
