@@ -141,8 +141,8 @@ public final class Constants {
 		// public static final double kvVoltSecondsPerMeter = 0.21907;
 		// public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
 
-		public static final double ksVolts = 0.022649;
-		public static final double kvVoltSecondsPerMeter = 0.54389;
+		public static final double ksVolts = 0.024305;
+		public static final double kvVoltSecondsPerMeter = 3.7486;
 		public static final double kaVoltSecondsSquaredPerMeter = 0.023529;
 
 		// Feedforward contraints
