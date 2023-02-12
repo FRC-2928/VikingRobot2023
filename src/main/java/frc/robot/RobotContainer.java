@@ -25,6 +25,7 @@ import frc.robot.commands.POVSelector;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
+import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
@@ -321,8 +322,13 @@ public class RobotContainer {
 
 		chooser.setDefaultOption("Tag7 over platform",
 			new SequentialCommandGroup(
-				// new DriveDistance(-.35, 4, drivetrain),
-				this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.cargo.get(7).toPose2d()))
+				new DriveDistance(-.35, 4, drivetrain),
+				this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.cargo.get(7).toPose2d())),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo7-Tag6")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Balance")),
+				new DriveTime(-.38, 4, drivetrain),
+				new BalanceAUX(drivetrain, false, 15000)
 			)
 		);
 
@@ -334,7 +340,7 @@ public class RobotContainer {
 			new SequentialCommandGroup(
 				new WaitCommand(.1),
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				new BalanceAUX(drivetrain, false, 15)
+				new BalanceAUX(drivetrain, false, 15000)
 			)
 		);
 
