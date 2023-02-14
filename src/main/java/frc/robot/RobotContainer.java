@@ -561,6 +561,7 @@ public class RobotContainer {
         return trajectory;
     }
 
+	
 	public Trajectory generateLocalTrajectory(Direction direction) {
 		Log.writeln("generateLocalTrajectory");
 		if (this.drivetrain.hasNoLimelightTarget()) {
