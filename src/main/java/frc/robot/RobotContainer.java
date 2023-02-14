@@ -356,27 +356,27 @@ public class RobotContainer {
 
 		//----- commented because paths haven't saved as json files yet ---------
 
-		// chooser.addOption("Tag6 Balance", 
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
-		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-		// 	)	
-		// );
+		chooser.addOption("Tag6 Balance", 
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)	
+		);
 
-		// chooser.addOption("Tag8 Balance", 
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
-		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-		// 	)	
-		// );
+		chooser.addOption("Tag8 Balance", 
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)	
+		);
 
-		// chooser.addOption("Tag8 Routines1",
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
-		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-		// ));
+		chooser.addOption("Tag8 Routines1",
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+		));
 
 		chooser.addOption("Calibrate Trajectory", 
 			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
