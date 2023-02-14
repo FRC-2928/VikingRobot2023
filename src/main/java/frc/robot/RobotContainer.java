@@ -390,16 +390,16 @@ public class RobotContainer {
 			)
 		);
 
-		chooser.addOption(
-			"Curve right around Charging Station and balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-				// Todo: find right time/speed to get onto teeter totter
-				// new DriveTime(-.4, .5, this.drivetrain),
-				new BalanceAUX(drivetrain, false, 15)
-			)
-		);
+		// chooser.addOption(
+		// 	"Curve right around Charging Station and balance",
+		// 	new SequentialCommandGroup(
+		// 		new WaitCommand(.1),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
+		// 		// Todo: find right time/speed to get onto teeter totter
+		// 		// new DriveTime(-.4, .5, this.drivetrain),
+		// 		new BalanceAUX(drivetrain, false, 15)
+		// 	)
+		// );
 
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
