@@ -23,6 +23,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.Constants.IntakeConstants;
@@ -136,20 +137,10 @@ public class RobotContainer {
 				// CHECK THOUGH
 		// this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), elevator));
 		// this.arm.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), arm));
-		// this.operatorOI.getHigh().onTrue(new SequentialCommandGroup(
-		// 	new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-		// 	new ArmGoToPosition(arm, ArmConstants.highHeight)
-		// ));
-
-		// this.operatorOI.getMid().onTrue(new SequentialCommandGroup(
-		// 	new ElevatorGoToHeight(elevator, ElevatorConstants.midHeight),
-		// 	new ArmGoToPosition(arm, ArmConstants.midHeight)
-		// ));
-
-		// this.operatorOI.getLow().onTrue(new SequentialCommandGroup(
-		// 	new ElevatorGoToHeight(elevator, ElevatorConstants.lowHeight),
-		// 	new ArmGoToPosition(arm, ArmConstants.lowHeight)
-		// ));
+		
+		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highHeight));
+		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.midHeight, ArmConstants.midHeight));
+		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowHeight));
 
 		// Configure driver button commands
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
