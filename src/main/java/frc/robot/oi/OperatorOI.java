@@ -58,4 +58,16 @@ public class OperatorOI extends OIBase {
 	public DoubleSupplier getArmSupplier() {
 		return () -> this.controller.getLeftX();
 	}
+
+	public Trigger getHigh(){
+		return new Trigger(() -> this.controller.getPOV() == 0);
+	}
+
+	public Trigger getMid(){
+		return new Trigger(() -> this.controller.getPOV() == 90);
+	}
+
+	public Trigger getLow(){
+		return new Trigger(() -> this.controller.getPOV() == 180);
+	}
 }
