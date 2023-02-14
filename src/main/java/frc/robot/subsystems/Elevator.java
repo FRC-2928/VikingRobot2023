@@ -110,8 +110,14 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //TODO: make for when hitting home or limit switch
+    if(1==1){
+      isFound = true;
+    }
+    
     if(!isFound){
       setPower(ElevatorConstants.defaultPower);
     }
+    
   }
 }
