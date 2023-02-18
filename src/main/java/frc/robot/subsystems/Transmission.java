@@ -11,9 +11,9 @@ import frc.robot.Constants;
  */
 
 public class Transmission extends SubsystemBase {
-	private Solenoid shiftPiston;
-	// private Solenoid shiftPistonHigh;
-	// private Solenoid shiftPistonLow;
+	//private Solenoid shiftPiston;
+	private Solenoid shiftPistonHigh;
+	private Solenoid shiftPistonLow;
 	private GearState gearState;
 
 	public enum GearState {
@@ -22,9 +22,9 @@ public class Transmission extends SubsystemBase {
 	}
 
 	public Transmission() {
-		this.shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoid);
-		// this.shiftPistonHigh = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidHigh);
-		// this.shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
+		// this.shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoid);
+		this.shiftPistonHigh = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidHigh);
+		this.shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
 
 		this.gearState = GearState.LOW;
 
@@ -38,17 +38,17 @@ public class Transmission extends SubsystemBase {
 
 		switch (state) {
 			case HIGH:
-				this.shiftPiston.set(false);
-				// this.shiftPistonHigh.set(false);
-				// this.shiftPistonLow.set(true);
+				//this.shiftPiston.set(false);
+				this.shiftPistonHigh.set(false);
+				this.shiftPistonLow.set(true);
 
 				Log.writeln("Transmission: HIGH");
 				break;
 
 			case LOW:
-				this.shiftPiston.set(true);
-				// this.shiftPistonHigh.set(true);
-				// this.shiftPistonLow.set(false);
+				//this.shiftPiston.set(true);
+				this.shiftPistonHigh.set(true);
+				this.shiftPistonLow.set(false);
 
 				Log.writeln("Transmission: LOW");
 				break;
