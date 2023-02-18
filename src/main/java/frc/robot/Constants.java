@@ -34,11 +34,18 @@ public final class Constants {
 
 	public static final class CANBusIDs {
 		// Drivetrain, right side
-		public static final int DrivetrainRightBackTalonFX = 19;
-		public static final int DrivetrainRightFrontTalonFX = 18;
+		// public static final int DrivetrainRightBackTalonFX = 19;
+		// public static final int DrivetrainRightFrontTalonFX = 18;
+
+		public static final int DrivetrainRightBackTalonFX = 15;
+		public static final int DrivetrainRightFrontTalonFX = 14;
+
 		// Drivetrain, left side
-		public static final int DrivetrainLeftFrontTalonFX = 16;
-		public static final int DrivetrainLeftBackTalonFX = 17;
+		// public static final int DrivetrainLeftFrontTalonFX = 16;
+		// public static final int DrivetrainLeftBackTalonFX = 17;
+
+		public static final int DrivetrainLeftFrontTalonFX = 1;
+		public static final int DrivetrainLeftBackTalonFX = 0;
 
 		//Arm
 		public static final int ArmTalon1 = 5;
