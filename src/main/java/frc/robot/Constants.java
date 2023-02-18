@@ -21,7 +21,7 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 public final class Constants {
 	public static final class PneumaticIDs {
 		// Solenoids
-		// public static final int kDrivetrainShiftSolenoid = 0;
+		public static final int kDrivetrainShiftSolenoid = 0;
 		public static final int kRampSolenoid = 1;
 		public static final int kArmSolenoid = 2;
 
@@ -101,12 +101,12 @@ public final class Constants {
 		public static final double kUnitsPerRevolution = 2048;
 
 		// for sweetpants
-		public static final double highGearRatio = 5;
-		public static final double lowGearRatio = 10.71;
+		// public static final double highGearRatio = 5;
+		// public static final double lowGearRatio = 10.71;
 
 		// for competition robot
-		// public static final double highGearRatio = 5.68
-		// public static final double lowGearRatio = 8.82
+		public static final double highGearRatio = 5.68;
+		public static final double lowGearRatio = 8.82;
 
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
 				AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelMetersPerSecondSquared);
