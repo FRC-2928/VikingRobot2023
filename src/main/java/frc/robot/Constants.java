@@ -79,6 +79,7 @@ public final class Constants {
 		public static final double midHeight = 0;
 		public static final double highHeight = 0;
 		public static final double defaultPower = .4;
+
 	}
 
 	public static final class DrivetrainConstants {
