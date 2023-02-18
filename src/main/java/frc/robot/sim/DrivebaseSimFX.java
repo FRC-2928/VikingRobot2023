@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConstants;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -122,20 +123,20 @@ public class DrivebaseSimFX {
 							nativeUnitsToDistanceMeters(_leftMaster.getSelectedSensorPosition()),
 							nativeUnitsToDistanceMeters(_rightMaster.getSelectedSensorPosition()));
 		_field.setRobotPose(_odometry.getPoseMeters());
-		// SmartDashboard.putData("Field", _field);
+		SmartDashboard.putData("Field", _field);
 	}
 
 	// Helper methods to convert between meters and native units
 
 	private int distanceToNativeUnits(double positionMeters){
-		double wheelRotations = positionMeters/(Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
+		double wheelRotations = positionMeters/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		double motorRotations = wheelRotations * DrivetrainConstants.lowGearRatio;
 		int sensorCounts = (int)(motorRotations * DrivetrainConstants.encoderCPR);
 		return sensorCounts;
 	}
 
 	private int velocityToNativeUnits(double velocityMetersPerSecond){
-		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
+		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		double motorRotationsPerSecond = wheelRotationsPerSecond * DrivetrainConstants.lowGearRatio;
 		double motorRotationsPer100ms = motorRotationsPerSecond / 10;
 		int sensorCountsPer100ms = (int)(motorRotationsPer100ms * DrivetrainConstants.encoderCPR);
@@ -145,7 +146,7 @@ public class DrivebaseSimFX {
 	private double nativeUnitsToDistanceMeters(double sensorCounts){
 		double motorRotations = (double)sensorCounts / DrivetrainConstants.encoderCPR;
 		double wheelRotations = motorRotations / DrivetrainConstants.lowGearRatio;
-		double positionMeters = wheelRotations * (Math.PI * Units.inchesToMeters(DrivetrainConstants.kWheelDiameterMeters));
+		double positionMeters = wheelRotations * (Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		return positionMeters;
 	}
 }
