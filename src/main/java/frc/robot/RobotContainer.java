@@ -10,19 +10,21 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.POVSelector;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
@@ -128,8 +130,14 @@ public class RobotContainer {
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
 		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
 
-		// Configure driver button commands
-		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
+		// Configure gear shifting
+		if(RobotBase.isReal()) {
+			this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
+		} else {
+			// Uses the X button to test ApproachTag in simulation
+			this.driverOI.getShiftLowButton().onTrue(
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)));
+		}		
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 		
 		// this.driverOI.getOrchestraButton().whileTrue(
@@ -176,80 +184,6 @@ public class RobotContainer {
 				new Tree("Left", Direction.Left)
 			)
 		));
-
-		//POV tree for dynamic trajectories? (use TBD)
-		// this.driverOI.getTestButton().toggleOnTrue(new POVSelector(
-		// 	this.driverOI,
-		// 	path -> Log.writeln("POV Selector step: ", String.join(",", path)),
-		// 	(str, path) -> Log.writeln("POV Selector finish: ", str, " (", String.join(",", path), ')'),
-		// 	new Tree("Deposit",
-		// 		new Tree("Center Station",
-		// 			new Tree("Center Position",
-		// 				new Tree("Top", new int[] { 2, 2, 3 }),
-		// 				new Tree("Middle", new int[] { 2, 2, 2 }),
-		// 				new Tree("Bottom", new int[] { 2, 2, 1 }),
-		// 				new Tree("Top", new int[] { 2, 2, 3 })
-		// 			),
-		// 			new Tree("Right Position",
-		// 				new Tree("Top", new int[] { 2, 3, 3 }),
-		// 				new Tree("Middle", new int[] { 2, 3, 2 }),
-		// 				new Tree("Bottom", new int[] { 2, 3, 1 }),
-		// 				new Tree("Top", new int[] { 2, 3, 3 })
-		// 			),
-		// 			new Tree(),
-		// 			new Tree("Left Position",
-		// 				new Tree("Top", new int[] { 2, 1, 3 }),
-		// 				new Tree("Middle", new int[] { 2, 1, 2 }),
-		// 				new Tree("Bottom", new int[] { 2, 1, 1 }),
-		// 				new Tree("Top", new int[] { 2, 1, 3 })
-		// 			)
-		// 		),
-		// 		new Tree("Right Station",
-		// 			new Tree("Center Position",
-		// 				new Tree("Top", new int[] { 3, 2, 3 }),
-		// 				new Tree("Middle", new int[] { 3, 2, 2 }),
-		// 				new Tree("Bottom", new int[] { 3, 2, 1 }),
-		// 				new Tree("Top", new int[] { 3, 2, 3 })
-		// 			),
-		// 			new Tree("Right Position",
-		// 				new Tree("Top", new int[] { 3, 3, 3 }),
-		// 				new Tree("Middle", new int[] { 3, 3, 2 }),
-		// 				new Tree("Bottom", new int[] { 3, 3, 1 }),
-		// 				new Tree("Top", new int[] { 3, 3, 3 })
-		// 			),
-		// 			new Tree(),
-		// 			new Tree("Left Position",
-		// 				new Tree("Top", new int[] { 3, 1, 3 }),
-		// 				new Tree("Middle", new int[] { 3, 1, 2 }),
-		// 				new Tree("Bottom", new int[] { 3, 1, 1 }),
-		// 				new Tree("Top", new int[] { 3, 1, 3 })
-		// 			)
-		// 		),
-		// 		new Tree(),
-		// 		new Tree("Left Station",
-		// 			new Tree("Center Position",
-		// 				new Tree("Top", new int[] { 1, 2, 3 }),
-		// 				new Tree("Middle", new int[] { 1, 2, 2 }),
-		// 				new Tree("Bottom", new int[] { 1, 2, 1 }),
-		// 				new Tree("Top", new int[] { 1, 2, 3 })
-		// 			),
-		// 			new Tree("Right Position",
-		// 				new Tree("Top", new int[] { 1, 3, 3 }),
-		// 				new Tree("Middle", new int[] { 1, 3, 2 }),
-		// 				new Tree("Bottom", new int[] { 1, 3, 1 }),
-		// 				new Tree("Top", new int[] { 1, 3, 3 })
-		// 			),
-		// 			new Tree(),
-		// 			new Tree("Left Position",
-		// 				new Tree("Top", new int[] { 1, 1, 3 }),
-		// 				new Tree("Middle", new int[] { 1, 1, 2 }),
-		// 				new Tree("Bottom", new int[] { 1, 1, 1 }),
-		// 				new Tree("Top", new int[] { 1, 1, 3 })
-		// 			)
-		// 		)
-		// 	)
-		// ));
-		
 	}
 
 
@@ -447,9 +381,14 @@ public class RobotContainer {
 			// next, we run the actual ramsete command
 			.andThen(ramseteCommand)
 			// make sure that the robot stops
-			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
+			.andThen(new InstantCommand(() -> drivetrain.halt(), drivetrain));
 	} 
 
+	/** 
+	 * Load the trajectory from the roboRIOs deploy directory
+	 * 
+	 * @param trajectoryJSON name of trajectory to load
+	 */
 	public Trajectory loadTrajectory(String trajectoryJSON) {
 		Path trajectoryPath = Filesystem
 			.getDeployDirectory()
@@ -481,10 +420,13 @@ public class RobotContainer {
   	}
 
 	/**
+	 * Generates a dynamic trajectory starting at the current pose of the
+	 * robot, as determined by the Limelight looking at the AprilTags.
+	 * Additional waypoints may be added to navigate around field structures.
 	 * 
 	 * @param endPose pose where robot should end
-	 * @param direction 0 for left, 1 for right, 2 for robot to decide
-	 * @return
+	 * 
+	 * @return The generated Trajectory object
 	 */
 	public Trajectory generateTrajectory(Pose2d endPose) {
         Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
@@ -560,37 +502,70 @@ public class RobotContainer {
         return trajectory;
     }
 
+	/**
+	 * Generates a dynamic trajectory starting at the current pose of the
+	 * robot, as determined by the Limelight looking at the AprilTags.
+	 * The trajectory will end at the current in-view apriltag, or to the
+	 * left or right of it as directed.
+	 * 
+	 * @param direction whether the robot should end at the center, left,
+	 *                  or right of the apriltag.
+	 * 
+	 * @return The generated Trajectory object
+	 */
 	public Trajectory generateLocalTrajectory(Direction direction) {
+		
 		Log.writeln("generateLocalTrajectory");
-		if (this.drivetrain.hasNoLimelightTarget()) {
-			Log.writeln("generateLocalTrajectory: No Limelight target!");
-			return null;
-		}
-
-		// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
-		Pose2d startPose = this.drivetrain.getLimelightPoseRelative();
+		Trajectory trajectory = new Trajectory();
+		
+		// Get the aprilTag that the robot is looking at
 		double aprilTagID = this.drivetrain.getAprilTagID();
-		if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)){
-			Log.writeln("generateRamseteCommand: No valid aprilTag!" + aprilTagID);
-			return null;
-		}
 
-		// Now get the pose
-		Pose2d tag = FieldConstants.aprilTags.get((int)aprilTagID).toPose2d();
-		Pose2d endPose;
-		switch(direction){
-			case Left:
-			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
-			endPose = tag.plus(FieldConstants.leftOffset);	
-			break;
-			case Right:
-			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
-			endPose = tag.plus(FieldConstants.rightOffset);	
-			break;
-			default:
-			// endPose = tag.plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));
-			endPose = tag.plus(FieldConstants.centerOffset);		
-			break;		
+		// Default trajectory if no limelight target is to move back 0.5 meters
+		Pose2d startPose = this.drivetrain.getEncoderPose();
+		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.5, 0), 
+										new Rotation2d()));
+		// Set the trajectory config to reversed.
+		TrajectoryConfig config = AutoConstants.kTrajectoryConfigReversed;
+		
+		List<Translation2d> waypoints = new ArrayList<>();
+	
+		if (this.drivetrain.hasNoLimelightTarget()) {			
+			Log.writeln("No Limelight target!");	
+			Log.writeln("Start Pose X ", startPose.getX());
+			Log.writeln("Start Pose Y ", startPose.getY());
+			Log.writeln("Start Pose Heading ", startPose.getRotation().getDegrees());
+		
+			Log.writeln("End Pose X ", endPose.getX());
+			Log.writeln("End Pose Y ", endPose.getY());
+			Log.writeln("End Pose Heading ", endPose.getRotation().getDegrees());
+
+		} else if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)){
+			Log.writeln("Invalid aprilTag! " + aprilTagID);	
+
+		} else {
+			// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
+			startPose = this.drivetrain.getLimelightPoseRelative();
+			// Move forward config
+			config = AutoConstants.kTrajectoryConfig;
+
+			// Now get the pose
+			Pose2d tag = FieldConstants.aprilTags.get((int)aprilTagID).toPose2d();
+			switch(direction){
+				case Left:
+				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
+				endPose = tag.plus(FieldConstants.leftOffset);	
+				break;
+				case Right:
+				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
+				endPose = tag.plus(FieldConstants.rightOffset);	
+				break;
+				default:
+				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));
+				endPose = tag.plus(FieldConstants.centerOffset);		
+				break;		
+			}
+	
 		}
 
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
@@ -601,13 +576,10 @@ public class RobotContainer {
         SmartDashboard.putNumber("End Pose Y", endPose.getY());
         SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
         
-		Trajectory trajectory;
-		List<Translation2d> waypoints = new ArrayList<>();
-
 		// waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 					waypoints,
-        			endPose, AutoConstants.kTrajectoryConfig);
+        			endPose, config);
 
 		Log.writeln("Initial Pose: " + trajectory.getInitialPose());
 		Log.writeln("Waypoints:" + waypoints);
@@ -631,7 +603,7 @@ public class RobotContainer {
 						" Curvature:" + state.curvatureRadPerMeter);
 		}  
 
-		Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 
+		Log.writeln("Trajectory total time: " + trajectory.getTotalTimeSeconds()); 
 	}	
 
 	public Command getAutonomousCommand() {

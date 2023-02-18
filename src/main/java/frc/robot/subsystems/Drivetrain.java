@@ -178,6 +178,7 @@ public class Drivetrain extends SubsystemBase {
 	// Control Input
 	// -----------------------------------------------------------
 	public void halt() {
+		Log.writeln("Halt");
 		this.tankDriveVolts(0, 0);
 	}
 
@@ -379,11 +380,16 @@ public class Drivetrain extends SubsystemBase {
 	// Robot transform in field-space with the alliance driverstation at the origin
 	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative(){
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
-			return this.limelight.getRedPose2d();
+		if(RobotBase.isReal()) {		
+			if(RobotContainer.alliance == DriverStation.Alliance.Red){
+				return this.limelight.getRedPose2d();
+			} else {		
+					return this.limelight.getBluePose2d();
+			}	
 		} else {
-			return this.limelight.getBluePose2d();
-		}	
+			// In simulation we just return the encoder pose.
+			return this.getEncoderPose();
+		}		
 	}
 
   	/** 
@@ -420,7 +426,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public boolean hasValidLimelightTarget() {
-		return this.limelight.getHasValidTargets();
+		if(RobotBase.isReal()) {
+			return this.limelight.getHasValidTargets();
+		} else {
+			return this.getHasValidTargetsSim();
+		}		
 	}
 
 	public boolean hasNoLimelightTarget() {
@@ -428,7 +438,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getAprilTagID() {
-		return this.limelight.getAprilTagID();
+		if(RobotBase.isReal()) {
+			return this.limelight.getAprilTagID();
+		} else {
+			return this.getAprilTagIDSim();
+		}		
 	}
 
 	// ----------------------------------------------------
@@ -493,4 +507,30 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
+
+	public boolean getHasValidTargetsSim() {
+		double heading = getEncoderPose().getRotation().getDegrees();
+		Log.writeln("getHasValidTargetsSim Heading:" + heading);
+		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+			if (heading < 75 || heading > -75) {
+				Log.writeln("true - Red");
+				return true;
+			} else {
+				Log.writeln("true - Red");
+				return false;
+			}	
+		} else {
+			if (heading > 135 || heading < -135) {
+				Log.writeln("true - Blue");
+				return true;
+			} else {
+				Log.writeln("false - Blue");
+				return false;
+			}	
+		}	
+	}
+
+	public double getAprilTagIDSim() {
+		return 6;
+	}
 }

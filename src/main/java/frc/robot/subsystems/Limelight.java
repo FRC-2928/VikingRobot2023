@@ -122,14 +122,8 @@ public class Limelight {
 		}
 	}
 
-	public Pose2d getBluePose2d(){
-		if(RobotBase.isReal()) {
+	public Pose2d getBluePose2d(){	
 			return getBluePose3d().toPose2d();
-		} else {
-			Pose2d tag = FieldConstants.aprilTags.get(6).toPose2d();
-			return tag.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
-			// return new Pose2d();
-		}	
 	}
 
 	// Robot transform in field-space. Translation (X)
