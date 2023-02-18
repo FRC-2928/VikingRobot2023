@@ -184,6 +184,13 @@ public final class Constants {
 				.setKinematics(DrivetrainConstants.kDriveKinematics)
 				.addConstraint(kAutoVoltageConstraint);
 
+		public static final TrajectoryConfig kTrajectoryConfigReversed = new TrajectoryConfig(
+			kMaxSpeedMetersPerSecond,
+			kMaxAccelMetersPerSecondSquared)
+			.setKinematics(DrivetrainConstants.kDriveKinematics)
+			.addConstraint(kAutoVoltageConstraint)
+			.setReversed(true);
+
 		// Reasonable baseline values for a RAMSETE follower in units of meters and
 		// seconds
 		public static final double kRamseteB = 2;

@@ -30,7 +30,8 @@
       "/SmartDashboard/Encoder Pose": "Field2d",
       "/SmartDashboard/Estimated Pose": "Field2d",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Limelight Pose": "Field2d"
+      "/SmartDashboard/Limelight Pose": "Field2d",
+      "/SmartDashboard/Sim Field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/AutoRoutineChooser": {
