@@ -123,7 +123,7 @@ public class RobotContainer {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(
-					-this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
+					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
 					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier
 				),
 				this.drivetrain
