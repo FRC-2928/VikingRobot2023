@@ -83,6 +83,7 @@ public final class Constants {
 
 	public static final class DrivetrainConstants {
 
+		
 		public static final double kTrackWidthMeters = 0.7; // Placeholder
 		public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
 				kTrackWidthMeters);
@@ -90,7 +91,7 @@ public final class Constants {
 		public static final boolean kGyroReversed = true;
 
 		public static final int encoderCPR = 2048;
-		public static final double kWheelDiameterMeters = 0.1015;
+		public static final double kWheelDiameterMeters = 0.1016;
 
 		public static final double kEncoderDistancePerPulse =
 				// Assumes the encoders are directly mounted on the wheel shafts
@@ -98,9 +99,13 @@ public final class Constants {
 
 		public static final double kUnitsPerRevolution = 2048;
 
-		// TO DO change to correct values
+		// for sweetpants
 		public static final double highGearRatio = 5;
 		public static final double lowGearRatio = 10.71;
+
+		// for competition robot
+		// public static final double highGearRatio = 5.68
+		// public static final double lowGearRatio = 8.82
 
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
 				AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelMetersPerSecondSquared);
