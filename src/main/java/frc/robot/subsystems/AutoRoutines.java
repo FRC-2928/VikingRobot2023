@@ -32,6 +32,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
+import frc.robot.commands.DrivetrainCommands.DriveDistance;
+import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 
 /** Add your docs here. */
@@ -83,14 +85,14 @@ public class AutoRoutines {
 		// 	)
 		// );
 
-        // chooser.addOption("Tag8 Routines1",
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
-		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-		// 	)
-		// );
+        chooser.addOption("Tag8 Routines1",
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+			)
+		);
 
 		// chooser.addOption(
 		// 	"test",
@@ -135,29 +137,29 @@ public class AutoRoutines {
 		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
 		// 	);
 
-		chooser.addOption(
-			"Tag6 Routines1", 
-			new SequentialCommandGroup( 
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-			)
-		);
-
-		// // more success with this than routines1
 		// chooser.addOption(
 		// 	"Tag6 Routines2", 
 		// 	new SequentialCommandGroup( 
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3.0")),
-		// 		//new TurnDegrees(.5, 0, drivetrain),
-		// 		//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
-		// 		// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0-Tag6")),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
+		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
 		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
 		// 	)
 		// );
+
+		// // more success with this than routines2
+		chooser.addOption(
+			"Tag6 Routines1", 
+			new SequentialCommandGroup( 
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3.0")),
+				//new TurnDegrees(.5, 0, drivetrain),
+				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
+				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0-Tag6")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+			)
+		);
 
 		// chooser.addOption(
 		// 	"Tag7 Routines1", 
@@ -171,7 +173,7 @@ public class AutoRoutines {
 		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)))
 		// );
 
-		// chooser.setDefaultOption("Tag7 over platform",
+		// chooser.addOption("Tag7 over platform",
 		// 	new SequentialCommandGroup(
 		// 		new DriveDistance(-.35, 4, drivetrain),
 		// 		this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.cargo.get(7).toPose2d())),
@@ -192,12 +194,12 @@ public class AutoRoutines {
 
 		// //----- commented because paths haven't saved as json files yet ---------
 
-		// chooser.addOption("Tag6 Balance", 
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
-		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-		// 	)	
-		// ); 
+		chooser.addOption("Tag6 Balance", 
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)	
+		); 
 
         return chooser; 
 	}
