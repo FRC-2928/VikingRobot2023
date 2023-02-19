@@ -21,9 +21,9 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 public final class Constants {
 	public static final class PneumaticIDs {
 		// Solenoids
-		public static final int kDrivetrainShiftSolenoid = 0;
+		// public static final int kDrivetrainShiftSolenoid = 0;
 		public static final int kRampSolenoid = 1;
-		public static final int kArmSolenoid = 2;
+		public static final int kArmSolenoid = 1;
 
 		public static final int kDrivetrainShiftSolenoidLow = 2;
 		public static final int kDrivetrainShiftSolenoidHigh = 3;
@@ -137,9 +137,9 @@ public final class Constants {
 		public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
 		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
 		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
-		public static final Gains GainsBalance = new Gains(0.075, 0.0, 0.0, 0, 0, 0.3);
-		public static final Gains GainsRollBalance = new Gains(1, 0, 0.03, 0.0, 0, 0.3);
-		public static final Gains GainsTurnto = new Gains(1,0,0.02,0.0,0,0.3);
+		public static final Gains GainsBalance = new Gains(0.1, 0.0025, 0.015, 0, 0, 0.3);
+		public static final Gains GainsRollBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
+		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
 		public static final Gains GainsApproach = new Gains(.65,0.016,0.0,0.0,0,0.3);
 		// public static final double kDistanceToleranceMeters = 0.1;
