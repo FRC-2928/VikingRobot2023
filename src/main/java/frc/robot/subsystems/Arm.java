@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -11,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +22,8 @@ public class Arm extends SubsystemBase {
 
   public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
   public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+  //todo: initialize properly
+  public final Encoder armEncoder = new Encoder(0, 0);
 
   Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   

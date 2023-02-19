@@ -22,14 +22,18 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
+import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
@@ -129,6 +133,15 @@ public class RobotContainer {
 		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
 		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
+		// default command should run only in absence of other commands - 
+			//shouldn't be a problem for these to be default even though they're backup
+				// CHECK THOUGH
+		// this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), elevator));
+		// this.arm.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), arm));
+		
+		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highHeight));
+		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.midHeight, ArmConstants.midHeight));
+		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowHeight));
 
 		// Configure gear shifting
 		if(RobotBase.isReal()) {
@@ -290,27 +303,28 @@ public class RobotContainer {
 
 		//----- commented because paths haven't saved as json files yet ---------
 
-		// chooser.addOption("Tag6 Balance", 
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
-		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-		// 	)	
-		// );
+		chooser.addOption("Tag6 Balance", 
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)	
+		);
 
-		// chooser.addOption("Tag8 Balance", 
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
-		// 		new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-		// 	)	
-		// );
+		chooser.addOption("Tag8 Balance", 
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
+				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+			)	
+		);
 
-		// chooser.addOption("Tag8 Routines1",
-		// 	new SequentialCommandGroup(
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
-		// 		this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-		// ));
+		chooser.addOption("Tag8 Routines1",
+			new SequentialCommandGroup(
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
+				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
+			)
+		);
 
 		chooser.addOption("Calibrate Trajectory", 
 			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
