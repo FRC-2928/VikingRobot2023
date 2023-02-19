@@ -38,7 +38,7 @@ public class Transmission extends SubsystemBase {
 
 		switch (state) {
 			case HIGH:
-				// this.shiftPiston.set(false);
+				//this.shiftPiston.set(false);
 				this.shiftPistonHigh.set(false);
 				this.shiftPistonLow.set(true);
 
@@ -46,7 +46,7 @@ public class Transmission extends SubsystemBase {
 				break;
 
 			case LOW:
-				// this.shiftPiston.set(true);
+				//this.shiftPiston.set(true);
 				this.shiftPistonHigh.set(true);
 				this.shiftPistonLow.set(false);
 

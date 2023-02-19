@@ -37,6 +37,7 @@ import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
+import frc.robot.subsystems.AutoRoutines;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -86,7 +87,8 @@ public class RobotContainer {
 	private final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
 	// Create SmartDashboard chooser for autonomous routines
-	private final SendableChooser<Command> chooser = new SendableChooser<>();
+	private AutoRoutines autos;
+	private SendableChooser<Command> chooser = new SendableChooser<>();
 
 	public static DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
 
@@ -197,158 +199,12 @@ public class RobotContainer {
 				new Tree("Left", Direction.Left)
 			)
 		));
+		
 	}
 
-
 	private void configureAutoChooser() {
-		// chooser.addOption(
-		// 	"test",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance"))
-		// 	)
-		// );
-		// chooser.addOption(
-		// 	"testing",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new DriveTime(.5, 2, drivetrain)
-		// 	)
-		// );
-
-		// chooser.addOption(
-		// 	"auto 3",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto3")),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
-
-		// chooser.addOption(
-		// 	"auto 2",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto2")),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
-
-		// chooser.setDefaultOption(
-		// 	"Rotate 8", 
-		// 	new SequentialCommandGroup( 
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8")),
-		// 		// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Forward")),
-		// 		// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("AroundChargeStation")))
-		// 	);
-
-		chooser.addOption(
-			"Tag6 Routines1", 
-			new SequentialCommandGroup( 
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3")),
-				//new TurnDegrees(.5, 0, drivetrain),
-				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
-				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-			)
-		);
-
-		// more success with this than routines1
-		chooser.addOption(
-			"Tag6 Routines2", 
-			new SequentialCommandGroup( 
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Rotate3.0")),
-				//new TurnDegrees(.5, 0, drivetrain),
-				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
-				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3.0-Tag6")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-			)
-		);
-
-		chooser.addOption(
-			"Tag7 Routines1", 
-			new SequentialCommandGroup( 
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag7-Rotate3")),
-				//new TurnDegrees(.5, 0, drivetrain),
-				//new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3")),
-				// new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate8Back")))
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate3-Cargo5")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo5-Tag6")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)))
-		);
-
-		chooser.setDefaultOption("Tag7 over platform",
-			new SequentialCommandGroup(
-				new DriveDistance(-.35, 4, drivetrain),
-				this.generateRamseteCommand(() -> this.generateTrajectory(FieldConstants.cargo.get(7).toPose2d())),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo7-Tag6")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center)),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Balance")),
-				new DriveTime(-.38, 4, drivetrain),
-				new BalanceAUX(drivetrain, false, 15000)
-			)
-		);
-
-		chooser.addOption("Tag7 Balance",
-			new SequentialCommandGroup(
-				new DriveTime(-.38, 4, drivetrain),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-			)
-		);
-
-		//----- commented because paths haven't saved as json files yet ---------
-
-		chooser.addOption("Tag6 Balance", 
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag6-Around-Balance")),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-			)	
-		);
-
-		chooser.addOption("Tag8 Balance", 
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Around-Balance")),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
-			)	
-		);
-
-		chooser.addOption("Tag8 Routines1",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Tag8")),
-				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
-			)
-		);
-
-		chooser.addOption("Calibrate Trajectory", 
-			new RunRamseteTrajectory(drivetrain, calibrateTrajectory()));
-
-		chooser.addOption(
-			"Back up and balance",
-			new SequentialCommandGroup(
-				new WaitCommand(.1),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("BackUpToBalance")),
-				new BalanceAUX(drivetrain, false, 15000)
-			)
-		);
-
-		// chooser.addOption(
-		// 	"Curve right around Charging Station and balance",
-		// 	new SequentialCommandGroup(
-		// 		new WaitCommand(.1),
-		// 		new RunRamseteTrajectory(drivetrain, loadTrajectory("Auto1")),
-		// 		// Todo: find right time/speed to get onto teeter totter
-		// 		// new DriveTime(-.4, .5, this.drivetrain),
-		// 		new BalanceAUX(drivetrain, false, 15)
-		// 	)
-		// );
-
+		autos = new AutoRoutines(drivetrain);
+		chooser = autos.configureAutoChooser();
 		SmartDashboard.putData("AutoRoutineChooser", chooser);
 	}
 
