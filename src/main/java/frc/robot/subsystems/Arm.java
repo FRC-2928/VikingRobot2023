@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -23,7 +24,7 @@ public class Arm extends SubsystemBase {
   public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
   public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
   //todo: initialize properly
-  public final Encoder armEncoder = new Encoder(0, 0);
+  public final WPI_CANCoder armEncoder = new WPI_CANCoder(0);
 
   Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
   
@@ -75,10 +76,8 @@ public class Arm extends SubsystemBase {
 
   // -------------- System State ---------------------
 
-  // TODO: use absolute encoder thingy
   public double getPosition(){
-
-	return 0;
+	return armEncoder.getAbsolutePosition();
   }
 
   // -------------- Control Input --------------------

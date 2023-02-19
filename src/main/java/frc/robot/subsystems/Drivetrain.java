@@ -37,10 +37,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
-	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
-	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
+	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
+	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
 
   	private final Limelight limelight = new Limelight();
 
@@ -71,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d fieldLimelight = new Field2d();
 
 	/* Object for simulated drivetrain. */	
-	private DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
+	private DrivebaseSimFX driveSim = new DrivebaseSimFX(rightLeader, leftLeader, pigeon);
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -84,7 +84,7 @@ public class Drivetrain extends SubsystemBase {
 
 		this.setWheelPIDF();
 
-		this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
+		this.diffDrive = new DifferentialDrive(rightLeader, leftLeader);
 
 		this.feedForward = AutoConstants.kFeedForward;
 		this.feedForwardL = AutoConstants.kFeedForwardL;
@@ -110,7 +110,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void configureMotors() {
 		// Configure the motors
-		for(TalonFX fx : new TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
+		for(TalonFX fx : new TalonFX[] { this.rightLeader, this.rightFollower, this.leftLeader, this.leftFollower }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -152,19 +152,19 @@ public class Drivetrain extends SubsystemBase {
 
 		// Setting followers, followers don't automatically follow the Leader's inverts
 		// so you must set the invert type to Follow the Leader
-		this.leftFollower.setInverted(InvertType.FollowMaster);
 		this.rightFollower.setInverted(InvertType.FollowMaster);
+		this.leftFollower.setInverted(InvertType.FollowMaster);
 
-		this.leftFollower.follow(this.leftLeader, FollowerType.PercentOutput);
 		this.rightFollower.follow(this.rightLeader, FollowerType.PercentOutput);
+		this.leftFollower.follow(this.leftLeader, FollowerType.PercentOutput);
 
-		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
+		this.leftLeader.setInverted(InvertType.InvertMotorOutput);
 	}
 
 	public void setWheelPIDF() {
 
         // set the PID values for each individual wheel
-        for(TalonFX fx : new TalonFX[] {leftLeader, rightLeader}){
+        for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}){
             
             fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
             fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
@@ -191,8 +191,8 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
-		this.leftLeader.set(ControlMode.PercentOutput, leftVolts / 12);
-		this.rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
+		this.rightLeader.set(ControlMode.PercentOutput, leftVolts / 12);
+		this.leftLeader.set(ControlMode.PercentOutput, rightVolts / 12);
 
 		// Feed motor safety to assert that we're in control
 		this.diffDrive.feed();
@@ -204,8 +204,8 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void resetEncoders() {
-		this.leftLeader.setSelectedSensorPosition(0);
 		this.rightLeader.setSelectedSensorPosition(0);
+		this.leftLeader.setSelectedSensorPosition(0);
 	}
 
 	public void resetOdometry(Pose2d pose) {
@@ -233,11 +233,11 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
 		SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
 
-		this.leftLeader.set(ControlMode.Velocity,
+		this.rightLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
 				leftFeedForward / AutoConstants.k_MaxVolts);
-		this.rightLeader.set(ControlMode.Velocity,
+		this.leftLeader.set(ControlMode.Velocity,
 				rightVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
 				rightFeedForward / AutoConstants.k_MaxVolts);
@@ -246,8 +246,8 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void turnPower(double power){
-		rightLeader.setVoltage(power);
-		leftLeader.setVoltage(-power);
+		leftLeader.setVoltage(power);
+		rightLeader.setVoltage(-power);
 	}
 
 	// -----------------------------------------------------------
@@ -272,11 +272,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getLeftDistanceMeters() {
-		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
 	}
 
 	public double getRightDistanceMeters() {
-		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
 	}
 
 	public double getAvgDistanceMeters() {
@@ -338,7 +338,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getMotorOutput() {
-		return this.rightLeader.getMotorOutputVoltage();
+		return this.leftLeader.getMotorOutputVoltage();
 	}
 
 	public double metersToWheelRotations(double metersPerSecond) {
@@ -472,8 +472,8 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
-		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
 
 		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());	
 		SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
@@ -498,8 +498,8 @@ public class Drivetrain extends SubsystemBase {
 	// ----------------------------------------------------
 
 	public void simulationInit() {
-		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 	}
 	
 	@Override
