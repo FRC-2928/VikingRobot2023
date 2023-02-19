@@ -89,7 +89,8 @@ public class AutoRoutines {
 			new SequentialCommandGroup(
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Tag8-Rotate4")),
 				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-Cargo8")),
-				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-AprilTag8")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Cargo8-Rotate4")),
+				new RunRamseteTrajectory(drivetrain, loadTrajectory("Rotate4-AprilTag8")),
 				this.generateRamseteCommand(() -> this.generateLocalTrajectory(Direction.Center))
 			)
 		);
