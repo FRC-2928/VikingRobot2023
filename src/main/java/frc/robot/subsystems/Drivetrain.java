@@ -92,6 +92,13 @@ public class Drivetrain extends SubsystemBase {
 
 		this.resetEncoders();
 		this.zeroGyro();
+		
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			this.pigeon.setYaw(0);
+		} else {
+			this.pigeon.setYaw(180);
+		}
+		
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
