@@ -12,7 +12,11 @@ public class FindHome extends CommandBase {
 
   Elevator m_elevator;
   
-  /** Creates a new FindHome. */
+  /** Creates a new FindHome. 
+   * to be used when elevator is lost (how sad!) which will print on shuffleboard
+   * goes up until finding either home or limit switch, and then reset encoders
+   * (does not do these things yet)
+  */
   public FindHome(Elevator elevator) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_elevator = elevator;
