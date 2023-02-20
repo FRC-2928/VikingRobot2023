@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.LimelightHelpers.LimelightResults;
 
 /**
  * Limelight utility is responsible for I/O with both Limelight 3
@@ -88,21 +89,22 @@ public class Limelight {
 
 	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getPose3d(){
-		double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
-		if(pose.length == 0) {
-			return new Pose3d(); 
-		}
-		else {
-			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3] * Math.PI / 180, 
-							  				 pose[4] * Math.PI / 180, 
-											 pose[5] * Math.PI / 180));
-		}
+		return LimelightHelpers.getBotPose3d("");
+		// double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
+		// if(pose.length == 0) {
+		// 	return new Pose3d(); 
+		// }
+		// else {
+		// 	return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+		// 					  new Rotation3d(pose[3] * Math.PI / 180, 
+		// 					  				 pose[4] * Math.PI / 180, 
+		// 									 pose[5] * Math.PI / 180));
+		// }
 	}
 
 	// Robot transform in 2D field-space. Translation (X,Y) Rotation(Z)
 	public Pose2d getPose2d(){
-		return getPose3d().toPose2d();
+		return LimelightHelpers.getBotPose2d("");
 	}
 
 	// ---------------------------------------------------------------------
@@ -110,20 +112,21 @@ public class Limelight {
 	// ---------------------------------------------------------------------
 	// Robot transform in field-space (blue driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getBluePose3d(){
-		double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-		if(pose.length == 0) {
-			return new Pose3d(); 
-		}
-		else {
-			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3] * Math.PI / 180, 
-							  				 pose[4] * Math.PI / 180, 
-											 pose[5] * Math.PI / 180));
-		}
+		return LimelightHelpers.getBotPose3d_wpiBlue("");
+		// double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+		// if(pose.length == 0) {
+		// 	return new Pose3d(); 
+		// }
+		// else {
+		// 	return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+		// 					  new Rotation3d(pose[3] * Math.PI / 180, 
+		// 					  				 pose[4] * Math.PI / 180, 
+		// 									 pose[5] * Math.PI / 180));
+		// }
 	}
 
 	public Pose2d getBluePose2d(){	
-			return getBluePose3d().toPose2d();
+		return LimelightHelpers.getBotPose2d_wpiBlue("");
 	}
 
 	// Robot transform in field-space. Translation (X)
@@ -140,27 +143,22 @@ public class Limelight {
 	// Red Pose
 	// ---------------------------------------------------------------------
 	public Pose2d getRedPose2d(){
-		if(RobotBase.isReal()) {
-			return getRedPose3d().toPose2d();
-		} else {
-			Pose2d tag = FieldConstants.aprilTags.get(2).toPose2d();
-			return tag.plus(new Transform2d(new Translation2d(-1.0, -0.2), new Rotation2d()));
-			// return new Pose2d();
-		}				
+		return LimelightHelpers.getBotPose2d_wpiRed("");		
 	}
 
 	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
 	public Pose3d getRedPose3d(){
-		double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-		if(pose.length == 0) {
-			return new Pose3d(); 
-		}
-		else {
-			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3]  * Math.PI / 180, 
-							  				 pose[4] * Math.PI / 180, 
-											 pose[5] * Math.PI / 180));
-		}
+		return LimelightHelpers.getBotPose3d_wpiRed("");
+		// double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+		// if(pose.length == 0) {
+		// 	return new Pose3d(); 
+		// }
+		// else {
+		// 	return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
+		// 					  new Rotation3d(pose[3]  * Math.PI / 180, 
+		// 					  				 pose[4] * Math.PI / 180, 
+		// 									 pose[5] * Math.PI / 180));
+		// }
 	}
 
 	// Robot transform in field-space. Translation (X)
@@ -179,30 +177,12 @@ public class Limelight {
 
 	// 3D transform of the primary in-view AprilTag in the coordinate system of the Robot (array (6))
 	public Pose3d getRobotTagPose3d() {
-		double[] pose = this.m_limelightNI.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
-		if(pose.length == 0) {
-			return new Pose3d(); 
-		}
-		else {
-			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3] * Math.PI / 180, 
-							  				 pose[4] * Math.PI / 180, 
-											 pose[5] * Math.PI / 180));
-		}
+		return LimelightHelpers.getTargetPose3d_RobotSpace("");
 	}
 
 	// 3D transform of the primary in-view AprilTag in the coordinate system of the Camera (array (6))
 	public Pose3d getCameraTagPose3d() {
-		double[] pose = this.m_limelightNI.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
-		if(pose.length == 0) {
-			return new Pose3d(); 
-		}
-		else {
-			return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]), 
-							  new Rotation3d(pose[3] * Math.PI / 180, 
-							  				 pose[4] * Math.PI / 180, 
-											 pose[5] * Math.PI / 180));
-		}
+		return LimelightHelpers.getTargetPose3d_CameraSpace("");
 	}
 	
 }
