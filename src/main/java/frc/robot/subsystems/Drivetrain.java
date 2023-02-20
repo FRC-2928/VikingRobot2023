@@ -1,36 +1,25 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.List;
 import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.sim.PhysicsSim;
@@ -48,10 +37,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
-	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
-	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
+	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
+	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
 
   	private final Limelight limelight = new Limelight();
 
@@ -64,6 +53,13 @@ public class Drivetrain extends SubsystemBase {
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForward;
+	private SimpleMotorFeedforward feedForwardL;
+	private SimpleMotorFeedforward feedForwardR;
+
+	private double offset;
+	MedianFilter m_verticalFilter = new MedianFilter(10);
+
+	MedianFilter m_limelightFilter = new MedianFilter(10);
 
 	// Drivetrain odometry to keep track of our position on the field
 	private DifferentialDriveOdometry odometry;
@@ -75,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d fieldLimelight = new Field2d();
 
 	/* Object for simulated drivetrain. */	
-	private DrivebaseSimFX driveSim = new DrivebaseSimFX(leftLeader, rightLeader, pigeon);
+	private DrivebaseSimFX driveSim = new DrivebaseSimFX(rightLeader, leftLeader, pigeon);
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -88,30 +84,40 @@ public class Drivetrain extends SubsystemBase {
 
 		this.setWheelPIDF();
 
-		this.diffDrive = new DifferentialDrive(leftLeader, rightLeader);
+		this.diffDrive = new DifferentialDrive(rightLeader, leftLeader);
 
-		this.feedForward = DrivetrainConstants.kFeedForward;
+		this.feedForward = AutoConstants.kFeedForward;
+		this.feedForwardL = AutoConstants.kFeedForwardL;
+		this.feedForwardR = AutoConstants.kFeedForwardR;
 
 		this.resetEncoders();
 		this.zeroGyro();
+		
+		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			this.pigeon.setYaw(0);
+		} else {
+			this.pigeon.setYaw(180);
+		}
+		
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
-		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose());
+		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, 
+									new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose2d());
 
 		this.field2d.setRobotPose(this.getEncoderPose());
-		SmartDashboard.putData("Field", this.field2d);
+		SmartDashboard.putData("Encoder Pose", this.field2d);
 
 		this.fieldEstimated.setRobotPose(getEstimatedPose());
 		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
 
-		this.fieldLimelight.setRobotPose(getLimelightPose());
+		this.fieldLimelight.setRobotPose(getLimelightPose2d());
 		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
 	public void configureMotors() {
 		// Configure the motors
-		for(TalonFX fx : new TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
+		for(TalonFX fx : new TalonFX[] { this.rightLeader, this.rightFollower, this.leftLeader, this.leftFollower }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -153,24 +159,24 @@ public class Drivetrain extends SubsystemBase {
 
 		// Setting followers, followers don't automatically follow the Leader's inverts
 		// so you must set the invert type to Follow the Leader
-		this.leftFollower.setInverted(InvertType.FollowMaster);
 		this.rightFollower.setInverted(InvertType.FollowMaster);
+		this.leftFollower.setInverted(InvertType.FollowMaster);
 
-		this.leftFollower.follow(this.leftLeader, FollowerType.PercentOutput);
 		this.rightFollower.follow(this.rightLeader, FollowerType.PercentOutput);
+		this.leftFollower.follow(this.leftLeader, FollowerType.PercentOutput);
 
-		this.rightLeader.setInverted(InvertType.InvertMotorOutput);
+		this.leftLeader.setInverted(InvertType.InvertMotorOutput);
 	}
 
 	public void setWheelPIDF() {
 
         // set the PID values for each individual wheel
-        for(TalonFX fx : new TalonFX[] {leftLeader, rightLeader}){
+        for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}){
             
-            fx.config_kP(0, DrivetrainConstants.GainsProfiled.P, 0);
-            fx.config_kI(0, DrivetrainConstants.GainsProfiled.I, 0);
-            fx.config_kD(0, DrivetrainConstants.GainsProfiled.D, 0);
-            fx.config_kF(0, DrivetrainConstants.GainsProfiled.F, 0);
+            fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
+            fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
+            fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
+            fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
             // m_talonsMaster.config_IntegralZone(0, 30);
         }
     }
@@ -179,6 +185,7 @@ public class Drivetrain extends SubsystemBase {
 	// Control Input
 	// -----------------------------------------------------------
 	public void halt() {
+		Log.writeln("Halt");
 		this.tankDriveVolts(0, 0);
 	}
 
@@ -191,35 +198,21 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
-		this.leftLeader.set(ControlMode.PercentOutput, leftVolts / 12);
-		this.rightLeader.set(ControlMode.PercentOutput, rightVolts / 12);
+		this.rightLeader.set(ControlMode.PercentOutput, leftVolts / 12);
+		this.leftLeader.set(ControlMode.PercentOutput, rightVolts / 12);
 
 		// Feed motor safety to assert that we're in control
 		this.diffDrive.feed();
 	}
-	public Pose3d readTarget(int number){
-		if(number<10){
-				return FieldConstants.targets.get(number);
-		}
-		if(number<9 & number<19){
-				return FieldConstants.targets2.get(number);
-		}
-		if(number>18 & number < 28){
-				return FieldConstants.targets3.get(number);
-		}
-		else{
-			return null;
-		}
 
-}
 	public void zeroGyro() {
 		this.pigeon.setYaw(0);
 		this.pigeon.reset();
 	}
 
 	public void resetEncoders() {
-		this.leftLeader.setSelectedSensorPosition(0);
 		this.rightLeader.setSelectedSensorPosition(0);
+		this.leftLeader.setSelectedSensorPosition(0);
 	}
 
 	public void resetOdometry(Pose2d pose) {
@@ -231,8 +224,8 @@ public class Drivetrain extends SubsystemBase {
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// Log.writeln("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
-		double leftFeedForward = this.feedForward.calculate(leftMetersPerSecond);
-		double rightFeedForward = this.feedForward.calculate(rightMetersPerSecond);
+		double leftFeedForward = this.feedForwardL.calculate(leftMetersPerSecond);
+		double rightFeedForward = this.feedForwardR.calculate(rightMetersPerSecond);
 
 		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
@@ -240,15 +233,6 @@ public class Drivetrain extends SubsystemBase {
 		// Convert meters per second to encoder ticks per second
 		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
 		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
-		// GearState gearState = this.gearStateSupplier.get();
-		// double leftVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-		// 	this.metersToWheelRotations(leftMetersPerSecond),
-		// 	gearState
-		// );
-		// double rightVelocityTicksPerSec = this.wheelRotationsToEncoderTicks(
-		// 	this.metersToWheelRotations(rightMetersPerSecond),
-		// 	gearState
-		// );
 
 		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
 		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
@@ -256,21 +240,21 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
 		SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
 
-		this.leftLeader.set(ControlMode.Velocity,
+		this.rightLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				leftFeedForward / DrivetrainConstants.k_MaxVolts);
-		this.rightLeader.set(ControlMode.Velocity,
+				leftFeedForward / AutoConstants.k_MaxVolts);
+		this.leftLeader.set(ControlMode.Velocity,
 				rightVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				rightFeedForward / DrivetrainConstants.k_MaxVolts);
+				rightFeedForward / AutoConstants.k_MaxVolts);
 
 		this.diffDrive.feed();
 	}
 
 	public void turnPower(double power){
-		rightLeader.setVoltage(power);
-		leftLeader.setVoltage(-power);
+		leftLeader.setVoltage(power);
+		rightLeader.setVoltage(-power);
 	}
 
 	// -----------------------------------------------------------
@@ -295,11 +279,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getLeftDistanceMeters() {
-		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
 	}
 
 	public double getRightDistanceMeters() {
-		return this.encoderTicksToMeters(this.rightLeader.getSelectedSensorPosition());
+		return this.encoderTicksToMeters(this.leftLeader.getSelectedSensorPosition());
 	}
 
 	public double getAvgDistanceMeters() {
@@ -361,7 +345,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getMotorOutput() {
-		return this.rightLeader.getMotorOutputVoltage();
+		return this.leftLeader.getMotorOutputVoltage();
 	}
 
 	public double metersToWheelRotations(double metersPerSecond) {
@@ -388,33 +372,30 @@ public class Drivetrain extends SubsystemBase {
 		return this.pigeon.getYaw();
 	}
 
-	// calculations are in meters
+	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
+	// using "botpose"
 	public Pose3d getLimelightPose3d(){
 		return this.limelight.getPose3d();
 	}
 
-	// calculations are in meters
+	// Robot transform in 2D field-space. Translation (X,Y) Rotation(Z)
+	// using "botpose"
 	public Pose2d getLimelightPose2d() {
 		return this.limelight.getPose2d();
 	}
 
-	// Original method - gets rotation from the pideon
-	public Pose2d getLimelightPose(){
-		// Rotation2d rotation = new Rotation2d(this.limelight.getPose()[5] / 180 * Math.PI);
-		Rotation2d rotation = Rotation2d.fromDegrees(this.readYaw());
-		return new Pose2d(
-			this.limelight.getPoseX() + DrivetrainConstants.xOffsetField, 
-			this.limelight.getPoseY()  + DrivetrainConstants.yOffsetField,
-			rotation
-		);
-	}
-
 	// Robot transform in field-space with the alliance driverstation at the origin
+	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative(){
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
-			return this.limelight.getRedPose3d().toPose2d();
+		if(RobotBase.isReal()) {		
+			if(RobotContainer.alliance == DriverStation.Alliance.Red){
+				return this.limelight.getRedPose2d();
+			} else {		
+					return this.limelight.getBluePose2d();
+			}	
 		} else {
-			return this.limelight.getBluePose3d().toPose2d();
+			// In simulation we just return the encoder pose.
+			return this.getEncoderPose();
 		}		
 	}
 
@@ -444,6 +425,33 @@ public class Drivetrain extends SubsystemBase {
 		return limelight.getHorizontalOffset();		
 	}
 
+	public double getTargetVerticalOffset(){
+		if (limelight.getVerticalOffset() != 0){
+			offset = limelight.getVerticalOffset();
+		} 
+		return m_verticalFilter.calculate(offset);
+	}
+
+	public boolean hasValidLimelightTarget() {
+		if(RobotBase.isReal()) {
+			return this.limelight.getHasValidTargets();
+		} else {
+			return this.getHasValidTargetsSim();
+		}		
+	}
+
+	public boolean hasNoLimelightTarget() {
+		return !this.hasValidLimelightTarget();
+	}
+
+	public double getAprilTagID() {
+		if(RobotBase.isReal()) {
+			return this.limelight.getAprilTagID();
+		} else {
+			return this.getAprilTagIDSim();
+		}		
+	}
+
 	// ----------------------------------------------------
 	// Process Logic
 	// ----------------------------------------------------
@@ -456,11 +464,12 @@ public class Drivetrain extends SubsystemBase {
 		// } else {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		// }
+		RobotContainer.setAlliance(DriverStation.getAlliance());
 
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		if(this.limelight.getHasValidTargets()) {
-			poseEstimator.addVisionMeasurement(this.getLimelightPose(), Timer.getFPGATimestamp() - 0.3);
+			poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
 
 		this.publishTelemetry();
@@ -470,12 +479,19 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
-		SmartDashboard.putNumber("left encoder", this.leftLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("right encoder", this.rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("limelight X", this.limelight.getPoseX());
+		SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
+		SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
+
+		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());	
+		SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
+		SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
+		SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
+		
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
-		this.fieldLimelight.setRobotPose(this.getLimelightPose());
+		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
+
+		SmartDashboard.putNumber("April Tag", getAprilTagID());
 
 		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	
 		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
@@ -483,71 +499,14 @@ public class Drivetrain extends SubsystemBase {
 		// SmartDashboard.putNumber("poseX", this.getEncoderPose().getX());
 		// SmartDashboard.putNumber("botposeX", (this.limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
-	
-	public Trajectory generateTrajectory(Pose2d endPose) {
-        Pose2d startPose = this.getEstimatedPose();
-        
-		Log.writeln("Initial Pose: " + startPose.getX());
-
-        SmartDashboard.putNumber("Start Pose X", startPose.getX());
-        SmartDashboard.putNumber("Start Pose Y", startPose.getY());
-        SmartDashboard.putNumber("Start Pose Theta", startPose.getRotation().getDegrees());
-    
-        SmartDashboard.putNumber("End Pose X", endPose.getX());
-        SmartDashboard.putNumber("End Pose Y", endPose.getY());
-        SmartDashboard.putNumber("End Pose Theta", endPose.getRotation().getDegrees());
-    
-        DriverStation.Alliance color = DriverStation.getAlliance();
-        
-        // if(color == DriverStation.Alliance.Red){
-        // 	// for red, left and right
-        // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
-        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-        // 		//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
-        // 		List.of(),
-        // 		endPose, DrivetrainConstants.kTrajectoryConfig);
-        // 	} else {
-        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-        // 			//List.of(DrivetrainConstants.rightRedWaypoint1, DrivetrainConstants.rightRedWaypoint2), 
-        // 			List.of(),
-        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
-        // 	}
-        // } else {
-        // 	// for blue, left and right
-        // 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
-        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-        // 			//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
-        // 			List.of(),
-        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
-        // 	} else {
-        // 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-        // 			//List.of(DrivetrainConstants.rightBlueWaypoint1, DrivetrainConstants.rightBlueWaypoint2), 
-        // 			List.of(),
-        // 			endPose, DrivetrainConstants.kTrajectoryConfig);
-        // 	}
-        // }
-    
-        SmartDashboard.putNumber("Waypoint1 X", FieldConstants.Waypoints.rightBlue1.getX());
-        SmartDashboard.putNumber("Waypoint Y", FieldConstants.Waypoints.rightBlue1.getY());
-    
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-                List.of(FieldConstants.Waypoints.rightBlue1),
-                // List.of(),
-                endPose, DrivetrainConstants.kTrajectoryConfig);
-    
-        Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 
-
-        return trajectory;
-    }
 
 	// ----------------------------------------------------
 	// Simulation
 	// ----------------------------------------------------
 
 	public void simulationInit() {
-		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
-		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 	}
 	
 	@Override
@@ -555,4 +514,30 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().run();
         this.driveSim.run();
     }
+
+	public boolean getHasValidTargetsSim() {
+		double heading = getEncoderPose().getRotation().getDegrees();
+		Log.writeln("getHasValidTargetsSim Heading:" + heading);
+		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+			if (heading < 75 || heading > -75) {
+				Log.writeln("true - Red");
+				return true;
+			} else {
+				Log.writeln("true - Red");
+				return false;
+			}	
+		} else {
+			if (heading > 135 || heading < -135) {
+				Log.writeln("true - Blue");
+				return true;
+			} else {
+				Log.writeln("false - Blue");
+				return false;
+			}	
+		}	
+	}
+
+	public double getAprilTagIDSim() {
+		return 6;
+	}
 }

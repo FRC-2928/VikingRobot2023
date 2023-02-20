@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Log;
+import frc.robot.subsystems.Telemetry;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,33 +22,18 @@ public class Robot extends TimedRobot {
 	private Compressor compressor;
 	private RobotContainer robotContainer;
 
-	/**
-	 * This function is run when the robot is first started up and should be used
-	 * for any
-	 * initialization code.
-	 */
 	@Override
 	public void robotInit() {
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
 		this.compressor = new Compressor(1, PneumaticsModuleType.REVPH);
-		Log.writeln(this.compressor.getCurrent());
 		this.compressor.enableDigital();
 		this.robotContainer = new RobotContainer();
+
+		Telemetry.track("Gyroscope", this.robotContainer.drivetrain::readGyro, false);
 	}
 
-	/**
-	 * This function is called every robot packet, no matter the mode. Use this for
-	 * items like
-	 * diagnostics that you want ran during disabled, autonomous, teleoperated and
-	 * test.
-	 *
-	 * <p>
-	 * This runs after the mode specific periodic functions, but before LiveWindow
-	 * and
-	 * SmartDashboard integrated updating.
-	 */
 	@Override
 	public void robotPeriodic() {
 		// Runs the Scheduler. This is responsible for polling buttons, adding
@@ -65,7 +49,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		// Set the team alliance
-		robotContainer.setAlliance(DriverStation.getAlliance());
+		RobotContainer.setAlliance(DriverStation.getAlliance());
 		
 		// Get selected routine from the SmartDashboard
 		this.autonomousCommand = this.robotContainer.getAutonomousCommand();
@@ -85,12 +69,6 @@ public class Robot extends TimedRobot {
 		if(this.autonomousCommand != null) {
 			this.autonomousCommand.cancel();
 		}
-	}
-
-	@Override
-	public void teleopPeriodic() {
-		double[] gyro = this.robotContainer.drivetrain.readGyro();
-		SmartDashboard.putNumberArray("gyro", gyro);
 	}
 
 	@Override

@@ -5,31 +5,36 @@
 package frc.robot.commands.DrivetrainCommands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TurnToPid extends PIDCommand {
+public class TurnToPid extends ProfiledPIDCommand {
   /** Creates a new TurnTo. */
-  public TurnToPid(double angle, double speed, Drivetrain drivetrain) {
+  public TurnToPid(double angle, Drivetrain drivetrain) {
     super(
         // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsTurnto.P,DrivetrainConstants.GainsTurnto.I,DrivetrainConstants.GainsTurnto.D),
+        new ProfiledPIDController(DrivetrainConstants.GainsTurnto.P,DrivetrainConstants.GainsTurnto.I,DrivetrainConstants.GainsTurnto.D,
+                new TrapezoidProfile.Constraints(360, 200)),
         // This should return the measurement
         () -> drivetrain.readYaw(),
         // This should return the setpoint (can also be a constant)
-        () -> angle,
+        () -> new TrapezoidProfile.State(angle, 0),
         // This uses the output
-        output -> {
-          if(drivetrain.readYaw() > angle){drivetrain.tankDriveVolts(-output*speed,output*speed);}
-          else{drivetrain.tankDriveVolts(output*speed,-output*speed);}
+        (output, setpoint) -> {
+          //if(drivetrain.readYaw() > angle){drivetrain.tankDriveVolts(-output,output);}
+          // else{drivetrain.tankDriveVolts(output,-output);}
+          drivetrain.tankDriveVolts(output, -output);
         });
-        this.m_controller.setTolerance(0.3);
-        this.m_controller.setSetpoint(0.0);
-        this.m_controller.calculate(0.0);
+        this.m_controller.setTolerance(3, 10);
+        // this.m_controller.setSetpoint(0.0);
+        // this.m_controller.calculate(0.0);
         this.addRequirements(drivetrain);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
@@ -38,6 +43,6 @@ public class TurnToPid extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.m_controller.atSetpoint();
+    return this.m_controller.atGoal();
   }
 }

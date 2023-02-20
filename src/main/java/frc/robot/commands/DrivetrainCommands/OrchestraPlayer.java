@@ -14,10 +14,10 @@ public class OrchestraPlayer extends CommandBase {
 		this.drivetrain = drivetrain;
 
 		this.player = new Orchestra();
-		this.player.addInstrument(drivetrain.leftLeader);
 		this.player.addInstrument(drivetrain.rightLeader);
-		this.player.addInstrument(drivetrain.leftFollower);
+		this.player.addInstrument(drivetrain.leftLeader);
 		this.player.addInstrument(drivetrain.rightFollower);
+		this.player.addInstrument(drivetrain.leftFollower);
 		this.player.loadMusic(filename);
 
 		this.addRequirements(drivetrain);
