@@ -11,11 +11,15 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Log;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TurnToPid extends ProfiledPIDCommand {
+
+  Drivetrain drivetrain;
+
   /** Creates a new TurnTo. */
   public TurnToPid(double angle, Drivetrain drivetrain) {
     super(
@@ -33,11 +37,13 @@ public class TurnToPid extends ProfiledPIDCommand {
           drivetrain.tankDriveVolts(output, -output);
         });
         this.m_controller.setTolerance(3, 10);
-        // this.m_controller.setSetpoint(0.0);
-        // this.m_controller.calculate(0.0);
         this.addRequirements(drivetrain);
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
+        this.drivetrain = drivetrain;
+  }
+
+  public void initialize() {
+		super.initialize();
+    Log.writeln("TurnToPid Pose: " + this.drivetrain.getEncoderPose());
   }
 
   // Returns true when the command should end.
