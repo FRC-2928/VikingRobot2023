@@ -505,8 +505,8 @@ public class Drivetrain extends SubsystemBase {
 	// ----------------------------------------------------
 
 	public void simulationInit() {
-		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
-		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 	}
 	
 	@Override
