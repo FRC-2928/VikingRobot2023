@@ -18,18 +18,18 @@ public class BalancePID extends PIDCommand {
 	public BalancePID(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		super(
 			new PIDController(
-				DrivetrainConstants.GainsBalance.P,
+				.4,
 				DrivetrainConstants.GainsBalance.I,
 				DrivetrainConstants.GainsBalance.D
 			),
 			() -> drivetrain.readPitch(),
-			0,
-			output -> drivetrain.tankDriveVolts(-output, -output)
+			-15,
+			output -> drivetrain.tankDriveVolts(output, output)
 		);
 
 		this.m_controller.setTolerance(1.0);
-		this.m_controller.setSetpoint(0.0);
-		this.m_controller.calculate(0.0);
+		//this.m_controller.setSetpoint(0.0);
+		//this.m_controller.calculate(0.0);
 
 		this.stopAtSetpoint = stopAtSetpoint;
 		this.timeout = timeout;
@@ -59,6 +59,6 @@ public class BalancePID extends PIDCommand {
 
 	@Override
 	public boolean isFinished() {
-		return (System.currentTimeMillis() > this.time + this.timeout) || (this.stopAtSetpoint && this.m_controller.atSetpoint());
+		return (this.m_controller.atSetpoint());
 	}
 }

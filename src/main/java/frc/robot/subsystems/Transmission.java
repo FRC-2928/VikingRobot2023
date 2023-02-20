@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -28,6 +27,8 @@ public class Transmission extends SubsystemBase {
 		this.shiftPistonLow = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftSolenoidLow);
 
 		this.gearState = GearState.LOW;
+
+		Telemetry.track("Gear", () -> this.gearState.toString(), false);
 	}
 
 	public void setGearState(GearState state) {
@@ -37,7 +38,7 @@ public class Transmission extends SubsystemBase {
 
 		switch (state) {
 			case HIGH:
-				// this.shiftPiston.set(false);
+				//this.shiftPiston.set(false);
 				this.shiftPistonHigh.set(false);
 				this.shiftPistonLow.set(true);
 
@@ -45,7 +46,7 @@ public class Transmission extends SubsystemBase {
 				break;
 
 			case LOW:
-				// this.shiftPiston.set(true);
+				//this.shiftPiston.set(true);
 				this.shiftPistonHigh.set(true);
 				this.shiftPistonLow.set(false);
 
@@ -68,10 +69,5 @@ public class Transmission extends SubsystemBase {
 
 	public GearState getGearState() {
 		return this.gearState;
-	}
-
-	@Override
-	public void periodic() {
-		SmartDashboard.putString("Gear", this.gearState.toString());
 	}
 }

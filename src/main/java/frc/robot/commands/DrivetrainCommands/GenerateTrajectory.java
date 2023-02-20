@@ -1,16 +1,9 @@
 package frc.robot.commands.DrivetrainCommands;
 
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FieldConstants;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
 
@@ -38,7 +31,7 @@ public class GenerateTrajectory extends InstantCommand {
 		SmartDashboard.putNumber("End Pose Y", this.endPose.getY());
 		SmartDashboard.putNumber("End Pose Theta", this.endPose.getRotation().getDegrees());
 
-		DriverStation.Alliance color = DriverStation.getAlliance();
+		// DriverStation.Alliance color = DriverStation.getAlliance();
 		
 		// if(color == DriverStation.Alliance.Red){
 		// 	// for red, left and right
