@@ -49,9 +49,9 @@ public class RunRamseteTrajectory extends RamseteCommand {
 
 	public void execute() {
 		super.execute();
-		SmartDashboard.putNumber("Odometry X", this.drivetrain.getEncoderPose().getX());
-		SmartDashboard.putNumber("Odometry Y", this.drivetrain.getEncoderPose().getY());
-		SmartDashboard.putNumber("Odometry heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
+		// SmartDashboard.putNumber("Odometry X", this.drivetrain.getEncoderPose().getX());
+		// SmartDashboard.putNumber("Odometry Y", this.drivetrain.getEncoderPose().getY());
+		// SmartDashboard.putNumber("Odometry heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
 		//SmartDashboard.putNumber("current heading", this.drivetrain.getHeading());
 		this.drivetrain.diffDrive.feed(); // Feed motor safety instead of disabling it
 	}
