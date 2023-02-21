@@ -139,6 +139,12 @@ public class TrajectoryRunner {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	public static Command generateRamseteCommand(Drivetrain drivetrain, Supplier<Trajectory> trajectory) {
+		Log.writeln("generating Ramsete Command...");
+		// if (trajectory.get() == null) {
+		// 	Log.writeln("generateRamseteCommand: Got null trajectory!");
+		// 	return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
+		// }
+
 		RamseteCommand ramseteCommand = new RamseteCommand(
 			new Trajectory(),
 			drivetrain::getPose,
