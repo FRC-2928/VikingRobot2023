@@ -7,12 +7,9 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.DrivetrainConstants;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
+
+import frc.robot.Constants.DrivetrainConstants;
 
 public class DrivebaseSimFX {
 	private WPI_TalonFX _leftMaster, _rightMaster;
@@ -21,9 +18,6 @@ public class DrivebaseSimFX {
 	private TalonFXSimCollection _leftMasterSim, _rightMasterSim;
 	private BasePigeonSimCollection _pidgeySim;
 
-	private Field2d _field = new Field2d();
-	private DifferentialDriveOdometry _odometry;
-
 	//These numbers are an example AndyMark Drivetrain with some additional weight.  This is a fairly light robot.
 	//Note you can utilize results from robot characterization instead of theoretical numbers.
 	//https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html#introduction-to-robot-characterization
@@ -31,18 +25,16 @@ public class DrivebaseSimFX {
 	// private final double kSensorGearRatio = 1; //Gear ratio is the ratio between the *encoder* and the wheels.  On the AndyMark drivetrain, encoders mount 1:1 with the gearbox shaft.
 	// private final double kGearRatio = 10.71; //Switch kSensorGearRatio to this gear ratio if encoder is on the motor instead of on the gearbox.
 	// private final double kWheelRadiusInches = 3;
-	// private final int k100msPerSecond = 10;
+	private final int k100msPerSecond = 10;
 
 	//Simulation model of the drivetrain
 	private DifferentialDrivetrainSim _driveSim = new DifferentialDrivetrainSim(
 		DCMotor.getFalcon500(2),  //2 Falcon 500s on each side of the drivetrain.
-		DrivetrainConstants.lowGearRatio,               //Standard AndyMark Gearing reduction.
-		2.1,                      //MOI of 2.1 kg m^2 (from CAD model).
-		26.5,                     //Mass of the robot is 26.5 kg.
-        // Units.inchesToMeters(kWheelRadiusInches),  //Robot uses 3" radius (6" diameter) wheels.
-        // 0.546,                    //Distance between wheels is _ meters.
+		DrivetrainConstants.lowGearRatio,     // Gearing reduction.
+		2.1,                //MOI of 2.1 kg m^2 (from CAD model).
+		26.5,                         //Mass of the robot is 26.5 kg.
 		DrivetrainConstants.kWheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
-		DrivetrainConstants.kTrackWidthMeters,                    //Distance between wheels is _ meters.
+		DrivetrainConstants.kTrackWidthMeters,      //Distance between wheels is _ meters.
 
 		// The standard deviations for measurement noise:
 		// x and y:          0.001 m
@@ -67,19 +59,7 @@ public class DrivebaseSimFX {
 		_leftMasterSim = leftMaster.getSimCollection();
 		_rightMasterSim = rightMaster.getSimCollection();
 		_pidgeySim = pidgey.getSimCollection();
-
-		// Creating odometry object. Here,
-		// our starting pose is 5 meters along the long end of the field and in the
-		// center of the field along the short end, facing forward.
-		_odometry = new DifferentialDriveOdometry(_pidgey.getRotation2d(), 0, 0);
 	}
-
-	/**
-	 * Returns a 2D representation of the game field for dashboards.
-	 */
-	// public Field2d getField() {
-	// 	return _field;
-	// }
 
 	/**
 	 * Runs the drivebase simulator.
@@ -110,23 +90,12 @@ public class DrivebaseSimFX {
 						velocityToNativeUnits(
 						-_driveSim.getRightVelocityMetersPerSecond()));
 
-		_pidgeySim.setRawHeading(_driveSim.getHeading().getDegrees()); // Had to negated gyro heading
+		_pidgeySim.setRawHeading(-_driveSim.getHeading().getDegrees()); // Had to negated gyro heading
 
 		//Update other inputs to Talons
 		_leftMasterSim.setBusVoltage(RobotController.getBatteryVoltage());
 		_rightMasterSim.setBusVoltage(RobotController.getBatteryVoltage());
 
-		// This will get the simulated sensor readings that we set
-		// in the previous article while in simulation, but will use
-		// real values on the robot itself.
-		_odometry.update(_pidgey.getRotation2d(),
-							nativeUnitsToDistanceMeters(_leftMaster.getSelectedSensorPosition()),
-							nativeUnitsToDistanceMeters(_rightMaster.getSelectedSensorPosition()));
-		_field.setRobotPose(_odometry.getPoseMeters());
-		SmartDashboard.putData("Field", _field);
-		SmartDashboard.putNumber("Sim Odometry X", _odometry.getPoseMeters().getX());
-		SmartDashboard.putNumber("Sim Odometry Y", _odometry.getPoseMeters().getY());
-		SmartDashboard.putNumber("Sim Odometry Theta", _odometry.getPoseMeters().getRotation().getDegrees());
 	}
 
 	// Helper methods to convert between meters and native units
@@ -141,7 +110,7 @@ public class DrivebaseSimFX {
 	private int velocityToNativeUnits(double velocityMetersPerSecond){
 		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		double motorRotationsPerSecond = wheelRotationsPerSecond * DrivetrainConstants.lowGearRatio;
-		double motorRotationsPer100ms = motorRotationsPerSecond / 10;
+		double motorRotationsPer100ms = motorRotationsPerSecond / k100msPerSecond;
 		int sensorCountsPer100ms = (int)(motorRotationsPer100ms * DrivetrainConstants.encoderCPR);
 		return sensorCountsPer100ms;
 	}
