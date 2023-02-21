@@ -1,12 +1,18 @@
 package frc.robot.commands.DrivetrainCommands;
 
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Log;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveDistance extends CommandBase {
 	private final Drivetrain drivetrain;
 	private final double distance;
 	private final double speed;
+	private Pose2d endPose;
 
 	/**
 	 * Creates a new DriveDistance. This command will drive your your robot for a desired distance at
@@ -26,7 +32,14 @@ public class DriveDistance extends CommandBase {
 	@Override
 	public void initialize() {
 		this.drivetrain.halt();
-		this.drivetrain.resetEncoders(); // todo: is this a good idea?
+		Log.writeln("DriveDistance: " + this.distance);
+		// Command will calculate the distance from zero
+		// Any subsequent trajectory commands will reset this to
+		// the start pose.
+		// this.drivetrain.resetOdometry(new Pose2d());
+		this.endPose = this.drivetrain.getEncoderPose()
+			.plus(new Transform2d(new Translation2d(this.distance, 0), new Rotation2d()));
+		Log.writeln("DriveDistance Start Pose: " + this.drivetrain.getEncoderPose());
 	}
 
 	@Override
@@ -38,10 +51,13 @@ public class DriveDistance extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		this.drivetrain.halt();
+		Log.writeln("DriveDistance End Pose: " + this.drivetrain.getEncoderPose());
 	}
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
+		// return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
+		// TODO take care of negative distances
+		return this.drivetrain.getEncoderPose().getX() >= endPose.getX();
 	}
 }
