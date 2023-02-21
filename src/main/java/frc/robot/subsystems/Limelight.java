@@ -43,7 +43,7 @@ public class Limelight {
 	// -----------------------------------------------------------
 	
 	// Whether the limelight has any valid targets (0 or 1)
-	public boolean getHasValidTargets(){
+	public boolean getHasValidTargets() {
 		if(RobotBase.isReal()) {
 			return this.m_limelightNI.getEntry("tv").getDouble(0) == 1;
 		} else {
@@ -88,7 +88,7 @@ public class Limelight {
 	// ------------------------------------------------------------------------
 
 	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
-	public Pose3d getPose3d(){
+	public Pose3d getPose3d() {
 		return LimelightHelpers.getBotPose3d("");
 		// double[] pose = this.m_limelightNI.getEntry("botpose").getDoubleArray(new double[6]);
 		// if(pose.length == 0) {
@@ -103,7 +103,7 @@ public class Limelight {
 	}
 
 	// Robot transform in 2D field-space. Translation (X,Y) Rotation(Z)
-	public Pose2d getPose2d(){
+	public Pose2d getPose2d() {
 		return LimelightHelpers.getBotPose2d("");
 	}
 
@@ -111,7 +111,7 @@ public class Limelight {
 	// Blue Pose
 	// ---------------------------------------------------------------------
 	// Robot transform in field-space (blue driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
-	public Pose3d getBluePose3d(){
+	public Pose3d getBluePose3d() {
 		return LimelightHelpers.getBotPose3d_wpiBlue("");
 		// double[] pose = this.m_limelightNI.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
 		// if(pose.length == 0) {
@@ -125,29 +125,29 @@ public class Limelight {
 		// }
 	}
 
-	public Pose2d getBluePose2d(){	
+	public Pose2d getBluePose2d() {	
 		return LimelightHelpers.getBotPose2d_wpiBlue("");
 	}
 
 	// Robot transform in field-space. Translation (X)
-	public double getPoseX(){
+	public double getPoseX() {
 		return getPose2d().getX();
 	}
 
 	// Robot transform in field-space. Translation (Y)
-	public double getPoseY(){
+	public double getPoseY() {
 		return getPose2d().getY();
 	}
 
 	// ---------------------------------------------------------------------
 	// Red Pose
 	// ---------------------------------------------------------------------
-	public Pose2d getRedPose2d(){
+	public Pose2d getRedPose2d() {
 		return LimelightHelpers.getBotPose2d_wpiRed("");		
 	}
 
 	// Robot transform in field-space (red driverstation WPILIB origin). Translation (X,Y,Z) Rotation(X,Y,Z)
-	public Pose3d getRedPose3d(){
+	public Pose3d getRedPose3d() {
 		return LimelightHelpers.getBotPose3d_wpiRed("");
 		// double[] pose = this.m_limelightNI.getEntry("botpose_wpired").getDoubleArray(new double[6]);
 		// if(pose.length == 0) {
@@ -162,12 +162,12 @@ public class Limelight {
 	}
 
 	// Robot transform in field-space. Translation (X)
-	public double getPoseXRed(){
+	public double getPoseXRed() {
 		return getRedPose3d().getX();
 	}
 
 	// Robot transform in field-space. Translation (X)
-	public double getPoseXBlue(){
+	public double getPoseXBlue() {
 		return getBluePose3d().getX();
 	}
 

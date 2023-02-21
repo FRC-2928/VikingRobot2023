@@ -131,14 +131,14 @@ public class DrivebaseSimFX {
 
 	// Helper methods to convert between meters and native units
 
-	private int distanceToNativeUnits(double positionMeters){
+	private int distanceToNativeUnits(double positionMeters) {
 		double wheelRotations = positionMeters/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		double motorRotations = wheelRotations * DrivetrainConstants.lowGearRatio;
 		int sensorCounts = (int)(motorRotations * DrivetrainConstants.encoderCPR);
 		return sensorCounts;
 	}
 
-	private int velocityToNativeUnits(double velocityMetersPerSecond){
+	private int velocityToNativeUnits(double velocityMetersPerSecond) {
 		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		double motorRotationsPerSecond = wheelRotationsPerSecond * DrivetrainConstants.lowGearRatio;
 		double motorRotationsPer100ms = motorRotationsPerSecond / 10;
@@ -146,7 +146,7 @@ public class DrivebaseSimFX {
 		return sensorCountsPer100ms;
 	}
 
-	private double nativeUnitsToDistanceMeters(double sensorCounts){
+	private double nativeUnitsToDistanceMeters(double sensorCounts) {
 		double motorRotations = (double)sensorCounts / DrivetrainConstants.encoderCPR;
 		double wheelRotations = motorRotations / DrivetrainConstants.lowGearRatio;
 		double positionMeters = wheelRotations * (Math.PI * DrivetrainConstants.kWheelDiameterMeters);

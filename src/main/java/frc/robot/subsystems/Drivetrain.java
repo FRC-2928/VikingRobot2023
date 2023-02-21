@@ -93,7 +93,7 @@ public class Drivetrain extends SubsystemBase {
 		this.resetEncoders();
 		this.zeroGyro();
 		
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
 			this.pigeon.setYaw(0);
 		} else {
 			this.pigeon.setYaw(180);
@@ -171,7 +171,7 @@ public class Drivetrain extends SubsystemBase {
 	public void setWheelPIDF() {
 
         // set the PID values for each individual wheel
-        for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}){
+        for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}) {
             
             fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
             fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
@@ -252,7 +252,7 @@ public class Drivetrain extends SubsystemBase {
 		this.diffDrive.feed();
 	}
 
-	public void turnPower(double power){
+	public void turnPower(double power) {
 		leftLeader.setVoltage(power);
 		rightLeader.setVoltage(-power);
 	}
@@ -309,7 +309,7 @@ public class Drivetrain extends SubsystemBase {
 	 * 
 	 * @return pose using encoders and limelight
 	 */
-	public Pose2d getEstimatedPose(){
+	public Pose2d getEstimatedPose() {
 		if(RobotBase.isReal()) {
 			return this.poseEstimator.getEstimatedPosition();
 		} else if(Timer.getFPGATimestamp() > 0.5) {
@@ -374,7 +374,7 @@ public class Drivetrain extends SubsystemBase {
 
 	// Robot transform in 3D field-space. Translation (X,Y,Z) Rotation(X,Y,Z)
 	// using "botpose"
-	public Pose3d getLimelightPose3d(){
+	public Pose3d getLimelightPose3d() {
 		return this.limelight.getPose3d();
 	}
 
@@ -386,9 +386,9 @@ public class Drivetrain extends SubsystemBase {
 
 	// Robot transform in field-space with the alliance driverstation at the origin
 	// using botpose_wpired and botpose_wpiblue
-	public Pose2d getLimelightPoseRelative(){
+	public Pose2d getLimelightPoseRelative() {
 		if(RobotBase.isReal()) {		
-			if(RobotContainer.alliance == DriverStation.Alliance.Red){
+			if(RobotContainer.alliance == DriverStation.Alliance.Red) {
 				return this.limelight.getRedPose2d();
 			} else {		
 					return this.limelight.getBluePose2d();
@@ -406,7 +406,7 @@ public class Drivetrain extends SubsystemBase {
 	 * @return Is robot left or right of the center of the Charging Station
 	 */
 	public boolean isLeftOfChargingStation() {
-		if(RobotContainer.alliance == DriverStation.Alliance.Red){
+		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
 			return this.getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
 		} else {
 			return this.getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
@@ -425,8 +425,8 @@ public class Drivetrain extends SubsystemBase {
 		return limelight.getHorizontalOffset();		
 	}
 
-	public double getTargetVerticalOffset(){
-		if (limelight.getVerticalOffset() != 0){
+	public double getTargetVerticalOffset() {
+		if (limelight.getVerticalOffset() != 0) {
 			offset = limelight.getVerticalOffset();
 		} 
 		return m_verticalFilter.calculate(offset);
@@ -459,7 +459,7 @@ public class Drivetrain extends SubsystemBase {
 	@Override
 	public void periodic() {
 		//if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
-		// if(limelight.getHasValidTargets() == 1){
+		// if(limelight.getHasValidTargets() == 1) {
 		// 	updateOdometryFromLimelight();
 		// } else {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());

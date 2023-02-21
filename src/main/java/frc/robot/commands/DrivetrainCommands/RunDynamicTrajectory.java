@@ -17,7 +17,7 @@ import frc.robot.subsystems.Log;
 public class RunDynamicTrajectory extends RamseteCommand {
 	private Drivetrain drivetrain;
 	private Supplier<Trajectory> trajectory;
-  private Pose2d initialPose;
+	private Pose2d initialPose;
 	
 	public RunDynamicTrajectory(Drivetrain drivetrain, Supplier<Trajectory> trajectory) {
 		super(
@@ -35,7 +35,7 @@ public class RunDynamicTrajectory extends RamseteCommand {
 
 	public void initialize() {
 		super.initialize();
-    initialPose = this.trajectory.get().getInitialPose();
+		initialPose = this.trajectory.get().getInitialPose();
 		Log.writeln("RunDynamicTrajectory Initial Pose: " + initialPose);
 		this.drivetrain.resetOdometry(initialPose);
 		this.drivetrain.disableMotorSafety();

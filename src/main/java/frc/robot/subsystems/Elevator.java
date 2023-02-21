@@ -73,15 +73,15 @@ public class Elevator extends SubsystemBase {
 
 // --------------- Control Input ---------------------
 
-  public void setPower(double power){
+  public void setPower(double power) {
 	talon1.set(ControlMode.PercentOutput, power);
   }
 
-  public void setSolenoidBrake(){
+  public void setSolenoidBrake() {
     m_elevatorSolenoid.set(false);
   }
 
-  public void setSolenoidMove(){
+  public void setSolenoidMove() {
     m_elevatorSolenoid.set(true);
   }
 
@@ -89,7 +89,7 @@ public class Elevator extends SubsystemBase {
    * 
    * @param found whether the elevator knows its position
    */
-  public void isFound(boolean found){
+  public void isFound(boolean found) {
 	isFound = found;
   }
 
@@ -103,7 +103,7 @@ public class Elevator extends SubsystemBase {
    * 
    * @return whether the elevator knows where it is
    */
-  public boolean isFound(){
+  public boolean isFound() {
 	return isFound;
   }
   
@@ -111,11 +111,11 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //TODO: make for when hitting home or limit switch
-    if(1==1){
+    if(1==1) {
       isFound = true;
     }
     
-    if(!isFound){
+    if(!isFound) {
       setPower(ElevatorConstants.defaultPower);
     }
     

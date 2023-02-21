@@ -59,8 +59,8 @@ public class RobotContainer {
 	// XBox Controllers
 	private final XboxController driverController = new XboxController(0);
 	private final XboxController operatorController = new XboxController(1);
-	private final DriverOI driverOI = new DriverOI(this.driverController);
-	private final OperatorOI operatorOI = new OperatorOI(this.operatorController);
+	public final DriverOI driverOI = new DriverOI(this.driverController);
+	public final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
 	// Create SmartDashboard chooser for autonomous routines
 	private AutoRoutines autos;

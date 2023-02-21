@@ -65,11 +65,11 @@ public class Intake extends SubsystemBase {
    * 
    * @param output on a scale of -1 to 1
    */
-  public void setOutput(double output){
+  public void setOutput(double output) {
     m_output = output;
   }
 
-  public void runOutput(){
+  public void runOutput() {
     intakeTalon.set(ControlMode.PercentOutput, m_output);
   }
 

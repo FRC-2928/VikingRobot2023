@@ -76,7 +76,7 @@ public class Arm extends SubsystemBase {
 
   // -------------- System State ---------------------
 
-  public double getPosition(){
+  public double getPosition() {
 	return armEncoder.getAbsolutePosition();
   }
 
@@ -86,7 +86,7 @@ public class Arm extends SubsystemBase {
    * 
    * @param power the power for the arm from -1 to 1
    */
-  public void setPower(double power){
+  public void setPower(double power) {
 	talonLeader.set(ControlMode.PercentOutput, power);
   }
 
