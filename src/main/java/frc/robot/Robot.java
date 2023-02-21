@@ -18,12 +18,16 @@ import frc.robot.subsystems.Telemetry;
  * project.
  */
 public class Robot extends TimedRobot {
-	private Command autonomousCommand;
-	private Compressor compressor;
-	private RobotContainer robotContainer;
+	public static Robot instance;
+
+	public Command autonomousCommand;
+	public Compressor compressor;
+	public RobotContainer robotContainer;
 
 	@Override
 	public void robotInit() {
+		Robot.instance = this;
+
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.

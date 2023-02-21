@@ -35,6 +35,7 @@ public class OperatorOI extends OIBase {
 		- sequential commands to do one and then the other
 
 	*/
+	
 	public OperatorOI(XboxController controller) {
 		super(controller);
 	}
@@ -59,15 +60,15 @@ public class OperatorOI extends OIBase {
 		return () -> this.controller.getLeftX();
 	}
 
-	public Trigger getHigh(){
+	public Trigger getHigh() {
 		return new Trigger(() -> this.controller.getPOV() == 0);
 	}
 
-	public Trigger getMid(){
+	public Trigger getMid() {
 		return new Trigger(() -> this.controller.getPOV() == 90);
 	}
 
-	public Trigger getLow(){
+	public Trigger getLow() {
 		return new Trigger(() -> this.controller.getPOV() == 180);
 	}
 }

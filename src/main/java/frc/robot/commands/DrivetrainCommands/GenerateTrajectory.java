@@ -33,10 +33,10 @@ public class GenerateTrajectory extends InstantCommand {
 
 		// DriverStation.Alliance color = DriverStation.getAlliance();
 		
-		// if(color == DriverStation.Alliance.Red){
+		// if(color == DriverStation.Alliance.Red) {
 		// 	// for red, left and right
 		// 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
-		// 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+		// 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() <= (DrivetrainConstants.fieldWidthYMeters / 2)))) {
 		// 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 		// 		//List.of(DrivetrainConstants.leftRedWaypoint1, DrivetrainConstants.leftRedWaypoint2), \
 		// 		List.of(),
@@ -49,7 +49,7 @@ public class GenerateTrajectory extends InstantCommand {
 		// 	}
 		// } else {
 		// 	// for blue, left and right
-		// 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))){
+		// 	if(direction == 0 || ((direction == 2 ) && (startPose.getY() >= (DrivetrainConstants.fieldWidthYMeters / 2)))) {
 		// 		RobotContainer.dynamicTrajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 		// 			//List.of(DrivetrainConstants.leftBlueWaypoint1, DrivetrainConstants.leftBlueWaypoint2), 
 		// 			List.of(),

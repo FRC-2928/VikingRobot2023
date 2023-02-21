@@ -22,7 +22,7 @@ public class MoveElevatorAndArm extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     //if going down
-    if (elevator.getEncoderTicks() > elevatorGoal){
+    if (elevator.getEncoderTicks() > elevatorGoal) {
       addCommands(new ArmGoToPosition(arm, armGoal),
                   new ElevatorGoToHeight(elevator, elevatorGoal));
     } else {

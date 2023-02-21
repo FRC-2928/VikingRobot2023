@@ -90,7 +90,7 @@ public class DriverOI extends OIBase {
 
 	// Misc
 
-	public Trigger getApproachTagButton(){
+	public Trigger getApproachTagButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
 	}
 

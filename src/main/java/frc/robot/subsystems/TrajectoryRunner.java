@@ -27,12 +27,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.FieldConstants;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 
 /** Add your docs here. */
 public class TrajectoryRunner {
-
     public static enum Direction {
 		Left,
 		Right,
@@ -51,7 +51,6 @@ public class TrajectoryRunner {
 	 * @return The generated Trajectory object
 	 */
 	public static Trajectory generateLocalTrajectory(Drivetrain drivetrain, Direction direction) {
-		
 		Log.writeln("generateLocalTrajectory");
 		Trajectory trajectory = new Trajectory();
 		
@@ -76,8 +75,11 @@ public class TrajectoryRunner {
 			Log.writeln("End Pose X ", endPose.getX());
 			Log.writeln("End Pose Y ", endPose.getY());
 			Log.writeln("End Pose Heading ", endPose.getRotation().getDegrees());
+			
+			Robot.instance.robotContainer.driverOI.signalError();
 
-		} else if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)){
+			return new Trajectory();
+		} else if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)) {
 			Log.writeln("Invalid aprilTag! " + aprilTagID);	
 
 		} else {
@@ -88,7 +90,7 @@ public class TrajectoryRunner {
 
 			// Now get the pose
 			Pose2d tag = FieldConstants.aprilTags.get((int)aprilTagID).toPose2d();
-			switch(direction){
+			switch(direction) {
 				case Left:
 				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
 				endPose = tag.plus(FieldConstants.leftOffset);	
@@ -137,14 +139,8 @@ public class TrajectoryRunner {
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	public static Command generateRamseteCommand(Drivetrain drivetrain, Supplier<Trajectory> trajectory) {
-		Log.writeln("generateramsetecommand");
-		if (trajectory.get() == null) {
-			Log.writeln("generateRamseteCommand: Got null trajectory!");
-			return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
-		}
-
 		RamseteCommand ramseteCommand = new RamseteCommand(
-			trajectory.get(),
+			new Trajectory(),
 			drivetrain::getPose,
 			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 			DrivetrainConstants.kDriveKinematics,
@@ -157,12 +153,11 @@ public class TrajectoryRunner {
 		// First, we want to reset the drivetrain odometry
 		return new InstantCommand(() -> {
 			try {
+				Trajectory traj = trajectory.get();
 				Field field = ramseteCommand.getClass().getDeclaredField("m_trajectory");
 				field.setAccessible(true);
-				field.set(ramseteCommand, trajectory.get());
-				Log.writeln("field", field, trajectory.get());
-				Log.writeln("fields", ramseteCommand.getClass().getFields());
-				drivetrain.resetOdometry(trajectory.get().getInitialPose());
+				field.set(ramseteCommand, traj);
+				drivetrain.resetOdometry(traj.getInitialPose());
 			} catch(Exception e) {
 				Log.error(e);
 			}
@@ -198,10 +193,10 @@ public class TrajectoryRunner {
 		List<Translation2d> waypoints = new ArrayList<>();
 
 		// Log.writeln("Alliance:" + alliance);
-        // if(alliance == DriverStation.Alliance.Red){
+        // if(alliance == DriverStation.Alliance.Red) {
         // 	// for red, left and right
         // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
-        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))){
+        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))) {
 		// 		Log.writeln("Red left");
         // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
 		// 			List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
@@ -214,7 +209,7 @@ public class TrajectoryRunner {
         // 	}
         // } else {
         // 	// for blue, left and right
-        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))){
+        // 	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))) {
         // 		Log.writeln("Blue left");
 		// 		Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
 		// 		if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
