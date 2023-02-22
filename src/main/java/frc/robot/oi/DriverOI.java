@@ -20,8 +20,8 @@ public class DriverOI extends OIBase {
 	Start(left) - halt
 	Back(right) - start pov selector for tag approaching
 
-	LB
-	RB
+	LB - shoot intake
+	RB - intake cube and cone
 	
 	LT
 	RT
@@ -88,6 +88,20 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
+	// Intake
+
+	public Trigger getIntakeConeButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	}
+
+    public Trigger getIntakeCubeButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	}
+
+    public Trigger getShootIntakeButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+	}
+
 	// Misc
 
 	public Trigger getApproachTagButton(){
@@ -105,4 +119,6 @@ public class DriverOI extends OIBase {
 	public Trigger getOrchestraButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kLeftStick.value);
 	}
+
+	
 }
