@@ -5,8 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.subsystems.Arm;
