@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class OperatorOI extends OIBase {
 	/*
 	
-	A - stop intake
-	B - shoot intake
-	X - run intake
+	A - elevator down
+	B - elevator up
+	X 
 	Y
 
 	Start(left)
@@ -30,25 +30,10 @@ public class OperatorOI extends OIBase {
 	LS Click
 	RS Click
 
-	potentially POV for elevator/arm positions - high, middle, ground
-		- thinking on way up move elevator and then arm, on way down move arm and then elevator
-		- sequential commands to do one and then the other
-
+	POV for arm positions - high, middle, low, in
 	*/
 	public OperatorOI(XboxController controller) {
 		super(controller);
-	}
-
-	public Trigger getRunIntakeButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kX.value);
-	}
-
-    public Trigger getStopIntakeButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	}
-
-    public Trigger getShootIntakeButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
 
 	public DoubleSupplier getElevatorSupplier() {
@@ -59,15 +44,27 @@ public class OperatorOI extends OIBase {
 		return () -> this.controller.getLeftX();
 	}
 
-	public Trigger getHighArmElevator(){
+	public Trigger getHighArm(){
 		return new Trigger(() -> this.controller.getPOV() == 0);
 	}
 
-	public Trigger getMidArmElevator(){
+	public Trigger getMidArm(){
 		return new Trigger(() -> this.controller.getPOV() == 90);
 	}
 
-	public Trigger getLowArmElevator(){
+	public Trigger getLowArm(){
 		return new Trigger(() -> this.controller.getPOV() == 180);
+	}
+
+	public Trigger getArmIn(){
+		return new Trigger(() -> this.controller.getPOV() == 270);
+	}
+
+	public Trigger getElevatorUp(){
+		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	}
+
+	public Trigger getElevatorDown(){
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 }

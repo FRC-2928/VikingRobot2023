@@ -68,23 +68,24 @@ public final class Constants {
 	}
 
 	public static final class IntakeConstants {
-		public static final double intakePower = .3;
+		public static final double intakeConePower = -.3;
+		public static final double intakeCubePower = -.3;
 		public static final double shootPower = .5;
 	}
 
 	public static final class ElevatorConstants {
 		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
 		public static final double lowHeight = 0;
-		public static final double midHeight = 0;
 		public static final double highHeight = 0;
 		public static final double defaultPower = .3;
 	}
 
 	public static final class ArmConstants {
 		public static final Gains armGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
-		public static final double lowHeight = 0;
-		public static final double midHeight = 0;
-		public static final double highHeight = 0;
+		public static final double lowPosition = 0;
+		public static final double midPosition = 0;
+		public static final double highPosition = 0;
+		public static final double inPosition = 0;
 		public static final double defaultPower = .4;
 
 	}

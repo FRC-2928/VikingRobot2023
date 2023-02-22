@@ -4,11 +4,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.POVSelector;
+import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.BalanceAUX;
 import frc.robot.commands.DrivetrainCommands.BalancePID;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
+import frc.robot.commands.IntakeCommands.RunIntake;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
@@ -104,18 +109,20 @@ public class RobotContainer {
 		);
 
 		//operator buttons
-		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
-		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
-		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
+		
 		// default command should run only in absence of other commands - 
 			//shouldn't be a problem for these to be default even though they're backup
 				// CHECK THOUGH
 		// this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), elevator));
 		// this.arm.setDefaultCommand(new RunCommand(() -> elevator.setPower(m_operatorOI.getElevatorSupplier()), arm));
 		
-		// this.operatorOI.getHighArmElevator().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highHeight));
-		// this.operatorOI.getMidArmElevator().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.midHeight, ArmConstants.midHeight));
-		// this.operatorOI.getLowArmElevator().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowHeight));
+		// this.operatorOI.getHighArm().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
+		// this.operatorOI.getMidArm().onTrue(new ArmGoToPosition(arm, ArmConstants.midPosition));
+		// this.operatorOI.getLowArm().onTrue(new ArmGoToPosition(arm, ArmConstants.lowPosition));
+		// this.operatorOI.getArmIn().onTrue(new ArmGoToPosition(arm, ArmConstants.inPosition));
+		// this.operatorOI.getElevatorUp().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		// this.operatorOI.getElevatorDown().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.LowHeight));
+
 
 		// Configure gear shifting
 		if(RobotBase.isReal()) {
@@ -143,6 +150,12 @@ public class RobotContainer {
 			this.drivetrain.zeroGyro();
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
+
+		// for intake
+		// this.driverOI.getIntakeConeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakeConePower));
+		// this.driverOI.getIntakeCubeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakeCubePower));
+		// this.driverOI.getShootIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.shootPower));
+
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			Log.writeln("[HALT]");
 			this.drivetrain.halt();
