@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.sim;
 
 public class BasePigeonSimCollection {
 
