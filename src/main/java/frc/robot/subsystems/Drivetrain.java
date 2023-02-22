@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +74,8 @@ public class Drivetrain extends SubsystemBase {
 
 	/* Object for simulated drivetrain. */	
 	private DrivebaseSimFX driveSim = new DrivebaseSimFX(rightLeader, leftLeader, pigeon);
+	public DifferentialDrivetrainSim m_drivetrainSimulator;
+  	private EncoderSim m_leftEncoderSim;
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -505,8 +509,8 @@ public class Drivetrain extends SubsystemBase {
 	// ----------------------------------------------------
 
 	public void simulationInit() {
-		PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
-		PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
+		// PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 	}
 	
 	@Override
@@ -538,6 +542,6 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double getAprilTagIDSim() {
-		return 6;
+		return 8;
 	}
 }
