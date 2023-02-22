@@ -59,15 +59,15 @@ public class OperatorOI extends OIBase {
 		return () -> this.controller.getLeftX();
 	}
 
-	public Trigger getHigh(){
+	public Trigger getHighArmElevator(){
 		return new Trigger(() -> this.controller.getPOV() == 0);
 	}
 
-	public Trigger getMid(){
+	public Trigger getMidArmElevator(){
 		return new Trigger(() -> this.controller.getPOV() == 90);
 	}
 
-	public Trigger getLow(){
+	public Trigger getLowArmElevator(){
 		return new Trigger(() -> this.controller.getPOV() == 180);
 	}
 }
