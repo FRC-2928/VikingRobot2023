@@ -5,16 +5,21 @@
 package frc.robot.subsystems;
 
 
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,7 +28,7 @@ public class Arm extends SubsystemBase {
 	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
 
-	private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
+	// private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
 	
 	public Arm() {
 		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
@@ -61,6 +66,8 @@ public class Arm extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
+		this.talonLeader.configRemoteFeedbackFilter(0, RemoteSensorSource.CANCoder, 0, 0);
+		this.talonLeader.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
 		this.talonFollower.follow(this.talonLeader);
 	}
@@ -70,9 +77,14 @@ public class Arm extends SubsystemBase {
 	}
 
 	public void setPower(double power) {
+		SmartDashboard.putNumber("Arm Power", power);
+		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
+		SmartDashboard.putNumber("Deadband Arm Power", deadbandPower);
 		this.talonLeader.set(ControlMode.PercentOutput, power);
 	}
 
 	@Override
-	public void periodic() {}
+	public void periodic() {
+		SmartDashboard.putNumber("Arm Position", getPosition());
+	}
 }

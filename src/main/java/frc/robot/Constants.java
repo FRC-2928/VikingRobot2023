@@ -70,7 +70,7 @@ public final class Constants {
 		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
 		public static final double lowHeight = 0;
 		public static final double highHeight = 0;
-		public static final double defaultPower = .3;
+		public static final double defaultPower = 0.2;
 	}
 
 	public static final class ArmConstants {
