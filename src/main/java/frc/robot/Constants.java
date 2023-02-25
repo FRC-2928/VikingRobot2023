@@ -20,41 +20,35 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
  */
 public final class Constants {
 	public static final class PneumaticIDs {
-		// Solenoids
-		// public static final int kDrivetrainShiftSolenoid = 0;
-		public static final int kRampSolenoid = 1;
-		public static final int kArmSolenoid = 1;
+		public static final int kDrivetrainShiftPiston = 1;
 
-		public static final int kDrivetrainShiftSolenoidLow = 2;
-		public static final int kDrivetrainShiftSolenoidHigh = 3;
-		// public static final int kRampSolenoidOpen = 2;
-		// public static final int kRampSolenoidClosed = 3;
-
+		public static final int kElevatorLock = 2;
+		public static final int kArmLock = 0;
 	}
 
 	public static final class CANBusIDs {
 		// Drivetrain, right side
-		// public static final int DrivetrainRightBackTalonFX = 19;
-		// public static final int DrivetrainRightFrontTalonFX = 18;
+		public static final int DrivetrainRightBackTalonFX = 19;
+		public static final int DrivetrainRightFrontTalonFX = 18;
 
-		public static final int DrivetrainLeftBackTalonFX = 0;
-		public static final int DrivetrainLeftFrontTalonFX = 1;
+		//public static final int DrivetrainLeftBackTalonFX = 0;
+		//public static final int DrivetrainLeftFrontTalonFX = 1;
 
 		// Drivetrain, left side
-		// public static final int DrivetrainLeftFrontTalonFX = 16;
-		// public static final int DrivetrainLeftBackTalonFX = 17;
+		public static final int DrivetrainLeftFrontTalonFX = 13;
+		public static final int DrivetrainLeftBackTalonFX = 10;
 
-		public static final int DrivetrainRightFrontTalonFX = 14;
-		public static final int DrivetrainRightBackTalonFX = 15;
+		//public static final int DrivetrainRightFrontTalonFX = 14;
+		//public static final int DrivetrainRightBackTalonFX = 15;
 
 		//Arm
-		public static final int ArmTalon1 = 5;
-		public static final int ArmTalon2 = 5;
+		public static final int ArmTalon1 = 7;
+		public static final int ArmTalon2 = 8;
 
 		//Intake
-		public static final int IntakeTalon1 = 5;
+		public static final int IntakeTalon1 = 0;
 		
-		public static final int ElevatorTalon1 = 5;
+		public static final int ElevatorTalon1 = 6;
 
 		// Sensors
 		public static final int kPigeonIMU = 0;
@@ -62,7 +56,6 @@ public final class Constants {
 
 	
 	public static final class LimelightConstants {
-
 		public static final double tagGoalY = 8.25;
 		public static final double tagGoalX = 0;
 	}
