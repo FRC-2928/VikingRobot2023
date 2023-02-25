@@ -10,13 +10,6 @@ public class TurnTime extends CommandBase {
 
 	private long startTime;
 
-	/**
-	 * Creates a new TurnTime.
-	 *
-	 * @param speed The speed which the robot will turn. Negative is in reverse.
-	 * @param time How much time to turn in seconds
-	 * @param drive The drive subsystem on which this command will run
-	 */
 	public TurnTime(double speed, double time, Drivetrain drive) {
 		this.rotationalSpeed = speed;
 		this.duration = time * 1000;

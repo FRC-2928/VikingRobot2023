@@ -18,7 +18,7 @@ public class NTHelper {
             ArrayList<Double> tagPropertyList = new ArrayList<>();
 
             tagPropertyList.add(tag.pose.getX());
-            tagPropertyList.add(tag.pose.getY()); 
+            tagPropertyList.add(tag.pose.getY());
             tagPropertyList.add(tag.pose.getZ());
             tagPropertyList.add(tag.pose.getRotation().getQuaternion().getW());
             tagPropertyList.add(tag.pose.getRotation().getQuaternion().getX());
@@ -33,7 +33,7 @@ public class NTHelper {
         }
 
         IntegerArrayPublisher idPub = NTHelper.poseTable.getIntegerArrayTopic("AprilTag ID").publish();
-        
+
         idPub.getTopic().setRetained(true);
         idPub.set(new long[] { 1, 2, 3, 5, 6, 7});
         idPub.close();

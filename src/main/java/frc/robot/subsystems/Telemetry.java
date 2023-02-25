@@ -27,7 +27,7 @@ public final class Telemetry extends SubsystemBase {
             Telemetry.instance.table.getEntry(this.name).setValue(value);
         }
     }
-    
+
 	private static Telemetry instance;
 
     private NetworkTable table;
@@ -48,7 +48,7 @@ public final class Telemetry extends SubsystemBase {
         Telemetry.instance.telemetry.put(name, telem);
 
         if(!lazy) telem.publish();
-        
+
         return telem;
     }
 

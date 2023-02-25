@@ -55,9 +55,7 @@ public class Robot extends TimedRobot {
 		this.autonomousCommand = this.robotContainer.getAutonomousCommand();
 
 		// schedule the autonomous command (example)
-		if(this.autonomousCommand != null) {
-			this.autonomousCommand.schedule();
-		}
+		if(this.autonomousCommand != null) this.autonomousCommand.schedule();
 	}
 
 	@Override
@@ -66,9 +64,7 @@ public class Robot extends TimedRobot {
 		// use the default command which is ArcadeDrive. If you want the autonomous
 		// to continue until interrupted by another command, remove
 		// this line or comment it out.
-		if(this.autonomousCommand != null) {
-			this.autonomousCommand.cancel();
-		}
+		if(this.autonomousCommand != null) this.autonomousCommand.cancel();
 	}
 
 	@Override

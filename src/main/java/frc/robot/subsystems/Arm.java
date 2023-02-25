@@ -1,11 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
-
-
-import javax.swing.text.StyleContext.SmallAttributeSet;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -17,21 +10,21 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
+//import edu.wpi.first.wpilibj.PneumaticsModuleType;
+//import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-	public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
-	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+	public final WPI_TalonFX motorLead = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
+	public final WPI_TalonFX motorFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
 
-	// private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
-	
+	// private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
+
 	public Arm() {
-		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
+		for(TalonFX fx : new TalonFX[] { this.motorLead, this.motorFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -66,10 +59,11 @@ public class Arm extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
-		this.talonLeader.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
-		this.talonLeader.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+		
+		this.motorLead.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
+		this.motorLead.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
-		this.talonFollower.follow(this.talonLeader);
+		this.motorFollower.follow(this.motorLead);
 	}
 
 	public double getPosition() {
@@ -80,7 +74,7 @@ public class Arm extends SubsystemBase {
 		SmartDashboard.putNumber("Arm Power", power);
 		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
 		SmartDashboard.putNumber("Deadband Arm Power", deadbandPower);
-		this.talonLeader.set(ControlMode.PercentOutput, power);
+		this.motorLead.set(ControlMode.PercentOutput, power);
 	}
 
 	@Override

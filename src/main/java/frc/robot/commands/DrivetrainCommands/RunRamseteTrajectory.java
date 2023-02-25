@@ -15,7 +15,7 @@ import frc.robot.subsystems.Log;
 public class RunRamseteTrajectory extends RamseteCommand {
 	private Drivetrain drivetrain;
 	private Trajectory trajectory;
-	
+
 	public RunRamseteTrajectory(Drivetrain drivetrain, Trajectory trajectory) {
 		super(
 			trajectory,
@@ -42,7 +42,7 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		SmartDashboard.putNumber("X start traj", this.trajectory.getInitialPose().getX());
 		SmartDashboard.putNumber("X start odom", this.drivetrain.getEncoderPose().getX());
 		SmartDashboard.putNumber("start odom heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
-		SmartDashboard.putNumber("start traj heading", this.trajectory.getInitialPose().getRotation().getDegrees());  
+		SmartDashboard.putNumber("start traj heading", this.trajectory.getInitialPose().getRotation().getDegrees());
 
 		// printTrajectory();
 	}
@@ -66,11 +66,11 @@ public class RunRamseteTrajectory extends RamseteCommand {
 
 	public void printTrajectory() {
 		Log.writeln("Initial Pose: " + this.trajectory.getInitialPose());
-		
+
 		List<State> states = this.trajectory.getStates();
 		for (int i = 1; i < states.size(); i++) {
 		  var state = states.get(i);
 		  Log.writeln("Time:" + state.timeSeconds + " Velocity:" + state.velocityMetersPerSecond);
-		}  
+		}
 	}
 }

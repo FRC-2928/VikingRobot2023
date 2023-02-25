@@ -5,11 +5,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-/**
- * Transmission is responsible for shifting the gear on the drivetrain
- * Contains a statemachine for keeping gear state
- */
-
 public class Transmission extends SubsystemBase {
 	private Solenoid shiftPiston;
 	private GearState gearState;

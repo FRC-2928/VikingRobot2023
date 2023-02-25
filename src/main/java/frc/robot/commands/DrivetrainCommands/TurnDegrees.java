@@ -9,14 +9,6 @@ public class TurnDegrees extends CommandBase {
 	private final double degrees;
 	private final double speed;
 
-	/**
-	 * Creates a new TurnDegrees. This command will turn your robot for a desired rotation (in
-	 * degrees) and rotational speed.
-	 *
-	 * @param speed The speed which the robot will drive. Negative is in reverse.
-	 * @param degrees Degrees to turn. Leverages encoders to compare distance.
-	 * @param drive The drive subsystem on which this command will run
-	 */
 	public TurnDegrees(double speed, double degrees, Drivetrain drive) {
 		this.degrees = degrees;
 		this.speed = speed;
@@ -42,7 +34,7 @@ public class TurnDegrees extends CommandBase {
 
 	@Override
 	public boolean isFinished() {
-		/* Need to convert distance travelled to degrees. Sweetpants has a wheel 
+		/* Need to convert distance travelled to degrees. Sweetpants has a wheel
 			placement distance of 0.7 meters = 700 mm - width of the wheel (20 mm) = 720 mm
 			We then take into consideration the width of the tires.
 		*/

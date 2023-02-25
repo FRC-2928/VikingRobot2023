@@ -8,12 +8,12 @@ import frc.robot.Constants.DrivetrainConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.Balance;
-import frc.robot.commands.ElevatorCommands.MoveElevator;
+//import frc.robot.commands.ElevatorCommands.MoveElevator;
 //import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
-import frc.robot.subsystems.AutoRoutines;
+import frc.robot.subsystems.AutonomousRoutines;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
 import frc.robot.subsystems.TrajectoryRunner;
@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 // Mechanism Subsystems
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
+//import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
 
 /**
@@ -49,7 +49,6 @@ public class RobotContainer {
 	public final DriverOI driverOI = new DriverOI(this.driverController);
 	public final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
-	private AutoRoutines autos;
 	private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
 	public RobotContainer() {
@@ -59,7 +58,7 @@ public class RobotContainer {
 		this.configureOperatorControls();
 	}
 
-	public void configureDrivetrainControls() {
+	private void configureDrivetrainControls() {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(
@@ -75,7 +74,7 @@ public class RobotContainer {
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 
 		this.driverOI.getBalanceAuxButton().whileTrue(Balance.manual(this.drivetrain));
-		
+
 		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
 			this.drivetrain.zeroGyro();
 			this.drivetrain.resetEncoders();
@@ -108,14 +107,13 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 		// default command should run only in absence of other commands - shouldn't be a problem for these to be default even though they're backup. (CHECK THOUGH)
 		// why is this a good idea -nova
-		// this.elevator.setDefaultCommand(new MoveElevator(elevator, operatorOI.getElevatorSupplier().getAsDouble()));
-		this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(operatorOI.getElevatorSupplier().getAsDouble()), elevator));
-		this.arm.setDefaultCommand(new RunCommand(() -> arm.setPower(operatorOI.getArmSupplier().getAsDouble()), arm));
-		
+		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
+		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.setPower(operatorOI.getArmSupplier().getAsDouble()), this.arm));
+
 		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
 		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
-		
+
 		// this.operatorOI.getHigh().whileTrue(new MoveElevator(elevator, 0.2));
 		// this.operatorOI.getLow().whileTrue(new MoveElevator(elevator, -0.2));
 		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.midHeight, ArmConstants.midHeight));
@@ -123,8 +121,7 @@ public class RobotContainer {
 	}
 
 	private void configureAutoChooser() {
-		this.autos = new AutoRoutines(this.drivetrain);
-		this.autonomousChooser = this.autos.configureAutoChooser();
+		this.autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain);
 		SmartDashboard.putData("Autonomous Routine", this.autonomousChooser);
 	}
 

@@ -217,7 +217,7 @@ public final class FieldConstants {
 	    3,
 	    new Pose3d(
 		    Units.inchesToMeters(610.77),
-		    Units.inchesToMeters(174.19), 
+		    Units.inchesToMeters(174.19),
 		    Units.inchesToMeters(18.22),
 		    new Rotation3d(0.0, 0.0, Math.PI)),
 	    4,
@@ -235,7 +235,7 @@ public final class FieldConstants {
 	    6,
 	    new Pose3d(
 		    Units.inchesToMeters(40.45),
-		    Units.inchesToMeters(174.19), 
+		    Units.inchesToMeters(174.19),
 		    Units.inchesToMeters(18.22),
 		    new Rotation3d()),
 	    7,
@@ -268,32 +268,32 @@ public final class FieldConstants {
 	    2,
 	    new Pose3d(
 		    9.668,
-		    2.127, 
+		    2.127,
 		    0,
 		    new Rotation3d(0.0, 0.0, Math.PI)),
-	    
+
 	    3,
 	    new Pose3d(
 		    9.668,
 		    3.331,
 		    0,
 		    new Rotation3d(0.0, 0.0, Math.PI)));
-	
+
 
 	public static final Pose2d tag6 = aprilTags.get(6).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.5, 0), 
+				.plus(new Transform2d(new Translation2d(0.5, 0),
 				      new Rotation2d(Math.PI)));  // 0.5 meters in front
 	public static final Pose2d tag7 = aprilTags.get(7).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.75, 0), 
-					new Rotation2d(Math.PI)));  // 0.5 meters in front 
+				.plus(new Transform2d(new Translation2d(0.75, 0),
+					new Rotation2d(Math.PI)));  // 0.5 meters in front
 	public static final Pose2d tag8 = aprilTags.get(8).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.5, 0), 
-					new Rotation2d(Math.PI)));  // 0.5 meters in front  
-                                        
+				.plus(new Transform2d(new Translation2d(0.5, 0),
+					new Rotation2d(Math.PI)));  // 0.5 meters in front
+
         public static final Transform2d leftOffset = new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
         public static final Transform2d rightOffset = new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
         public static final Transform2d centerOffset = new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI));
-				      
+
 	public static final class Waypoints {
 		public static final double innerY = Units.inchesToMeters(30);
 		public static final double outerY = Units.inchesToMeters(186);
@@ -307,7 +307,7 @@ public final class FieldConstants {
 		public static final Translation2d rightBlue1 = new Translation2d(Units.inchesToMeters(193.25), outerY);
 		public static final Translation2d rightBlue2 = new Translation2d(Units.inchesToMeters(132.375), outerY);
 	}
-	
+
 	// TODO: change integer indices to something indexable by POVSelector and remap everything correctly
 	public static final Map<Integer, Pose3d> targets = new HashMap<>();
 

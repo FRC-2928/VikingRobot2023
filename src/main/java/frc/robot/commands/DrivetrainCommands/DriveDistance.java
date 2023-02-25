@@ -14,14 +14,6 @@ public class DriveDistance extends CommandBase {
 	private final double speed;
 	private Pose2d endPose;
 
-	/**
-	 * Creates a new DriveDistance. This command will drive your your robot for a desired distance at
-	 * a desired speed.
-	 *
-	 * @param speed The speed at which the robot will drive
-	 * @param meters The number of meters the robot will drive
-	 * @param drivetrain The drivetrain subsystem on which this command will run
-	 */
 	public DriveDistance(double speed, double meters, Drivetrain drivetrain) {
 		this.distance = meters;
 		this.speed = speed;

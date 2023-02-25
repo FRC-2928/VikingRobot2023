@@ -18,7 +18,7 @@ public class PhysicsSim {
 
     /**
      * Adds a TalonSRX controller to the simulator.
-     * 
+     *
      * @param talon
      *        The TalonSRX device
      * @param accelToFullTime
@@ -32,7 +32,7 @@ public class PhysicsSim {
 
     /**
      * Adds a TalonSRX controller to the simulator.
-     * 
+     *
      * @param talon
      *        The TalonSRX device
      * @param accelToFullTime
@@ -43,7 +43,7 @@ public class PhysicsSim {
      *        The phase of the TalonSRX sensors
      */
     public void addTalonSRX(TalonSRX talon, final double accelToFullTime, final double fullVel, final boolean sensorPhase) {
-        if (talon != null) {
+        if(talon != null) {
             TalonSRXSimProfile simTalon = new TalonSRXSimProfile(talon, accelToFullTime, fullVel, sensorPhase);
             _simProfiles.add(simTalon);
         }
@@ -51,7 +51,7 @@ public class PhysicsSim {
 
     /**
      * Adds a TalonFX controller to the simulator.
-     * 
+     *
      * @param falcon
      *        The TalonFX device
      * @param accelToFullTime
@@ -65,7 +65,7 @@ public class PhysicsSim {
 
     /**
      * Adds a TalonFX controller to the simulator.
-     * 
+     *
      * @param falcon
      *        The TalonFX device
      * @param accelToFullTime
@@ -76,7 +76,7 @@ public class PhysicsSim {
      *        The phase of the TalonFX sensors
      */
     public void addTalonFX(TalonFX falcon, final double accelToFullTime, final double fullVel, final boolean sensorPhase) {
-        if (falcon != null) {
+        if(falcon != null) {
             TalonFXSimProfile simFalcon = new TalonFXSimProfile(falcon, accelToFullTime, fullVel, sensorPhase);
             _simProfiles.add(simFalcon);
         }
@@ -104,7 +104,7 @@ public class PhysicsSim {
         return random(0, max);
     }
 
-    
+
     /**
      * Holds information about a simulated device.
      */
@@ -123,11 +123,11 @@ public class PhysicsSim {
          */
         protected double getPeriod() {
             // set the start time if not yet running
-            if (!_running) {
+            if(!_running) {
                 _lastTime = System.nanoTime();
                 _running = true;
             }
-            
+
             long now = System.nanoTime();
             final double period = (now - _lastTime) / 1000000.;
             _lastTime = now;

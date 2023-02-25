@@ -6,14 +6,14 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
 
 public class ElevatorGoToHeight extends PIDCommand {
-	Elevator elevator;
+	private Elevator elevator;
 
 	public ElevatorGoToHeight(Elevator elevator, double goalHeight) {
 		super(
 			new PIDController(ElevatorConstants.elevatorGains.P, ElevatorConstants.elevatorGains.I, ElevatorConstants.elevatorGains.D),
-			() -> elevator.getEncoderTicks(),
+			() -> elevator.getEncoderPosition(),
 			goalHeight,
-			output -> elevator.setPower(output)
+			output -> elevator.control(output)
 		);
 
 		this.m_controller.setTolerance(30);
@@ -26,7 +26,7 @@ public class ElevatorGoToHeight extends PIDCommand {
 
 	@Override
 	public void end(boolean interrupted) {
-		this.elevator.setPower(0.0);
+		this.elevator.control(0.0);
 	}
 
 	@Override

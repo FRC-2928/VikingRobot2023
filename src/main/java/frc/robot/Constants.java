@@ -47,14 +47,14 @@ public final class Constants {
 
 		//Intake
 		public static final int IntakeTalon1 = 0;
-		
+
 		public static final int ElevatorTalon1 = 6;
 
 		// Sensors
 		public static final int kPigeonIMU = 0;
 	}
 
-	
+
 	public static final class LimelightConstants {
 		public static final double tagGoalY = 8.25;
 		public static final double tagGoalX = 0;
@@ -85,7 +85,7 @@ public final class Constants {
 
 	public static final class DrivetrainConstants {
 
-		
+
 		public static final double kTrackWidthMeters = 0.7; // Placeholder
 		public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
 				kTrackWidthMeters);
@@ -117,14 +117,14 @@ public final class Constants {
 		// (acceleration) terms
 		// whereas the Talon SRX / Spark MAX kF is only a kV (velocity) feedforward.
 		// kp, ki, kd, kf, iz, peak output
-		
+
 		/**
 		 * PID Gains may have to be adjusted based on the responsiveness of control
 		 * loop.
 		 * kF: 1023 represents output value to Talon at 100%, 20660 represents Velocity
 		 * units at 100% output
 		 * Not all set of Gains are used in this project and may be removed as desired.
-		 * 
+		 *
 		 * kP kI kD kF Iz PeakOut
 		 */
 		public static final Gains GainsDistance = new Gains(0.1, 0.0, 0.0, 0.0, 100, 0.50);
