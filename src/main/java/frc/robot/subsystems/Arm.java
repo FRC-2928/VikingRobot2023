@@ -66,7 +66,7 @@ public class Arm extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
-		this.talonLeader.configRemoteFeedbackFilter(0, RemoteSensorSource.CANCoder, 0, 0);
+		this.talonLeader.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
 		this.talonLeader.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
 		this.talonFollower.follow(this.talonLeader);
