@@ -23,7 +23,7 @@ public class Arm extends SubsystemBase {
 	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
 
-	private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
+	private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
 	
 	public Arm() {
 		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
