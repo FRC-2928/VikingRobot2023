@@ -10,8 +10,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -21,6 +26,10 @@ public class Elevator extends SubsystemBase {
   public final WPI_TalonFX talon1 = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
   Solenoid elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
   private boolean isFound = false;
+
+  private ShuffleboardTab elevatorTab;
+  private GenericEntry elevatorPowerEntry, elevatorPositionEntry;
+  private GenericEntry topLimitSwitchEntry, homeLimitSwitchEntry;
   
   // ------------ Initialization -----------------------------
   
@@ -28,6 +37,7 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
     configureMotors();
     setSolenoidBrake();
+    setupShuffleboard();
   }
 
   public void configureMotors() {
@@ -67,12 +77,13 @@ public class Elevator extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
-    // Top limit switch
-    // talon1.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
-    //                                       LimitSwitchNormal.NormallyOpen);
-    // // Home limit switch
-    // talon1.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
-    //                                       LimitSwitchNormal.NormallyOpen);
+    // Top limit switch.  Stop motor if this switch is triggered.
+    talon1.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
+                                          LimitSwitchNormal.NormallyOpen);
+
+    // Home limit switch. Read as a digital input
+    talon1.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
+                                          LimitSwitchNormal.NormallyOpen);
 
     // talon1.configForwardSoftLimitThreshold(100);
     // talon1.configReverseSoftLimitThreshold(-100);
@@ -81,11 +92,31 @@ public class Elevator extends SubsystemBase {
     // talon1.overrideSoftLimitsEnable(false);
 	}
 
+  public void setupShuffleboard() {
+    elevatorTab = Shuffleboard.getTab("Elevator"); 
+
+    elevatorPowerEntry = elevatorTab.add("Motor Power", talon1.getMotorOutputPercent())
+      .withPosition(3, 0)
+      .getEntry();  
+
+    elevatorPositionEntry = elevatorTab.add("Elevator Position", getEncoderTicks())
+      .withPosition(5, 0)
+      .getEntry();    
+
+    // Limit Switches
+    ShuffleboardLayout switchLayout = Shuffleboard.getTab("Elevator")
+      .getLayout("Ramp", BuiltInLayouts.kList)
+      .withSize(2, 2)
+      .withPosition(8, 0); 
+    topLimitSwitchEntry = switchLayout.add("Top Limit Switch", topLimitSwitchClosed()).getEntry(); 
+    homeLimitSwitchEntry = switchLayout.add("Home Limit Switch", homeLimitSwitchClosed()).getEntry();  
+  }
+
 // --------------- Control Input ---------------------
 
   public void setPower(double power) {
     double deadbandPower = MathUtil.applyDeadband(power, 0.05);
-	  talon1.set(ControlMode.PercentOutput, power * 0.2);
+	  talon1.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.5, 0.5));
   }
 
   public void setEncoderTicks(double ticks) {
@@ -135,6 +166,14 @@ public class Elevator extends SubsystemBase {
     // if(!isFound) {
     //   setPower(ElevatorConstants.defaultPower);
     // }
+    publishTelemetry();
     
+  }
+
+  public void publishTelemetry() {
+    elevatorPowerEntry.setDouble(talon1.getMotorOutputPercent());
+    elevatorPositionEntry.setDouble(getEncoderTicks());
+    topLimitSwitchEntry.setBoolean(topLimitSwitchClosed());
+    homeLimitSwitchEntry.setBoolean(homeLimitSwitchClosed());
   }
 }
