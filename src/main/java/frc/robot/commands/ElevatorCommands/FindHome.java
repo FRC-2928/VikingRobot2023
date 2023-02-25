@@ -1,46 +1,34 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.ElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
 
+/*
+ * When the elevator is lost ( :( ), moves the elevator up until it hits either the home limit switch, or the top limit switch, thus knowing where the elevator is
+ */
 public class FindHome extends CommandBase {
+	private Elevator elevator;
+	
+	public FindHome(Elevator elevator) {
+		this.elevator = elevator;
+		this.addRequirements(elevator);
+	}
 
-  Elevator m_elevator;
-  
-  /** Creates a new FindHome. 
-   * to be used when elevator is lost (how sad!) which will print on shuffleboard
-   * goes up until finding either home or limit switch, and then reset encoders
-   * (does not do these things yet)
-  */
-  public FindHome(Elevator elevator) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_elevator = elevator;
-    addRequirements(m_elevator);
-  }
+	@Override
+	public void initialize() {}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+	@Override
+	public void execute() {
+		this.elevator.setPower(ElevatorConstants.defaultPower);
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_elevator.setPower(ElevatorConstants.defaultPower);
-  }
+	@Override
+	public void end(boolean interrupted) {}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    //TODO: make finish when reaching home or limit switch
-    return false;
-  }
+	@Override
+	public boolean isFinished() {
+		// TODO: finish when reaching home or limit switch
+		return false;
+	}
 }

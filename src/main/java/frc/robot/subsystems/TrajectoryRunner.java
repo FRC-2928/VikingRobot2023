@@ -66,7 +66,7 @@ public class TrajectoryRunner {
 		
 		List<Translation2d> waypoints = new ArrayList<>();
 	
-		if (drivetrain.hasNoLimelightTarget()) {			
+		if(drivetrain.hasValidLimelightTarget()) {			
 			Log.writeln("No Limelight target!");	
 			Log.writeln("Start Pose X ", startPose.getX());
 			Log.writeln("Start Pose Y ", startPose.getY());

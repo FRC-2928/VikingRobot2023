@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
@@ -39,6 +40,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
+	private static final GearState RobotContainer = null;
 	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
 	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
@@ -50,32 +52,26 @@ public class Drivetrain extends SubsystemBase {
 
 	public DifferentialDrive diffDrive;
 
-	// Set up the BuiltInAccelerometer
 	public WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
-	private SimpleMotorFeedforward feedForward;
 	private SimpleMotorFeedforward feedForwardL;
 	private SimpleMotorFeedforward feedForwardR;
 
 	private double offset;
-	MedianFilter m_verticalFilter = new MedianFilter(10);
 
-	MedianFilter m_limelightFilter = new MedianFilter(10);
+	private MedianFilter m_verticalFilter = new MedianFilter(10);
+	private MedianFilter m_limelightFilter = new MedianFilter(10);
 
-	// Drivetrain odometry to keep track of our position on the field
 	private DifferentialDriveOdometry odometry;
-
 	private DifferentialDrivePoseEstimator poseEstimator;
 
 	private final Field2d field2d = new Field2d();
 	private final Field2d fieldEstimated = new Field2d();
 	private final Field2d fieldLimelight = new Field2d();
 
-	/* Object for simulated drivetrain. */	
 	private DrivebaseSimFX driveSim = new DrivebaseSimFX(rightLeader, leftLeader, pigeon);
 	public DifferentialDrivetrainSim m_drivetrainSimulator;
-  	private EncoderSim m_leftEncoderSim;
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -90,14 +86,13 @@ public class Drivetrain extends SubsystemBase {
 
 		this.diffDrive = new DifferentialDrive(rightLeader, leftLeader);
 
-		this.feedForward = AutoConstants.kFeedForward;
 		this.feedForwardL = AutoConstants.kFeedForwardL;
 		this.feedForwardR = AutoConstants.kFeedForwardR;
 
 		this.resetEncoders();
 		this.zeroGyro();
 		
-		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			this.pigeon.setYaw(0);
 		} else {
 			this.pigeon.setYaw(180);
@@ -278,8 +273,7 @@ public class Drivetrain extends SubsystemBase {
 
 	// Encoder ticks to meters
 	public double encoderTicksToMeters(double encoderTicks) {
-		GearState gearState = this.gearStateSupplier.get();
-		return this.wheelRotationsToMeters(this.motorRotationsToWheelRotations(encoderTicks, gearState));
+		return this.wheelRotationsToMeters(this.motorRotationsToWheelRotations(encoderTicks, Robot.instance.robotContainer.transmission.getGearState()));
 	}
 
 	public double getLeftDistanceMeters() {
@@ -392,7 +386,7 @@ public class Drivetrain extends SubsystemBase {
 	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative() {
 		if(RobotBase.isReal()) {		
-			if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+			if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 				return this.limelight.getRedPose2d();
 			} else {		
 					return this.limelight.getBluePose2d();
@@ -410,7 +404,7 @@ public class Drivetrain extends SubsystemBase {
 	 * @return Is robot left or right of the center of the Charging Station
 	 */
 	public boolean isLeftOfChargingStation() {
-		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			return this.getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
 		} else {
 			return this.getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
@@ -444,10 +438,6 @@ public class Drivetrain extends SubsystemBase {
 		}		
 	}
 
-	public boolean hasNoLimelightTarget() {
-		return !this.hasValidLimelightTarget();
-	}
-
 	public double getAprilTagID() {
 		if(RobotBase.isReal()) {
 			return this.limelight.getAprilTagID();
@@ -455,10 +445,6 @@ public class Drivetrain extends SubsystemBase {
 			return this.getAprilTagIDSim();
 		}		
 	}
-
-	// ----------------------------------------------------
-	// Process Logic
-	// ----------------------------------------------------
 
 	@Override
 	public void periodic() {
@@ -468,7 +454,6 @@ public class Drivetrain extends SubsystemBase {
 		// } else {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		// }
-		RobotContainer.setAlliance(DriverStation.getAlliance());
 
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
@@ -522,7 +507,7 @@ public class Drivetrain extends SubsystemBase {
 	public boolean getHasValidTargetsSim() {
 		double heading = getEncoderPose().getRotation().getDegrees();
 		Log.writeln("getHasValidTargetsSim Heading:" + heading);
-		if(RobotContainer.alliance == DriverStation.Alliance.Red) {
+		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			if (heading < 75 || heading > -75) {
 				Log.writeln("true - Red");
 				return true;

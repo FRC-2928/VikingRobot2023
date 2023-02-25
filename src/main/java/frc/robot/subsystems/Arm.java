@@ -13,28 +13,19 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
+	public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
+	public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
+	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
 
-  public final WPI_TalonFX talonLeader = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
-  public final WPI_TalonFX talonFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
-  //todo: initialize properly
-  public final WPI_CANCoder armEncoder = new WPI_CANCoder(0);
-
-  Solenoid m_armSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
-  
-  /** Creates a new Arm. */
-  public Arm() {
-    configureMotors();
-  }
-
-  public void configureMotors() {
-		// Configure the motors
+	private final Solenoid lockPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmSolenoid);
+	
+	public Arm() {
 		for(TalonFX fx : new TalonFX[] { this.talonLeader, this.talonFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
@@ -71,30 +62,17 @@ public class Arm extends SubsystemBase {
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
 
-    talonFollower.follow(talonLeader);
-  }
+		this.talonFollower.follow(this.talonLeader);
+	}
 
-  // -------------- System State ---------------------
+	public double getPosition() {
+		return this.encoder.getAbsolutePosition();
+	}
 
-  public double getPosition() {
-	return armEncoder.getAbsolutePosition();
-  }
+	public void setPower(double power) {
+		this.talonLeader.set(ControlMode.PercentOutput, power);
+	}
 
-  // -------------- Control Input --------------------
-
-  /**
-   * 
-   * @param power the power for the arm from -1 to 1
-   */
-  public void setPower(double power) {
-	talonLeader.set(ControlMode.PercentOutput, power);
-  }
-
-
-  
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+	@Override
+	public void periodic() {}
 }

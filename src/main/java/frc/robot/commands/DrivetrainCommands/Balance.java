@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
-public class BalanceAUX extends CommandBase {
+public class Balance extends CommandBase {
 	private double time = System.currentTimeMillis();
 
 	private Drivetrain drivetrain;
@@ -29,7 +29,7 @@ public class BalanceAUX extends CommandBase {
 	/// Set to Double.POSITIVE_INFINITY to disable
 	public double timeout;
 	
-	public BalanceAUX(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
+	public Balance(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		this.drivetrain = drivetrain;
 
 		this.balance.setTolerance(1.0);
@@ -47,18 +47,23 @@ public class BalanceAUX extends CommandBase {
 	}
 
 	/// Construct a manual-style command, which does not stop at setpoint, nor does it timeout.
-	public static BalanceAUX manual(Drivetrain drivetrain) {
-		return new BalanceAUX(drivetrain, false, Double.POSITIVE_INFINITY);
+	public static Balance manual(Drivetrain drivetrain) {
+		return new Balance(drivetrain, false, Double.POSITIVE_INFINITY);
 	}
 
 	/// Construct an auto-style command, which automatically stops at setpoint or after `timeout` ms.
-	public static BalanceAUX auto(Drivetrain drivetrain, double timeout) {
-		return new BalanceAUX(drivetrain, true, timeout);
+	public static Balance auto(Drivetrain drivetrain, double timeout) {
+		return new Balance(drivetrain, true, timeout);
 	}
 
 	/// Construct an auto-style command, which automatically stops at setpoint, but does not timeout.
-	public static BalanceAUX auto(Drivetrain drivetrain) {
-		return new BalanceAUX(drivetrain, true, Double.POSITIVE_INFINITY);
+	public static Balance auto(Drivetrain drivetrain) {
+		return new Balance(drivetrain, true, Double.POSITIVE_INFINITY);
+	}
+
+	/// Construct an auto-style command, which does not stop at setpoint, but does timeout.
+	public static Balance timed(Drivetrain drivetrain, double timeout) {
+		return new Balance(drivetrain, false, timeout);
 	}
 
 	@Override

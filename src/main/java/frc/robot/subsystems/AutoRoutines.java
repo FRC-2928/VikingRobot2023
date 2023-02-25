@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.Constants.AutoConstants;
-import frc.robot.commands.DrivetrainCommands.BalanceAUX;
-import frc.robot.commands.DrivetrainCommands.BalancePID;
+import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.TurnToPid;
@@ -38,7 +37,7 @@ public class AutoRoutines {
 		chooser.addOption("Tag7/2 Balance",
 			new SequentialCommandGroup(
 				//new DriveTime(-.6, 4.5, drivetrain),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
 			)
 		);
 		
@@ -91,14 +90,14 @@ public class AutoRoutines {
 		chooser.addOption("Tag8/3 Balance", 
 			new SequentialCommandGroup(
 				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Around-Balance")),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
 			)	
 		);
 
 		chooser.addOption("Tag6/1 Balance", 
 			new SequentialCommandGroup(
 				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Around-Balance")),
-				new BalancePID(drivetrain, false, 10),BalanceAUX.manual(drivetrain)
+				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
 			)	
 		); 
 
