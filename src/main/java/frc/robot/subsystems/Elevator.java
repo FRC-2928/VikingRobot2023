@@ -101,10 +101,9 @@ public class Elevator extends SubsystemBase {
 
 		// Limit Switches
 		ShuffleboardLayout switchLayout = this.tab
-			.getLayout("Ramp", BuiltInLayouts.kList)
-			.withSize(2, 2)
+			.getLayout("Limits", BuiltInLayouts.kList)
+			.withSize(2, 5)
 			.withPosition(8, 0);
-
 		this.entryTopLimit = switchLayout.add("Top Limit Switch", this.limitTopClosed()).getEntry();
 		this.entryHomeLimit = switchLayout.add("Home Limit Switch", this.limitHomeClosed()).getEntry();
 	}
