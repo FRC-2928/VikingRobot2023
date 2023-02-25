@@ -1,13 +1,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.Balance;
+import frc.robot.commands.ElevatorCommands.MoveElevatorAndArm;
 //import frc.robot.commands.ElevatorCommands.MoveElevator;
 //import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
@@ -114,10 +117,9 @@ public class RobotContainer {
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
 		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
 
-		// this.operatorOI.getHigh().whileTrue(new MoveElevator(elevator, 0.2));
-		// this.operatorOI.getLow().whileTrue(new MoveElevator(elevator, -0.2));
-		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.midHeight, ArmConstants.midHeight));
-		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowHeight));
+		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highPosition));
+		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.midPosition));
+		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowPosition));
 	}
 
 	private void configureAutoChooser() {
