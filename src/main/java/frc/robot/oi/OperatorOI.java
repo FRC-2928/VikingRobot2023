@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class OperatorOI extends OIBase {
 	/*
-	
+
 	A - stop intake
 	B - shoot intake
 	X - run intake
@@ -19,14 +19,14 @@ public class OperatorOI extends OIBase {
 
 	LB
 	RB
-	
+
 	LT
 	RT
 
-	LS up and down controls elevator, right and left controls arm 
+	LS up and down controls elevator, right and left controls arm
 		(probably most movement for these subsystems will be to predesignated positions)
 	RS
-	
+
 	LS Click
 	RS Click
 
@@ -35,7 +35,7 @@ public class OperatorOI extends OIBase {
 		- sequential commands to do one and then the other
 
 	*/
-	
+
 	public OperatorOI(XboxController controller) {
 		super(controller);
 	}

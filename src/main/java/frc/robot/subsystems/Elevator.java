@@ -20,30 +20,26 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
+	public final WPI_TalonFX motor = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
+	public final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
 
-  public final WPI_TalonFX talon1 = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
-  Solenoid elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
-  private boolean isFound = false;
+	private ShuffleboardTab tab;
+	private GenericEntry entryPower, entryPosition;
+	private GenericEntry entryTopLimit, entryHomeLimit;
 
-  private ShuffleboardTab elevatorTab;
-  private GenericEntry elevatorPowerEntry, elevatorPositionEntry;
-  private GenericEntry topLimitSwitchEntry, homeLimitSwitchEntry;
-  
-  // ------------ Initialization -----------------------------
-  
-  /** Creates a new Elevator. */
-  public Elevator() {
-    configureMotors();
-    setSolenoidBrake();
-    setupShuffleboard();
-  }
+	// ------------ Initialization -----------------------------
 
-  public void configureMotors() {
+	public Elevator() {
+		this.configureMotors();
+		this.lock(true);
+		this.setupShuffleboard();
+	}
+
+	public void configureMotors() {
 		// Configure the motors
-		for(TalonFX fx : new TalonFX[] { this.talon1}) {
+		for(TalonFX fx : new TalonFX[] { this.motor }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -78,107 +74,96 @@ public class Elevator extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
-    // Top limit switch.  Stop motor if this switch is triggered.
-    talon1.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
-                                          LimitSwitchNormal.NormallyOpen);
 
-    // Home limit switch. Read as a digital input
-    talon1.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
-                                          LimitSwitchNormal.NormallyOpen);
+		// Top limit switch.  Stop motor if this switch is triggered.
+		this.motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
-    // talon1.configForwardSoftLimitThreshold(100);
-    talon1.configReverseSoftLimitThreshold(-100);
-    // talon1.configForwardSoftLimitEnable(false);
-    talon1.configReverseSoftLimitEnable(false);
-    talon1.overrideSoftLimitsEnable(false);
+		// Home limit switch. Read as a digital input
+		this.motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+
+		// talon1.configForwardSoftLimitThreshold(100);
+		this.motor.configReverseSoftLimitThreshold(-100);
+		// talon1.configForwardSoftLimitEnable(false);
+		this.motor.configReverseSoftLimitEnable(false);
+		this.motor.overrideSoftLimitsEnable(false);
 	}
 
-  public void setupShuffleboard() {
-    elevatorTab = Shuffleboard.getTab("Elevator"); 
+	public void setupShuffleboard() {
+		this.tab = Shuffleboard.getTab("Elevator");
 
-    elevatorPowerEntry = elevatorTab.add("Motor Power", talon1.getMotorOutputPercent())
-      .withPosition(3, 0)
-      .getEntry();  
+		this.entryPower = tab.add("Motor Power", this.motor.getMotorOutputPercent())
+			.withPosition(3, 0)
+			.getEntry();
 
-    elevatorPositionEntry = elevatorTab.add("Elevator Position", getEncoderTicks())
-      .withPosition(5, 0)
-      .getEntry();    
+		this.entryPosition = tab.add("Elevator Position", this.getEncoderPosition())
+			.withPosition(5, 0)
+			.getEntry();
 
-    // Limit Switches
-    ShuffleboardLayout switchLayout = Shuffleboard.getTab("Elevator")
-      .getLayout("Ramp", BuiltInLayouts.kList)
-      .withSize(2, 2)
-      .withPosition(8, 0); 
-    topLimitSwitchEntry = switchLayout.add("Top Limit Switch", topLimitSwitchClosed()).getEntry(); 
-    homeLimitSwitchEntry = switchLayout.add("Home Limit Switch", homeLimitSwitchClosed()).getEntry();  
-  }
+		// Limit Switches
+		ShuffleboardLayout switchLayout = this.tab
+			.getLayout("Ramp", BuiltInLayouts.kList)
+			.withSize(2, 2)
+			.withPosition(8, 0);
 
-// --------------- Control Input ---------------------
+		this.entryTopLimit = switchLayout.add("Top Limit Switch", this.limitTopClosed()).getEntry();
+		this.entryHomeLimit = switchLayout.add("Home Limit Switch", this.limitHomeClosed()).getEntry();
+	}
 
-  public void setPower(double power) {
-    SmartDashboard.putNumber("Elevator power", power);
-    double deadbandPower = MathUtil.applyDeadband(power, 0.05);
-    SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
+	// --------------- Control Input ---------------------
 
-    if (deadbandPower == 0) {
-      setSolenoidBrake();
-    } else {
-      setSolenoidMove();
-    }
-	  talon1.set(ControlMode.PercentOutput, MathUtil.clamp(deadbandPower, -0.2, 0.2));
-  }
+	public void halt() {
+		this.lock(true);
+	}
 
-  public void setEncoderTicks(double ticks) {
-    talon1.setSelectedSensorPosition(ticks);
-  }
+	public void control(double power) {
+		SmartDashboard.putNumber("Elevator power", power);
+		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
+		SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
 
-  public void setSolenoidBrake() {
-    elevatorSolenoid.set(false);
-  }
+		this.lock(deadbandPower == 0);
+		this.setPower(deadbandPower);
+	}
 
-  public void setSolenoidMove() {
-    elevatorSolenoid.set(true);
-  }
+	public void setPower(double power) {
+		this.motor.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.2, 0.2));
+	}
 
-  public void setBrakeEnabled() {
-    talon1.overrideLimitSwitchesEnable(true);
-  }
+	public void lock(boolean shouldLock) {
+		this.lockingPiston.set(shouldLock);
+		this.motor.set(ControlMode.PercentOutput, 0.0); // just to be safe
+	}
 
-  public void setBrakeDisabled() {
-    talon1.overrideLimitSwitchesEnable(false);
-  }
+	// ------------- System State -------------------
 
-  // ------------- System State -------------------
+	public boolean limitTopClosed() {
+		return motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
+	}
 
-  public boolean topLimitSwitchClosed() {
-    return talon1.getSensorCollection().isFwdLimitSwitchClosed() == 1;
-  }
+	public boolean limitHomeClosed() {
+		return motor.getSensorCollection().isRevLimitSwitchClosed() == 1;
+	}
 
-  public boolean homeLimitSwitchClosed() {
-    return talon1.getSensorCollection().isRevLimitSwitchClosed() == 1;
-  }
+	public double getEncoderPosition() {
+		return motor.getSelectedSensorPosition();
+	}
 
-  public double getEncoderTicks() {
-	  return talon1.getSelectedSensorPosition();
-  }
-  
-   // ------------- Process State -------------------
+	public void overrideEncoderPosition(double ticks) {
+		this.motor.setSelectedSensorPosition(ticks);
+	}
 
-  @Override
-  public void periodic() {
+	 // ------------- Process State -------------------
 
-    if (topLimitSwitchClosed()) {
-      setPower(0);
-    }
-    
-    publishTelemetry();
-    
-  }
+	@Override
+	public void periodic() {
+		if(this.limitTopClosed()) this.control(0);
 
-  public void publishTelemetry() {
-    elevatorPowerEntry.setDouble(talon1.getMotorOutputPercent());
-    elevatorPositionEntry.setDouble(getEncoderTicks());
-    topLimitSwitchEntry.setBoolean(topLimitSwitchClosed());
-    homeLimitSwitchEntry.setBoolean(homeLimitSwitchClosed());
-  }
+		this.publishTelemetry();
+	}
+
+	public void publishTelemetry() {
+		this.entryPower.setDouble(this.motor.getMotorOutputPercent());
+		this.entryPosition.setDouble(this.getEncoderPosition());
+		this.entryTopLimit.setBoolean(this.limitTopClosed());
+		this.entryHomeLimit.setBoolean(this.limitHomeClosed());
+	}
 }

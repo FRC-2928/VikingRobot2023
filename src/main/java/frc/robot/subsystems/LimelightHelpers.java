@@ -179,7 +179,7 @@ public class LimelightHelpers {
         {
             return toPose2D(targetPose_RobotSpace);
         }
-        
+
         @JsonProperty("ta")
         public double ta;
 
@@ -197,7 +197,7 @@ public class LimelightHelpers {
 
         @JsonProperty("ts")
         public double ts;
-        
+
         public LimelightTarget_Fiducial() {
             cameraPose_TargetSpace = new double[6];
             robotPose_FieldSpace = new double[6];
@@ -309,11 +309,11 @@ public class LimelightHelpers {
         public Pose3d getBotPose3d() {
             return toPose3D(botpose);
         }
-    
+
         public Pose3d getBotPose3d_wpiRed() {
             return toPose3D(botpose_wpired);
         }
-    
+
         public Pose3d getBotPose3d_wpiBlue() {
             return toPose3D(botpose_wpiblue);
         }
@@ -321,11 +321,11 @@ public class LimelightHelpers {
         public Pose2d getBotPose2d() {
             return toPose2D(botpose);
         }
-    
+
         public Pose2d getBotPose2d_wpiRed() {
             return toPose2D(botpose_wpired);
         }
-    
+
         public Pose2d getBotPose2d_wpiBlue() {
             return toPose2D(botpose_wpiblue);
         }
@@ -376,7 +376,7 @@ public class LimelightHelpers {
     static boolean profileJSON = false;
 
     static final String sanitizeName(String name) {
-        if (name == "" || name == null) {
+        if(name == "" || name == null) {
             return "limelight";
         }
         return name;
@@ -477,7 +477,7 @@ public class LimelightHelpers {
 
     /**
      * Switch to getBotPose
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -488,7 +488,7 @@ public class LimelightHelpers {
 
     /**
      * Switch to getBotPose_wpiRed
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -499,7 +499,7 @@ public class LimelightHelpers {
 
     /**
      * Switch to getBotPose_wpiBlue
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -594,7 +594,7 @@ public class LimelightHelpers {
     /**
      * Gets the Pose2d for easy use with Odometry vision pose estimator
      * (addVisionMeasurement)
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -607,7 +607,7 @@ public class LimelightHelpers {
     /**
      * Gets the Pose2d for easy use with Odometry vision pose estimator
      * (addVisionMeasurement)
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -621,7 +621,7 @@ public class LimelightHelpers {
     /**
      * Gets the Pose2d for easy use with Odometry vision pose estimator
      * (addVisionMeasurement)
-     * 
+     *
      * @param limelightName
      * @return
      */
@@ -735,12 +735,12 @@ public class LimelightHelpers {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            if (snapshotName != null && snapshotName != "") {
+            if(snapshotName != null && snapshotName != "") {
                 connection.setRequestProperty("snapname", snapshotName);
             }
 
             int responseCode = connection.getResponseCode();
-            if (responseCode == 200) {
+            if(responseCode == 200) {
                 return true;
             } else {
                 System.err.println("Bad LL Request");
@@ -758,7 +758,7 @@ public class LimelightHelpers {
 
         long start = System.nanoTime();
         LimelightHelpers.LimelightResults results = new LimelightHelpers.LimelightResults();
-        if (mapper == null) {
+        if(mapper == null) {
             mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
 
@@ -771,7 +771,7 @@ public class LimelightHelpers {
         long end = System.nanoTime();
         double millis = (end - start) * .000001;
         results.targetingResults.latency_jsonParse = millis;
-        if (profileJSON) {
+        if(profileJSON) {
             System.out.printf("lljson: %.2f\r\n", millis);
         }
 

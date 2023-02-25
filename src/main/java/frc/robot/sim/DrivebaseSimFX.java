@@ -12,9 +12,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class DrivebaseSimFX {
-	private WPI_TalonFX _leftMaster, _rightMaster;
-	private WPI_Pigeon2 _pidgey;
-
 	private TalonFXSimCollection _leftMasterSim, _rightMasterSim;
 	private BasePigeonSimCollection _pidgeySim;
 
@@ -52,10 +49,6 @@ public class DrivebaseSimFX {
 	 * @param pidgey the Pigeon IMU
 	 */
 	public DrivebaseSimFX(WPI_TalonFX leftMaster, WPI_TalonFX rightMaster, WPI_Pigeon2 pidgey) {
-		_leftMaster = leftMaster;
-		_rightMaster = rightMaster;
-		_pidgey = pidgey;
-
 		_leftMasterSim = leftMaster.getSimCollection();
 		_rightMasterSim = rightMaster.getSimCollection();
 		_pidgeySim = pidgey.getSimCollection();
@@ -74,7 +67,7 @@ public class DrivebaseSimFX {
 		// subsystem in a separate thread or have changed the nominal timestep
 		// of TimedRobot, this value needs to match it.
         // Reduced from 0.02 to 0.008 to make sim smoother while running trajectories
-		_driveSim.update(0.02); 
+		_driveSim.update(0.02);
 
 		// Update all of our sensors.
 		_leftMasterSim.setIntegratedSensorRawPosition(

@@ -18,7 +18,7 @@ public class RunDynamicTrajectory extends RamseteCommand {
 	private Drivetrain drivetrain;
 	private Supplier<Trajectory> trajectory;
 	private Pose2d initialPose;
-	
+
 	public RunDynamicTrajectory(Drivetrain drivetrain, Supplier<Trajectory> trajectory) {
 		super(
 			trajectory.get(),
@@ -46,9 +46,7 @@ public class RunDynamicTrajectory extends RamseteCommand {
 		SmartDashboard.putNumber("X start traj", initialPose.getX());
 		SmartDashboard.putNumber("X start odom", this.drivetrain.getEncoderPose().getX());
 		SmartDashboard.putNumber("start odom heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
-		SmartDashboard.putNumber("start traj heading", initialPose.getRotation().getDegrees());  
-
-		// printTrajectory();
+		SmartDashboard.putNumber("start traj heading", initialPose.getRotation().getDegrees());
 	}
 
 	public void execute() {
@@ -70,11 +68,11 @@ public class RunDynamicTrajectory extends RamseteCommand {
 
 	public void printTrajectory() {
 		Log.writeln("Initial Pose: " + initialPose);
-		
+
 		List<State> states = this.trajectory.get().getStates();
 		for (int i = 1; i < states.size(); i++) {
 		  var state = states.get(i);
 		  Log.writeln("Time:" + state.timeSeconds + " Velocity:" + state.velocityMetersPerSecond);
-		}  
+		}
 	}
 }

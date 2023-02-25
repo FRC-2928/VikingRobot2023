@@ -11,18 +11,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
+	public final WPI_TalonSRX motor = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
+	private double output = 0;
 
-  public final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
-  private double m_output = 0;
-  
-  /** Creates a new Intake. */
-  public Intake() {
-    configureMotors();
-  }
+	public Intake() {
+		this.configureMotors();
+	}
 
-  public void configureMotors() {
+	public void configureMotors() {
 		// Configure the motors
-		for(TalonSRX fx : new TalonSRX[] { this.intakeTalon}) {
+		for(TalonSRX fx : new TalonSRX[] { this.motor }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -59,20 +57,11 @@ public class Intake extends SubsystemBase {
 		}
 	}
 
-  
+	public void setOutput(double output) {
+		this.output = output;
+	}
 
-  /**
-   * 
-   * @param output on a scale of -1 to 1
-   */
-  public void setOutput(double output) {
-    m_output = output;
-  }
-
-  public void runOutput() {
-    intakeTalon.set(ControlMode.PercentOutput, m_output);
-  }
-
-  @Override
-  public void periodic() {}
+	public void runOutput() {
+		this.motor.set(ControlMode.PercentOutput, this.output);
+	}
 }

@@ -28,7 +28,7 @@ public class Balance extends CommandBase {
 	/// The timeout to automatically end the command at
 	/// Set to Double.POSITIVE_INFINITY to disable
 	public double timeout;
-	
+
 	public Balance(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		this.drivetrain = drivetrain;
 
@@ -75,7 +75,7 @@ public class Balance extends CommandBase {
 	public void execute() {
 		double balanceVolts = this.balance.calculate(this.drivetrain.readPitch());
 		double rollVolts = this.roll.calculate(this.drivetrain.readRoll());
-		
+
 		if(this.drivetrain.readPitch() > 0) this.drivetrain.tankDriveVolts(-balanceVolts + rollVolts, -balanceVolts - rollVolts);
 		else this.drivetrain.tankDriveVolts(-balanceVolts - rollVolts, -balanceVolts + rollVolts);
 	}

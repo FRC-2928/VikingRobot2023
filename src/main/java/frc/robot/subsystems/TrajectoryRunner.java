@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
@@ -31,57 +27,55 @@ import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 
-/** Add your docs here. */
 public class TrajectoryRunner {
     public static enum Direction {
 		Left,
 		Right,
 		Center
 	}
-    
+
     /**
 	 * Generates a dynamic trajectory starting at the current pose of the
 	 * robot, as determined by the Limelight looking at the AprilTags.
 	 * The trajectory will end at the current in-view apriltag, or to the
 	 * left or right of it as directed.
-	 * 
+	 *
 	 * @param direction whether the robot should end at the center, left,
 	 *                  or right of the apriltag.
-	 * 
+	 *
 	 * @return The generated Trajectory object
 	 */
 	public static Trajectory generateLocalTrajectory(Drivetrain drivetrain, Direction direction) {
 		Log.writeln("generateLocalTrajectory");
 		Trajectory trajectory = new Trajectory();
-		
+
 		// Get the aprilTag that the robot is looking at
-		double aprilTagID = drivetrain.getAprilTagID();
+		int aprilTagID = drivetrain.getAprilTagID();
 
 		// Default trajectory if no limelight target is to move back 0.5 meters
 		Pose2d startPose = drivetrain.getEncoderPose();
-		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.5, 0), 
+		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.5, 0),
 										new Rotation2d()));
 		// Set the trajectory config to reversed.
 		TrajectoryConfig config = AutoConstants.kTrajectoryConfigReversed;
-		
+
 		List<Translation2d> waypoints = new ArrayList<>();
-	
-		if(drivetrain.hasValidLimelightTarget()) {			
-			Log.writeln("No Limelight target!");	
+
+		if(drivetrain.hasValidLimelightTarget()) {
+			Log.writeln("No Limelight target!");
 			Log.writeln("Start Pose X ", startPose.getX());
 			Log.writeln("Start Pose Y ", startPose.getY());
 			Log.writeln("Start Pose Heading ", startPose.getRotation().getDegrees());
-		
+
 			Log.writeln("End Pose X ", endPose.getX());
 			Log.writeln("End Pose Y ", endPose.getY());
 			Log.writeln("End Pose Heading ", endPose.getRotation().getDegrees());
-			
+
 			Robot.instance.robotContainer.driverOI.signalError();
 
 			return new Trajectory();
-		} else if(!FieldConstants.aprilTags.containsKey((int)aprilTagID)) {
-			Log.writeln("Invalid aprilTag! " + aprilTagID);	
-
+		} else if(!FieldConstants.aprilTags.containsKey(aprilTagID)) {
+			throw new Error("Attempted to go to an AprilTag that does not exist! Id #" + aprilTagID);
 		} else {
 			// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
 			startPose = drivetrain.getLimelightPoseRelative();
@@ -93,30 +87,30 @@ public class TrajectoryRunner {
 			switch(direction) {
 				case Left:
 				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
-				endPose = tag.plus(FieldConstants.leftOffset);	
+				endPose = tag.plus(FieldConstants.leftOffset);
 				break;
 				case Right:
-				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));	
-				endPose = tag.plus(FieldConstants.rightOffset);	
+				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI)));
+				endPose = tag.plus(FieldConstants.rightOffset);
 				break;
 				default:
 				// endPose = tag.plus(new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI)));
-				endPose = tag.plus(FieldConstants.centerOffset);		
-				break;		
+				endPose = tag.plus(FieldConstants.centerOffset);
+				break;
 			}
-	
+
 		}
 
 		SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
         SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
-    
+
         SmartDashboard.putNumber("End Pose X", endPose.getX());
         SmartDashboard.putNumber("End Pose Y", endPose.getY());
         SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
-        
+
 		// waypoints.add(new Translation2d(endPose.getX() + 1, endPose.getY() + 0.1));
-		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
 					waypoints,
         			endPose, config);
 
@@ -131,16 +125,16 @@ public class TrajectoryRunner {
 
     /**
 	 * Generate a trajectory following Ramsete command
-	 * 
+	 *
 	 * This is very similar to the WPILib RamseteCommand example. It uses
-	 * constants defined in the Constants.java file. These constants were 
+	 * constants defined in the Constants.java file. These constants were
 	 * found empirically by using the frc-characterization tool.
-	 * 
+	 *
 	 * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
 	 */
   	public static Command generateRamseteCommand(Drivetrain drivetrain, Supplier<Trajectory> trajectory) {
 		Log.writeln("generating Ramsete Command...");
-		// if (trajectory.get() == null) {
+		// if(trajectory.get() == null) {
 		// 	Log.writeln("generateRamseteCommand: Got null trajectory!");
 		// 	return new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain);
 		// }
@@ -151,7 +145,8 @@ public class TrajectoryRunner {
 			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 			DrivetrainConstants.kDriveKinematics,
 			drivetrain::setOutputMetersPerSecond,
-			drivetrain);
+			drivetrain
+		);
 
 		// drivetrain.resetOdometry(trajectory.get().getInitialPose());
 
@@ -172,15 +167,15 @@ public class TrajectoryRunner {
 			.andThen(ramseteCommand)
 			// make sure that the robot stops
 			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
-	} 
-    
+	}
+
     /**
 	 * Generates a dynamic trajectory starting at the current pose of the
 	 * robot, as determined by the Limelight looking at the AprilTags.
 	 * Additional waypoints may be added to navigate around field structures.
-	 * 
+	 *
 	 * @param endPose pose where robot should end
-	 * 
+	 *
 	 * @return The generated Trajectory object
 	 */
 	public static Trajectory generateTrajectory(Drivetrain drivetrain, Pose2d endPose) {
@@ -190,11 +185,11 @@ public class TrajectoryRunner {
         SmartDashboard.putNumber("Start Pose X", startPose.getX());
         SmartDashboard.putNumber("Start Pose Y", startPose.getY());
         SmartDashboard.putNumber("Start Pose Heading", startPose.getRotation().getDegrees());
-    
+
         SmartDashboard.putNumber("End Pose X", endPose.getX());
         SmartDashboard.putNumber("End Pose Y", endPose.getY());
         SmartDashboard.putNumber("End Pose Heading", endPose.getRotation().getDegrees());
-        
+
 		Trajectory trajectory;
 		List<Translation2d> waypoints = new ArrayList<>();
 
@@ -204,13 +199,13 @@ public class TrajectoryRunner {
         // 	//if direction is specified left, or direction is unspecified and Y is on left side of field...
         // 	if(direction == Direction.Left || ((direction == Direction.Unspecified ) && (drivetrain.isLeftOfChargingStation()))) {
 		// 		Log.writeln("Red left");
-        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
 		// 			List.of(FieldConstants.Waypoints.leftRed1, FieldConstants.Waypoints.leftRed2),
 		// 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	} else {
 		// 		Log.writeln("Red right");
-        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
-		// 			List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2), 
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
+		// 			List.of(FieldConstants.Waypoints.rightRed1, FieldConstants.Waypoints.rightRed2),
 		// 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	}
         // } else {
@@ -218,33 +213,33 @@ public class TrajectoryRunner {
         // 	if(direction == Direction.Left || ((direction == Direction.Unspecified) && (drivetrain.isLeftOfChargingStation()))) {
         // 		Log.writeln("Blue left");
 		// 		Log.writeln("CS Center" + FieldConstants.Community.chargingStationCenterY);
-		// 		if (startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
+		// 		if(startPose.getX() > FieldConstants.Waypoints.leftBlue1.getX()) {
 		// 			waypoints.add(FieldConstants.Waypoints.leftBlue1);
 		// 		}
-		// 		if (startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
+		// 		if(startPose.getX() > FieldConstants.Waypoints.leftBlue2.getX()) {
 		// 			waypoints.add(FieldConstants.Waypoints.leftBlue2);
-		// 		}				
+		// 		}
 
-		// 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
 		// 			waypoints,
         // 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	} else {
 		// 		Log.writeln("Blue right");
-		// 		if (startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
+		// 		if(startPose.getX() > FieldConstants.Waypoints.rightBlue1.getX()) {
 		// 			waypoints.add(FieldConstants.Waypoints.rightBlue1);
-		// 		}		
-		// 		if (startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
+		// 		}
+		// 		if(startPose.getX() > FieldConstants.Waypoints.rightBlue2.getX()) {
 		// 			waypoints.add(FieldConstants.Waypoints.rightBlue2);
-		// 		} 		
-				
-        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		// 		}
+
+        // 		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
 		// 			waypoints,
         // 			endPose, DrivetrainConstants.kTrajectoryConfig);
         // 	}
         // }
 
     	// waypoints.add(new Translation2d(endPose.getX() + 2, endPose.getY() + 0.1));
-		trajectory = TrajectoryGenerator.generateTrajectory(startPose, 
+		trajectory = TrajectoryGenerator.generateTrajectory(startPose,
 					waypoints,
         			endPose, AutoConstants.kTrajectoryConfig);
 
@@ -262,7 +257,7 @@ public class TrajectoryRunner {
 			.getDeployDirectory()
 			.toPath()
 			.resolve("paths/output/" + trajectoryJSON + ".wpilib.json");
-		
+
 		try {
 			return TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 		} catch (IOException ex) {
@@ -276,13 +271,13 @@ public class TrajectoryRunner {
 
 		for (int i = 1; i < states.size(); i++) {
 			var state = states.get(i);
-			Log.writeln("Time:" + state.timeSeconds + 
+			Log.writeln("Time:" + state.timeSeconds +
 						" X:" + state.poseMeters.getX() +
 						" Y:" + state.poseMeters.getY() +
 						" Vel:" + state.velocityMetersPerSecond +
 						" Curvature:" + state.curvatureRadPerMeter);
-		}  
+		}
 
-		Log.writeln("Traj: " + trajectory.getTotalTimeSeconds()); 
-	}	
+		Log.writeln("Traj: " + trajectory.getTotalTimeSeconds());
+	}
 }

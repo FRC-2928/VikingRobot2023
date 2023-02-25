@@ -19,7 +19,7 @@ public class POVSelector extends CommandBase {
 
             // Leaf node, returns a value
             Leaf,
-            
+
             // Cancel POVSelect
             Cancel,
         }
@@ -73,7 +73,7 @@ public class POVSelector extends CommandBase {
             this.down = down;
             this.left = left;
         }
-        
+
         public Tree pov(int pov) {
             if(pov == 0) return this.up;
             else if(pov == 90) return this.right;
@@ -100,10 +100,10 @@ public class POVSelector extends CommandBase {
 
     private final TelemetryData telem = Telemetry.track("POV Selector", () -> {
         if(!this.isScheduled()) return "<inactive>";
-        
+
         return String.join(" > ", this.state.stream().map(tree -> tree.name).toArray(String[]::new)) + " > ?";
     }, true);
-    
+
     private final OIBase oi;
     private final Tree root;
 
@@ -112,7 +112,7 @@ public class POVSelector extends CommandBase {
 
     public Consumer<String[]> hook;
     public BiConsumer<Object, String[]> finished;
-	
+
 	public POVSelector(OIBase oi, Consumer<String[]> hook, BiConsumer<Object, String[]> finished, Tree root) {
         this.oi = oi;
         this.hook = hook;
@@ -127,7 +127,7 @@ public class POVSelector extends CommandBase {
 	public void initialize() {
         this.state.clear();
         this.state.add(this.root);
-        
+
         Log.writeln("POV Selector: initialized");
 
         this.telem.publish();
@@ -141,16 +141,16 @@ public class POVSelector extends CommandBase {
             this.pressed = false;
             return;
         }
-        
+
         if(this.pressed) return;
 
         this.pressed = true;
 
         Tree next = this.state.get(this.state.size() - 1).pov(pov);
-        
+
         if(next != null) {
             this.state.add(next);
-            
+
             String[] names = this.state.stream().map(tree -> tree.name).toArray(String[]::new);
 
             if(this.hook != null) this.hook.accept(names);
@@ -169,7 +169,7 @@ public class POVSelector extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         Log.writeln("POV Selector: end");
-        
+
         this.telem.publish();
     }
 

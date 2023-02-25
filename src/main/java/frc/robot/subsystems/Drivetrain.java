@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,11 +19,9 @@ import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.sim.DrivebaseSimFX;
-import frc.robot.sim.PhysicsSim;
 import frc.robot.subsystems.Transmission.GearState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -40,7 +36,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
-	private static final GearState RobotContainer = null;
 	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
 	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
@@ -52,7 +47,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public DifferentialDrive diffDrive;
 
-	public WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
+	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForwardL;
@@ -60,8 +55,7 @@ public class Drivetrain extends SubsystemBase {
 
 	private double offset;
 
-	private MedianFilter m_verticalFilter = new MedianFilter(10);
-	private MedianFilter m_limelightFilter = new MedianFilter(10);
+	private MedianFilter filterVertical = new MedianFilter(10);
 
 	private DifferentialDriveOdometry odometry;
 	private DifferentialDrivePoseEstimator poseEstimator;
@@ -71,7 +65,6 @@ public class Drivetrain extends SubsystemBase {
 	private final Field2d fieldLimelight = new Field2d();
 
 	private DrivebaseSimFX driveSim = new DrivebaseSimFX(rightLeader, leftLeader, pigeon);
-	public DifferentialDrivetrainSim m_drivetrainSimulator;
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -91,17 +84,17 @@ public class Drivetrain extends SubsystemBase {
 
 		this.resetEncoders();
 		this.zeroGyro();
-		
+
 		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			this.pigeon.setYaw(0);
 		} else {
 			this.pigeon.setYaw(180);
 		}
-		
+
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
-		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics, 
+		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics,
 									new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose2d());
 
 		this.field2d.setRobotPose(this.getEncoderPose());
@@ -171,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
 
         // set the PID values for each individual wheel
         for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}) {
-            
+
             fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
             fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
             fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
@@ -219,7 +212,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.resetPosition(this.read2dRotation(), 0, 0, pose);
 	}
 
-//   
+//
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// Log.writeln("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
@@ -295,7 +288,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return pose from encoders
 	 */
 	public Pose2d getEncoderPose() {
@@ -304,7 +297,7 @@ public class Drivetrain extends SubsystemBase {
 
 	/**
 	 * If the robot is in simulation then a default pose is returned
-	 * 
+	 *
 	 * @return pose using encoders and limelight
 	 */
 	public Pose2d getEstimatedPose() {
@@ -312,10 +305,10 @@ public class Drivetrain extends SubsystemBase {
 			return this.poseEstimator.getEstimatedPosition();
 		} else if(Timer.getFPGATimestamp() > 0.5) {
 			return new Pose2d(5.0,4.0, new Rotation2d(3.1));
-		} 
+		}
 		else {
 			return new Pose2d(0.0,0.0, new Rotation2d());
-		}				
+		}
 	}
 
 	public Rotation2d readYawRot() {
@@ -364,7 +357,7 @@ public class Drivetrain extends SubsystemBase {
 			gearState
 		);
 		return encoderTicks;
-	}	
+	}
 
 	public double getHeading() {
 		return this.pigeon.getYaw();
@@ -385,22 +378,22 @@ public class Drivetrain extends SubsystemBase {
 	// Robot transform in field-space with the alliance driverstation at the origin
 	// using botpose_wpired and botpose_wpiblue
 	public Pose2d getLimelightPoseRelative() {
-		if(RobotBase.isReal()) {		
+		if(RobotBase.isReal()) {
 			if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 				return this.limelight.getRedPose2d();
-			} else {		
+			} else {
 					return this.limelight.getBluePose2d();
-			}	
+			}
 		} else {
 			// In simulation we just return the encoder pose.
 			return this.getEncoderPose();
-		}		
+		}
 	}
 
-  	/** 
+  	/**
 	 * Returns if current robot estimated pose is left or right of the center
 	 * of the Charging Station taking the team alliance into account.
-	 * 
+	 *
 	 * @return Is robot left or right of the center of the Charging Station
 	 */
 	public boolean isLeftOfChargingStation() {
@@ -408,7 +401,7 @@ public class Drivetrain extends SubsystemBase {
 			return this.getEstimatedPose().getY() >= FieldConstants.Community.chargingStationCenterY;
 		} else {
 			return this.getEstimatedPose().getY() <= FieldConstants.Community.chargingStationCenterY;
-		}		
+		}
 	}
 
 	public boolean isRightOfChargingStation() {
@@ -420,14 +413,14 @@ public class Drivetrain extends SubsystemBase {
 	 * @return offset angle between target and the robot
 	 */
 	public double getTargetHorizontalOffset() {
-		return limelight.getHorizontalOffset();		
+		return this.limelight.getHorizontalOffset();
 	}
 
 	public double getTargetVerticalOffset() {
-		if (limelight.getVerticalOffset() != 0) {
-			offset = limelight.getVerticalOffset();
-		} 
-		return m_verticalFilter.calculate(offset);
+		if(this.limelight.getVerticalOffset() != 0) {
+			this.offset = this.limelight.getVerticalOffset();
+		}
+		return this.filterVertical.calculate(this.offset);
 	}
 
 	public boolean hasValidLimelightTarget() {
@@ -435,15 +428,15 @@ public class Drivetrain extends SubsystemBase {
 			return this.limelight.getHasValidTargets();
 		} else {
 			return this.getHasValidTargetsSim();
-		}		
+		}
 	}
 
-	public double getAprilTagID() {
+	public int getAprilTagID() {
 		if(RobotBase.isReal()) {
 			return this.limelight.getAprilTagID();
 		} else {
 			return this.getAprilTagIDSim();
-		}		
+		}
 	}
 
 	@Override
@@ -458,7 +451,7 @@ public class Drivetrain extends SubsystemBase {
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		if(this.limelight.getHasValidTargets()) {
-			poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
+			this.poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
 
 		this.publishTelemetry();
@@ -471,18 +464,18 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
 		SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
 
-		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());	
+		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());
 		SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
 		SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
 		SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
-		
+
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
 
-		SmartDashboard.putNumber("April Tag", getAprilTagID());
+		SmartDashboard.putNumber("April Tag", this.getAprilTagID());
 
-		// SmartDashboard.putNumber("motor output", this.getMotorOutput());	
+		// SmartDashboard.putNumber("motor output", this.getMotorOutput());
 		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("left enoder ticks", this.leftLeader.getSelectedSensorPosition());
 		// SmartDashboard.putNumber("poseX", this.getEncoderPose().getX());
@@ -497,7 +490,7 @@ public class Drivetrain extends SubsystemBase {
 		// PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
 		// PhysicsSim.getInstance().addTalonFX(leftFollower, 0.75, 20660);
 	}
-	
+
 	@Override
     public void simulationPeriodic() {
 		// PhysicsSim.getInstance().run();
@@ -505,28 +498,30 @@ public class Drivetrain extends SubsystemBase {
     }
 
 	public boolean getHasValidTargetsSim() {
-		double heading = getEncoderPose().getRotation().getDegrees();
+		double heading = this.getEncoderPose().getRotation().getDegrees();
+
 		Log.writeln("getHasValidTargetsSim Heading:" + heading);
+
 		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-			if (heading < 75 || heading > -75) {
+			if(heading < 75 || heading > -75) {
 				Log.writeln("true - Red");
 				return true;
 			} else {
-				Log.writeln("true - Red");
+				Log.writeln("false - Red");
 				return false;
-			}	
+			}
 		} else {
-			if (heading > 135 || heading < -135) {
+			if(heading > 135 || heading < -135) {
 				Log.writeln("true - Blue");
 				return true;
 			} else {
 				Log.writeln("false - Blue");
 				return false;
-			}	
-		}	
+			}
+		}
 	}
 
-	public double getAprilTagIDSim() {
+	public int getAprilTagIDSim() {
 		return 8;
 	}
 }

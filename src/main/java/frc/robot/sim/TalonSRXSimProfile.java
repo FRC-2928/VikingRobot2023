@@ -21,7 +21,7 @@ class TalonSRXSimProfile extends SimProfile {
 
     /**
      * Creates a new simulation profile for a TalonSRX device.
-     * 
+     *
      * @param talon
      *        The TalonSRX device
      * @param accelToFullTime
@@ -40,7 +40,7 @@ class TalonSRXSimProfile extends SimProfile {
 
     /**
      * Runs the simulation profile.
-     * 
+     *
      * This uses very rudimentary physics simulation and exists to allow users to test
      * features of our products in simulation using our examples out of the box.
      * Users may modify this to utilize more accurate physics simulation.
@@ -52,16 +52,16 @@ class TalonSRXSimProfile extends SimProfile {
         /// DEVICE SPEED SIMULATION
 
         double outPerc = _talon.getSimCollection().getMotorOutputLeadVoltage() / 12;
-        if (_sensorPhase) {
+        if(_sensorPhase) {
             outPerc *= -1;
         }
         // Calculate theoretical velocity with some randomness
         double theoreticalVel = outPerc * _fullVel * random(0.95, 1);
         // Simulate motor load
-        if (theoreticalVel > _vel + accelAmount) {
+        if(theoreticalVel > _vel + accelAmount) {
             _vel += accelAmount;
         }
-        else if (theoreticalVel < _vel - accelAmount) {
+        else if(theoreticalVel < _vel - accelAmount) {
             _vel -= accelAmount;
         }
         else {

@@ -18,7 +18,7 @@ public abstract class OIBase {
 
     public void rumble(RumbleType rt, double intensity, Duration time) {
         this.controller.setRumble(rt, intensity);
-        
+
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
             new WaitCommand(time.toSeconds()),
             new InstantCommand(() -> this.controller.setRumble(rt, 0))

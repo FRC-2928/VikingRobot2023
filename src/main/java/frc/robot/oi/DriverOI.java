@@ -11,7 +11,7 @@ import frc.robot.subsystems.Log;
 
 public class DriverOI extends OIBase {
 	/*
-	
+
 	A - balance aux
 	B - (maybe)switch between coast and brake
 	X - shift low
@@ -22,17 +22,18 @@ public class DriverOI extends OIBase {
 
 	LB
 	RB
-	
+
 	LT
 	RT
 
 	LS - y-move
 	RS - x-rotate
-	
+
 	LS Click - shift high
 	RS Click - shift low
 
 	*/
+	
 	public DriverOI(XboxController controller) {
 		super(controller);
 

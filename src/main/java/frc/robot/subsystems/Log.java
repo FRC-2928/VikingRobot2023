@@ -45,12 +45,12 @@ public final class Log extends SubsystemBase {
 		for(Object entry : input) {
 			if(entry.getClass().isArray()) {
 				Object[] array;
-				
+
 				if(entry instanceof int[]) array = Arrays.stream((int[])entry).boxed().toArray(Integer[]::new);
 				else if(entry instanceof long[]) array = Arrays.stream((long[])entry).boxed().toArray(Long[]::new);
 				else if(entry instanceof double[]) array = Arrays.stream((double[])entry).boxed().toArray(Double[]::new);
 				else array = (Object[])entry;
-				
+
 				Log.writeFast(array);
 			} else {
 				Log.writeFast(entry.toString());
