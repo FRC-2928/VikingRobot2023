@@ -22,14 +22,11 @@ public class ElevatorGoToHeight extends PIDCommand {
 	}
 
 	@Override
-	public void initialize() {
-		this.elevator.setSolenoidMove();
-	}
+	public void initialize() {}
 
 	@Override
 	public void end(boolean interrupted) {
 		this.elevator.setPower(0.0);
-		this.elevator.setSolenoidBrake();
 	}
 
 	@Override

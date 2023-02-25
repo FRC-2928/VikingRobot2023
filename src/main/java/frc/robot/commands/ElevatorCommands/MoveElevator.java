@@ -21,7 +21,6 @@ public class MoveElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.elevator.setSolenoidMove();
     this.elevator.setPower(speed);
   }
 
@@ -33,7 +32,6 @@ public class MoveElevator extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.elevator.setPower(0.0);
-    this.elevator.setSolenoidBrake();
   }
 
   // Returns true when the command should end.
