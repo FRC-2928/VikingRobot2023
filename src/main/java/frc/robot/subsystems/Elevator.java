@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -86,10 +87,10 @@ public class Elevator extends SubsystemBase {
                                           LimitSwitchNormal.NormallyOpen);
 
     // talon1.configForwardSoftLimitThreshold(100);
-    // talon1.configReverseSoftLimitThreshold(-100);
+    talon1.configReverseSoftLimitThreshold(-100);
     // talon1.configForwardSoftLimitEnable(false);
-    // talon1.configReverseSoftLimitEnable(false);
-    // talon1.overrideSoftLimitsEnable(false);
+    talon1.configReverseSoftLimitEnable(false);
+    talon1.overrideSoftLimitsEnable(false);
 	}
 
   public void setupShuffleboard() {
@@ -115,8 +116,16 @@ public class Elevator extends SubsystemBase {
 // --------------- Control Input ---------------------
 
   public void setPower(double power) {
+    SmartDashboard.putNumber("Elevator power", power);
     double deadbandPower = MathUtil.applyDeadband(power, 0.05);
-	  talon1.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.5, 0.5));
+    SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
+
+    if (deadbandPower == 0) {
+      setSolenoidBrake();
+    } else {
+      setSolenoidMove();
+    }
+	  talon1.set(ControlMode.PercentOutput, MathUtil.clamp(deadbandPower, -0.2, 0.2));
   }
 
   public void setEncoderTicks(double ticks) {
@@ -157,15 +166,11 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //TODO: make for when hitting home or limit switch
-    // if(1==1) {
-    //   isFound = true;
-    // }
+
+    if (topLimitSwitchClosed()) {
+      setPower(0);
+    }
     
-    // if(!isFound) {
-    //   setPower(ElevatorConstants.defaultPower);
-    // }
     publishTelemetry();
     
   }

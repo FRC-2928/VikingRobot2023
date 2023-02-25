@@ -109,8 +109,8 @@ public class RobotContainer {
 		// default command should run only in absence of other commands - shouldn't be a problem for these to be default even though they're backup. (CHECK THOUGH)
 		// why is this a good idea -nova
 		// this.elevator.setDefaultCommand(new MoveElevator(elevator, operatorOI.getElevatorSupplier().getAsDouble()));
-		// this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(operatorOI.getElevatorSupplier().getAsDouble()), elevator));
-		this.arm.setDefaultCommand(new RunCommand(() -> arm.setPower(operatorOI.getElevatorSupplier().getAsDouble()), arm));
+		this.elevator.setDefaultCommand(new RunCommand(() -> elevator.setPower(operatorOI.getElevatorSupplier().getAsDouble()), elevator));
+		this.arm.setDefaultCommand(new RunCommand(() -> arm.setPower(operatorOI.getArmSupplier().getAsDouble()), arm));
 		
 		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));

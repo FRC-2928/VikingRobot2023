@@ -27,6 +27,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/AutoRoutineChooser": "String Chooser",
+      "/SmartDashboard/Autonomous Routine": "String Chooser",
       "/SmartDashboard/Encoder Pose": "Field2d",
       "/SmartDashboard/Estimated Pose": "Field2d",
       "/SmartDashboard/Field": "Field2d",
@@ -48,6 +49,9 @@
   },
   "NetworkTables": {
     "transitory": {
+      "Shuffleboard": {
+        "open": true
+      },
       "SmartDashboard": {
         "open": true
       }
