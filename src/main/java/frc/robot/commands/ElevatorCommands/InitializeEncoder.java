@@ -7,10 +7,10 @@ import frc.robot.subsystems.Elevator;
 /*
  * When the elevator is lost ( :( ), moves the elevator up until it hits either the home limit switch, or the top limit switch, thus knowing where the elevator is
  */
-public class FindHome extends CommandBase {
+public class InitializeEncoder extends CommandBase {
 	private Elevator elevator;
 	
-	public FindHome(Elevator elevator) {
+	public InitializeEncoder(Elevator elevator) {
 		this.elevator = elevator;
 		this.addRequirements(elevator);
 	}
@@ -28,7 +28,15 @@ public class FindHome extends CommandBase {
 
 	@Override
 	public boolean isFinished() {
-		// TODO: finish when reaching home or limit switch
+		if (this.elevator.topLimitSwitchClosed()) {
+			// Set encoder to top position
+			this.elevator.setPower(0);
+			this.elevator.setEncoderTicks(0);
+		} else if (this.elevator.homeLimitSwitchClosed()) {
+			// Set encoder home position
+			this.elevator.setPower(0);
+			this.elevator.setEncoderTicks(0);
+		}
 		return false;
 	}
 }

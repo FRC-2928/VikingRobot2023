@@ -2,11 +2,14 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,7 +19,7 @@ import frc.robot.Constants.ElevatorConstants;
 public class Elevator extends SubsystemBase {
 
   public final WPI_TalonFX talon1 = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
-  Solenoid m_elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
+  Solenoid elevatorSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
   private boolean isFound = false;
   
   // ------------ Initialization -----------------------------
@@ -64,56 +67,74 @@ public class Elevator extends SubsystemBase {
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
-    
+    // Top limit switch
+    // talon1.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
+    //                                       LimitSwitchNormal.NormallyOpen);
+    // // Home limit switch
+    // talon1.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, 
+    //                                       LimitSwitchNormal.NormallyOpen);
+
+    // talon1.configForwardSoftLimitThreshold(100);
+    // talon1.configReverseSoftLimitThreshold(-100);
+    // talon1.configForwardSoftLimitEnable(false);
+    // talon1.configReverseSoftLimitEnable(false);
+    // talon1.overrideSoftLimitsEnable(false);
 	}
 
 // --------------- Control Input ---------------------
 
   public void setPower(double power) {
-	talon1.set(ControlMode.PercentOutput, power);
+    double deadbandPower = MathUtil.applyDeadband(power, 0.05);
+	  talon1.set(ControlMode.PercentOutput, power * 0.2);
+  }
+
+  public void setEncoderTicks(double ticks) {
+    talon1.setSelectedSensorPosition(ticks);
   }
 
   public void setSolenoidBrake() {
-    m_elevatorSolenoid.set(false);
+    elevatorSolenoid.set(false);
   }
 
   public void setSolenoidMove() {
-    m_elevatorSolenoid.set(true);
+    elevatorSolenoid.set(true);
   }
 
-  /**
-   * 
-   * @param found whether the elevator knows its position
-   */
-  public void isFound(boolean found) {
-	isFound = found;
+  public void setBrakeEnabled() {
+    talon1.overrideLimitSwitchesEnable(true);
+  }
+
+  public void setBrakeDisabled() {
+    talon1.overrideLimitSwitchesEnable(false);
   }
 
   // ------------- System State -------------------
 
-  public double getEncoderTicks() {
-	return talon1.getSelectedSensorPosition();
+  public boolean topLimitSwitchClosed() {
+    return talon1.getSensorCollection().isFwdLimitSwitchClosed() == 1;
   }
 
-  /**
-   * 
-   * @return whether the elevator knows where it is
-   */
-  public boolean isFound() {
-	return isFound;
+  public boolean homeLimitSwitchClosed() {
+    return talon1.getSensorCollection().isRevLimitSwitchClosed() == 1;
+  }
+
+  public double getEncoderTicks() {
+	  return talon1.getSelectedSensorPosition();
   }
   
+   // ------------- Process State -------------------
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //TODO: make for when hitting home or limit switch
-    if(1==1) {
-      isFound = true;
-    }
+    // if(1==1) {
+    //   isFound = true;
+    // }
     
-    if(!isFound) {
-      setPower(ElevatorConstants.defaultPower);
-    }
+    // if(!isFound) {
+    //   setPower(ElevatorConstants.defaultPower);
+    // }
     
   }
 }
