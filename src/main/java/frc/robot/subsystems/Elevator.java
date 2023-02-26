@@ -75,16 +75,20 @@ public class Elevator extends SubsystemBase {
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
 
-		// Top limit switch.  Stop motor if this switch is triggered.
+		// TMP: forward and reverse are flipped via hardware
+
+		// Top limit switch. Stop motor if this switch is triggered.
 		this.motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
 		// Home limit switch. Read as a digital input
 		this.motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
-		// talon1.configForwardSoftLimitThreshold(100);
-		this.motor.configReverseSoftLimitThreshold(-100);
-		// talon1.configForwardSoftLimitEnable(false);
-		this.motor.configReverseSoftLimitEnable(false);
+		this.motor.configForwardSoftLimitThreshold(100);
+		//this.motor.configReverseSoftLimitThreshold(-100);
+
+		this.motor.configForwardSoftLimitEnable(false);
+		//this.motor.configReverseSoftLimitEnable(false);
+
 		this.motor.overrideSoftLimitsEnable(false);
 	}
 
@@ -135,11 +139,13 @@ public class Elevator extends SubsystemBase {
 	// ------------- System State -------------------
 
 	public boolean limitTopClosed() {
-		return motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
+		// todo: flip
+		return motor.getSensorCollection().isRevLimitSwitchClosed() == 1;
 	}
 
 	public boolean limitHomeClosed() {
-		return motor.getSensorCollection().isRevLimitSwitchClosed() == 1;
+		// todo: flip
+		return motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
 	}
 
 	public double getEncoderPosition() {

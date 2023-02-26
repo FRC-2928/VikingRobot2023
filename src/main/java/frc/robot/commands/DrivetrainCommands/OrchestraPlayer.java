@@ -1,7 +1,6 @@
 package frc.robot.commands.DrivetrainCommands;
 
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Log;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.ctre.phoenix.music.Orchestra;
@@ -26,7 +25,6 @@ public class OrchestraPlayer extends CommandBase {
 	@Override
 	public void initialize() {
 		this.player.play();
-		Log.writeln("orchestra start");
 	}
 
 	@Override
@@ -37,7 +35,6 @@ public class OrchestraPlayer extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		this.player.stop();
-		Log.writeln("orchestra end");
 	}
 
 	@Override

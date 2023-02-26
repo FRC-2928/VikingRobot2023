@@ -12,11 +12,15 @@ public class TurnToPid extends ProfiledPIDCommand {
 
 	public TurnToPid(double angle, Drivetrain drivetrain) {
 		super(
-			new ProfiledPIDController(DrivetrainConstants.GainsTurnto.P,DrivetrainConstants.GainsTurnto.I,DrivetrainConstants.GainsTurnto.D,
-							new TrapezoidProfile.Constraints(360, 200)),
+			new ProfiledPIDController(
+				DrivetrainConstants.GainsTurnto.P,
+				DrivetrainConstants.GainsTurnto.I,
+				DrivetrainConstants.GainsTurnto.D,
+				new TrapezoidProfile.Constraints(360, 200)
+			),
 			() -> drivetrain.readYaw(),
 			new TrapezoidProfile.State(angle, 0),
-			(output, setpoint) ->  drivetrain.tankDriveVolts(output, -output)
+			(output, setpoint) -> drivetrain.tankDriveVolts(output, -output)
 		);
 		this.m_controller.setTolerance(3, 10);
 		this.addRequirements(drivetrain);

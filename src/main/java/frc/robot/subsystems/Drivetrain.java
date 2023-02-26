@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.function.Supplier;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.Robot;
@@ -43,11 +42,9 @@ public class Drivetrain extends SubsystemBase {
 
   	private final Limelight limelight = new Limelight();
 
-	private Supplier<Transmission.GearState> gearStateSupplier;
+	public final DifferentialDrive diffDrive;
 
-	public DifferentialDrive diffDrive;
-
-	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.kPigeonIMU);
+	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.PigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
 	private SimpleMotorFeedforward feedForwardL;
@@ -69,9 +66,7 @@ public class Drivetrain extends SubsystemBase {
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
-	public Drivetrain(Supplier<Transmission.GearState> gearStateSupplier) {
-		this.gearStateSupplier = gearStateSupplier;
-
+	public Drivetrain() {
 		// Configure Talon motors
 		this.configureMotors();
 
@@ -90,7 +85,6 @@ public class Drivetrain extends SubsystemBase {
 		} else {
 			this.pigeon.setYaw(180);
 		}
-
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
@@ -177,7 +171,6 @@ public class Drivetrain extends SubsystemBase {
 	// Control Input
 	// -----------------------------------------------------------
 	public void halt() {
-		Log.writeln("Halt");
 		this.tankDriveVolts(0, 0);
 	}
 
@@ -214,7 +207,6 @@ public class Drivetrain extends SubsystemBase {
 
 //
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
-		// Log.writeln("right m/s" + rightMetersPerSecond);
 		// Calculate feedforward for the left and right wheels.
 		double leftFeedForward = this.feedForwardL.calculate(leftMetersPerSecond);
 		double rightFeedForward = this.feedForwardR.calculate(rightMetersPerSecond);
@@ -351,7 +343,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double metersToEncoderTicks(double metersPerSecond) {
-		GearState gearState = this.gearStateSupplier.get();
+		GearState gearState = Transmission.instance.getGearState();
 		double encoderTicks = this.wheelRotationsToEncoderTicks(
 			this.metersToWheelRotations(metersPerSecond),
 			gearState
@@ -500,25 +492,8 @@ public class Drivetrain extends SubsystemBase {
 	public boolean getHasValidTargetsSim() {
 		double heading = this.getEncoderPose().getRotation().getDegrees();
 
-		Log.writeln("getHasValidTargetsSim Heading:" + heading);
-
-		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-			if(heading < 75 || heading > -75) {
-				Log.writeln("true - Red");
-				return true;
-			} else {
-				Log.writeln("false - Red");
-				return false;
-			}
-		} else {
-			if(heading > 135 || heading < -135) {
-				Log.writeln("true - Blue");
-				return true;
-			} else {
-				Log.writeln("false - Blue");
-				return false;
-			}
-		}
+		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) return heading < 75 || heading > -75;
+		else return heading > 135 || heading < -135;
 	}
 
 	public int getAprilTagIDSim() {

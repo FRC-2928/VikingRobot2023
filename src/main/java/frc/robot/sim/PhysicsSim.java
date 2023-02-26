@@ -104,7 +104,6 @@ public class PhysicsSim {
         return random(0, max);
     }
 
-
     /**
      * Holds information about a simulated device.
      */

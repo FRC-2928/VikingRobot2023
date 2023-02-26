@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Arrays;
 
+import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -59,11 +60,13 @@ public final class Log extends SubsystemBase {
 	}
 
 	public static void writeFast(String str) {
+		DriverStationJNI.sendConsoleLine(str);
+
+		System.err.print(str);
+		
 		Log.instance.log.append(str);
 		Log.instance.lines += str.lines().count();
 		Log.instance.dirty = true;
-
-		System.err.print(str);
 	}
 
 	/// Writes to the buffer, does NOT trim any old leading lines, and
@@ -72,16 +75,29 @@ public final class Log extends SubsystemBase {
 	/// `trimExcessLeadingLines` or `writeln`
 	public static void writelnFast(Object... input) { Log.writeFast(input, '\n'); }
 
-	/// Writes an error to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
+	/// Writes an error to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station with a full stack trace
 	public static void error(Exception error) {
 		DriverStation.reportError(error.getLocalizedMessage(), error.getStackTrace());
-		Log.writeln("! ERROR !", '\n', error.getLocalizedMessage(), '\n', "! More information has been printed in the Driver Station !");
+		Log.writeln("! ERROR !", '\n', error.getLocalizedMessage(), '\n');
 	}
 
-	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station
-	public static void warning(String warning) {
+	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the warning to the driver station without a stack trace
+	public static void warning(String str) {
+		DriverStationJNI.sendError(true, 0, false, str, "", "", true);
+
+		str += '\n';
+
+		Log.instance.log.append(str);
+		Log.instance.lines += str.lines().count();
+		Log.instance.dirty = true;
+
+		System.err.print(str);
+	}
+
+	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the warning to the driver station with a full stack trace
+	public static void warningFull(String warning) {
 		DriverStation.reportWarning(warning, Thread.currentThread().getStackTrace());
-		Log.writeln("Δ WARNING Δ", '\n', warning, '\n', "Δ More information has been printed in the Driver Station Δ`");
+		Log.writeln("Δ WARNING Δ\n", warning, '\n');
 	}
 
 	/// Trims as many leading lines is necessary so that the buffer contains less

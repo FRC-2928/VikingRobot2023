@@ -19,7 +19,7 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
 	public final WPI_TalonFX motorLead = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
 	public final WPI_TalonFX motorFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
-	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
+	public final WPI_CANCoder encoder = new WPI_CANCoder(Constants.CANBusIDs.ArmEncoder);
 
 	// private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
 
