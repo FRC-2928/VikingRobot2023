@@ -5,10 +5,10 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
 
 // When the elevator is lost ( :( ), moves the elevator up until it hits either the home limit switch, or the top limit switch, thus knowing where the elevator is
-public class InitializeEncoder extends CommandBase {
+public class InitializeElevator extends CommandBase {
 	private Elevator elevator;
 
-	public InitializeEncoder(Elevator elevator) {
+	public InitializeElevator(Elevator elevator) {
 		this.elevator = elevator;
 		this.addRequirements(elevator);
 	}

@@ -11,6 +11,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -25,12 +27,12 @@ public class Elevator extends SubsystemBase {
 	public final WPI_TalonFX motor = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
 	public final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
 
-	private ShuffleboardTab tab;
+  private ShuffleboardTab tab;
 	private GenericEntry entryPower, entryPosition;
 	private GenericEntry entryTopLimit, entryHomeLimit;
 
 	// ------------ Initialization -----------------------------
-
+  
 	public Elevator() {
 		this.configureMotors();
 		this.lock(true);
@@ -92,22 +94,23 @@ public class Elevator extends SubsystemBase {
 		this.motor.overrideSoftLimitsEnable(false);
 	}
 
-	public void setupShuffleboard() {
-		this.tab = Shuffleboard.getTab("Elevator");
 
-		this.entryPower = tab.add("Motor Power", this.motor.getMotorOutputPercent())
+	public void setupShuffleboard() {
+		this.tab = Shuffleboard.getTab("ElevatorArm");
+  
+		this.entryPosition = tab.add("Elevator Position", this.getPosition())
 			.withPosition(3, 0)
 			.getEntry();
 
-		this.entryPosition = tab.add("Elevator Position", this.getEncoderPosition())
-			.withPosition(5, 0)
+    this.entryPower = tab.add("Elevator Power", this.motor.getMotorOutputPercent())
+			.withPosition(3, 2)
 			.getEntry();
 
 		// Limit Switches
 		ShuffleboardLayout switchLayout = this.tab
-			.getLayout("Limits", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(8, 0);
+			.getLayout("Elevator Limits", BuiltInLayouts.kList)
+			.withSize(2, 2)
+			.withPosition(4, 0);
 		this.entryTopLimit = switchLayout.add("Top Limit Switch", this.limitTopClosed()).getEntry();
 		this.entryHomeLimit = switchLayout.add("Home Limit Switch", this.limitHomeClosed()).getEntry();
 	}
@@ -148,7 +151,7 @@ public class Elevator extends SubsystemBase {
 		return motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
 	}
 
-	public double getEncoderPosition() {
+	public double getPosition() {
 		return motor.getSelectedSensorPosition();
 	}
 
@@ -167,7 +170,7 @@ public class Elevator extends SubsystemBase {
 
 	public void publishTelemetry() {
 		this.entryPower.setDouble(this.motor.getMotorOutputPercent());
-		this.entryPosition.setDouble(this.getEncoderPosition());
+		this.entryPosition.setDouble(this.getPosition());
 		this.entryTopLimit.setBoolean(this.limitTopClosed());
 		this.entryHomeLimit.setBoolean(this.limitHomeClosed());
 	}
