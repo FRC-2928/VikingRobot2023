@@ -10,6 +10,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 //import edu.wpi.first.wpilibj.PneumaticsModuleType;
 //import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,8 +24,13 @@ public class Arm extends SubsystemBase {
 	public final WPI_TalonFX motorFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 	public final WPI_CANCoder encoder = new WPI_CANCoder(0);
 
+	private ShuffleboardTab tab;
+	private GenericEntry entryPower, entryPosition;
 	// private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
 
+	// -----------------------------------------------------------
+	// Initialization
+	// -----------------------------------------------------------
 	public Arm() {
 		for(TalonFX fx : new TalonFX[] { this.motorLead, this.motorFollower}) {
 			// Reset settings for safety
@@ -64,12 +72,25 @@ public class Arm extends SubsystemBase {
 		this.motorLead.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
 		this.motorFollower.follow(this.motorLead);
+
+		setupShuffleboard();
 	}
 
-	public double getPosition() {
-		return this.encoder.getAbsolutePosition();
-	}
+	public void setupShuffleboard() {
+		this.tab = Shuffleboard.getTab("ElevatorArm");
 
+		this.entryPosition = tab.add("Arm Position", this.getPosition())
+			.withPosition(8, 0)
+			.getEntry();
+
+    	this.entryPower = tab.add("Arm Power", this.motorLead.getMotorOutputPercent())
+			.withPosition(8, 2)
+			.getEntry();
+	}
+			
+	// -----------------------------------------------------------
+	// Control Input
+	// -----------------------------------------------------------
 	public void setPower(double power) {
 		SmartDashboard.putNumber("Arm Power", power);
 		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
@@ -77,8 +98,20 @@ public class Arm extends SubsystemBase {
 		this.motorLead.set(ControlMode.PercentOutput, power);
 	}
 
+	// -----------------------------------------------------------
+	// System State
+	// -----------------------------------------------------------
+	public double getPosition() {
+		return this.encoder.getAbsolutePosition();
+	}
+
+	// -----------------------------------------------------------
+	// Processing
+	// -----------------------------------------------------------
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("Arm Position", getPosition());
+		this.entryPower.setDouble(this.motorLead.getMotorOutputPercent());
+		this.entryPosition.setDouble(this.getPosition());
+		// SmartDashboard.putNumber("Arm Position", getPosition());
 	}
 }

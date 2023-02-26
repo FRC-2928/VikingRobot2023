@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.AutoConstants;
@@ -53,6 +55,7 @@ public class RobotContainer {
 	public final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
 	private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+	private ShuffleboardTab tab = Shuffleboard.getTab("ElevatorArm");;
 
 	public RobotContainer() {
 		this.configureAutoChooser();
