@@ -431,6 +431,9 @@ public class Drivetrain extends SubsystemBase {
 		}
 	}
 
+	// -----------------------------------------------------------
+	// Processing
+	// -----------------------------------------------------------
 	@Override
 	public void periodic() {
 		//if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders

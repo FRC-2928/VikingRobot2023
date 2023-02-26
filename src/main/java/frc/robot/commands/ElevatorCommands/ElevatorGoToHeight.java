@@ -11,7 +11,7 @@ public class ElevatorGoToHeight extends PIDCommand {
 	public ElevatorGoToHeight(Elevator elevator, double goalHeight) {
 		super(
 			new PIDController(ElevatorConstants.elevatorGains.P, ElevatorConstants.elevatorGains.I, ElevatorConstants.elevatorGains.D),
-			() -> elevator.getEncoderPosition(),
+			() -> elevator.getPosition(),
 			goalHeight,
 			output -> elevator.control(output)
 		);
