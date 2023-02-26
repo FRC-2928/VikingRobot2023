@@ -12,6 +12,7 @@ import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.Balance;
+import frc.robot.commands.ElevatorCommands.InitializeElevator;
 import frc.robot.commands.ElevatorCommands.MoveElevatorAndArm;
 //import frc.robot.commands.ElevatorCommands.MoveElevator;
 //import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
@@ -120,6 +121,7 @@ public class RobotContainer {
 		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
 		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
 
+		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(elevator));
 		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highPosition));
 		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.midPosition));
 		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowPosition));

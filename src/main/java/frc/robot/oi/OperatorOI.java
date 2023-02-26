@@ -12,7 +12,7 @@ public class OperatorOI extends OIBase {
 	A - stop intake
 	B - shoot intake
 	X - run intake
-	Y
+	Y - Initialize Elevator
 
 	Start(left)
 	Back(right)
@@ -50,6 +50,10 @@ public class OperatorOI extends OIBase {
 
     public Trigger getShootIntakeButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	}
+
+	public Trigger getInitializeElevatorButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
 	public DoubleSupplier getElevatorSupplier() {
