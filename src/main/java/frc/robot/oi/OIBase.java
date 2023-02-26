@@ -16,7 +16,7 @@ public abstract class OIBase {
         this.controller = controller;
     }
 
-    public void rumble(RumbleType rt, double intensity, Duration time) {
+    public final void rumble(RumbleType rt, double intensity, Duration time) {
         this.controller.setRumble(rt, intensity);
 
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
@@ -25,7 +25,7 @@ public abstract class OIBase {
         ));
     }
 
-    public void signalError() {
+    public final void signalError() {
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
             new InstantCommand(() -> this.controller.setRumble(RumbleType.kLeftRumble, 1)),
             new WaitCommand(0.25),

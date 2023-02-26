@@ -1,16 +1,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.DrivetrainCommands.Balance;
-import frc.robot.commands.ElevatorCommands.MoveElevatorAndArm;
 //import frc.robot.commands.ElevatorCommands.MoveElevator;
 //import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
@@ -41,8 +38,8 @@ import frc.robot.subsystems.Arm;
  * the robot (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-	public final Transmission transmission = new Transmission();
-	public final Drivetrain drivetrain = new Drivetrain(this.transmission::getGearState);
+	public final Transmission transmission = Transmission.instance;
+	public final Drivetrain drivetrain = new Drivetrain();
 	// public final Intake intake = new Intake();
 	public final Elevator elevator = new Elevator();
 	public final Arm arm = new Arm();
@@ -57,11 +54,11 @@ public class RobotContainer {
 	public RobotContainer() {
 		this.configureAutoChooser();
 
-		this.configureDrivetrainControls();
+		this.configureDriverControls();
 		this.configureOperatorControls();
 	}
 
-	private void configureDrivetrainControls() {
+	private void configureDriverControls() {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(

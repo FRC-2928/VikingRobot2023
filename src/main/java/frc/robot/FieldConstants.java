@@ -279,7 +279,6 @@ public final class FieldConstants {
 		    0,
 		    new Rotation3d(0.0, 0.0, Math.PI)));
 
-
 	public static final Pose2d tag6 = aprilTags.get(6).toPose2d()
 				.plus(new Transform2d(new Translation2d(0.5, 0),
 				      new Rotation2d(Math.PI)));  // 0.5 meters in front

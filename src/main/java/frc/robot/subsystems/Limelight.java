@@ -16,7 +16,6 @@ public class Limelight {
 	// Pulls values from network tables
 	private NetworkTable limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
 
-
 	// ----------------------------------- ------------------------
 	// Initialization
 	// -----------------------------------------------------------
@@ -149,7 +148,7 @@ public class Limelight {
 		// }
 		// else {
 		// 	return new Pose3d(new Translation3d(pose[0], pose[1], pose[2]),
-		// 					  new Rotation3d(pose[3]  * Math.PI / 180,
+		// 					  new Rotation3d(pose[3] * Math.PI / 180,
 		// 					  				 pose[4] * Math.PI / 180,
 		// 									 pose[5] * Math.PI / 180));
 		// }

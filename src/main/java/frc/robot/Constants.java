@@ -51,9 +51,10 @@ public final class Constants {
 		public static final int ElevatorTalon1 = 6;
 
 		// Sensors
-		public static final int kPigeonIMU = 0;
-	}
+		public static final int PigeonIMU = 0;
 
+		public static final int ArmEncoder = 7;
+	}
 
 	public static final class LimelightConstants {
 		public static final double tagGoalY = 8.25;
@@ -80,12 +81,9 @@ public final class Constants {
 		public static final double highPosition = 0;
 		public static final double inPosition = 0;
 		public static final double defaultPower = .4;
-
 	}
 
 	public static final class DrivetrainConstants {
-
-
 		public static final double kTrackWidthMeters = 0.7; // Placeholder
 		public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
 				kTrackWidthMeters);
@@ -139,7 +137,6 @@ public final class Constants {
 		// public static final double kDistanceToleranceMeters = 0.1;
 		// public static final double kVelocityToleranceMeters = 0.1;
 
-
 		//trajectories and localization
 
 		// 0,0 is blue tag 8
@@ -151,11 +148,9 @@ public final class Constants {
 		//offset for limelight and length of robot
 		public static final double xOffsetField = 6.718 + .91;
 		public static final double arcadeDriveMultiplier = 0.8;
-
 	}
 
 	public static final class AutoConstants {
-
 		// public static final Gains GainsAuto = new Gains(0.08, 0.001, 0, 0, 0, 1.00);
 		public static final Gains GainsAuto = new Gains(0.06, 0.001, 0.04, 0, 0, 1.00);
 
@@ -203,5 +198,4 @@ public final class Constants {
 		public static final double kRamseteB = 2;
 		public static final double kRamseteZeta = 0.7;
 	}
-
 }

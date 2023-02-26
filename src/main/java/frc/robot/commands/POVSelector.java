@@ -128,7 +128,7 @@ public class POVSelector extends CommandBase {
         this.state.clear();
         this.state.add(this.root);
 
-        Log.writeln("POV Selector: initialized");
+        Log.writeln("[POV Selector Started]");
 
         this.telem.publish();
 	}
@@ -168,8 +168,6 @@ public class POVSelector extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        Log.writeln("POV Selector: end");
-
         this.telem.publish();
     }
 
