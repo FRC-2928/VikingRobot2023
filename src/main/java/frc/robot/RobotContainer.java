@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 //import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.IntakeConstants;
 //import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
@@ -14,6 +15,7 @@ import frc.robot.commands.ElevatorCommands.InitializeElevator;
 import frc.robot.commands.POVSelector.Tree;
 import frc.robot.oi.DriverOI;
 import frc.robot.oi.OperatorOI;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.AutonomousRoutines;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Log;
@@ -29,8 +31,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 // Mechanism Subsystems
 import frc.robot.subsystems.Elevator;
-//import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
+//import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -41,9 +43,10 @@ import frc.robot.subsystems.Arm;
 public class RobotContainer {
 	public final Transmission transmission = Transmission.instance;
 	public final Drivetrain drivetrain = new Drivetrain();
-	// public final Intake intake = new Intake();
+
 	public final Elevator elevator = new Elevator();
 	public final Arm arm = new Arm();
+	public final Intake intake = new Intake();
 
 	private final XboxController driverController = new XboxController(0);
 	private final XboxController operatorController = new XboxController(1);
@@ -109,14 +112,14 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 		// default command should run only in absence of other commands - shouldn't be a problem for these to be default even though they're backup. (CHECK THOUGH)
 		// why is this a good idea -nova
-		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
-		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.setPower(operatorOI.getArmSupplier().getAsDouble()), this.arm));
+		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(this.operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
+		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.control(this.operatorOI.getArmSupplier().getAsDouble()), this.arm));
 
-		// this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.intakePower)));
-		// this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(IntakeConstants.shootPower)));
-		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> intake.setOutput(0)));
+		this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(IntakeConstants.intakeCubePower)));
+		this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(IntakeConstants.shootPower)));
+		this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
 
-		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(elevator));
+		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
 		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highPosition));
 		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.midPosition));
 		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowPosition));

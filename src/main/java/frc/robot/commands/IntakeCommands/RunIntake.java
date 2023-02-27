@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
 public class RunIntake extends CommandBase {
-	private Intake intake = new Intake();
+	private Intake intake;
 	private double speed = 0;
 
 	public RunIntake(Intake intake, double speed) {

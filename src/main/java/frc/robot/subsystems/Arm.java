@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -11,6 +12,8 @@ import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 //import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 
 public class Arm extends SubsystemBase {
 	public final WPI_TalonFX motorLead = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
@@ -26,7 +30,10 @@ public class Arm extends SubsystemBase {
 
 	private ShuffleboardTab tab;
 	private GenericEntry entryPower, entryPosition;
-	// private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kArmLock);
+
+	// True: Unlocked
+	// False: Locked
+	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kArmLock);
 
 	// -----------------------------------------------------------
 	// Initialization
@@ -66,14 +73,21 @@ public class Arm extends SubsystemBase {
 			// Either using the integrated Falcon sensor or an external one, will change if
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-		}
 		
-		this.motorLead.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
-		this.motorLead.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+			fx.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
+			fx.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+	
+			fx.configForwardSoftLimitThreshold(ArmConstants.maxAngle);
+	
+			fx.configForwardSoftLimitEnable(true);
 
+			fx.overrideSoftLimitsEnable(true);
+		}
+
+		this.motorFollower.setInverted(InvertType.FollowMaster);
 		this.motorFollower.follow(this.motorLead);
 
-		setupShuffleboard();
+		this.setupShuffleboard();
 	}
 
 	public void setupShuffleboard() {
@@ -91,18 +105,41 @@ public class Arm extends SubsystemBase {
 	// -----------------------------------------------------------
 	// Control Input
 	// -----------------------------------------------------------
+
+	public void halt() {
+		this.lock(true);
+	}
+
+	public void control(double power) {
+		SmartDashboard.putNumber("Arm power", power);
+		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
+		double deadbandPower = MathUtil.applyDeadband(power, 0.1);
+		SmartDashboard.putNumber("Arm deadband power", deadbandPower);
+
+		this.lock(deadbandPower == 0);
+		this.setPower(deadbandPower);
+	}
+
 	public void setPower(double power) {
-		SmartDashboard.putNumber("Arm Power", power);
-		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
-		SmartDashboard.putNumber("Deadband Arm Power", deadbandPower);
-		this.motorLead.set(ControlMode.PercentOutput, power);
+		power *= -1;
+		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.2, 0.2));
+	}
+
+	public void lock(boolean shouldLock) {
+		this.lockingPiston.set(!shouldLock);
+		this.motorLead.set(ControlMode.PercentOutput, 0.0); // just to be safe
 	}
 
 	// -----------------------------------------------------------
 	// System State
 	// -----------------------------------------------------------
+
 	public double getPosition() {
 		return this.encoder.getAbsolutePosition();
+	}
+
+	public boolean pastBottomLimit() {
+		return this.getPosition() <= ArmConstants.homeAngleLimit;
 	}
 
 	// -----------------------------------------------------------

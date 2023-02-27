@@ -46,7 +46,7 @@ public final class Constants {
 		public static final int ArmTalon2 = 8;
 
 		//Intake
-		public static final int IntakeTalon1 = 0;
+		public static final int IntakeTalon1 = 9;
 
 		public static final int ElevatorTalon1 = 6;
 
@@ -72,6 +72,15 @@ public final class Constants {
 		public static final double lowHeight = 0;
 		public static final double highHeight = 0;
 		public static final double defaultPower = 0.2;
+		public static final double homingPower = -0.4;
+
+		public static final int homeOffset = 1900;
+		public static final int topOffset = -11650;
+		public static final int bottomSoftLimit = 11000;
+		public static final int topSoftLimit = -11600;
+
+		public static final int exitHeight = -10000; // min height to allow arm movement
+		public static final int driveHeight = -9780;
 	}
 
 	public static final class ArmConstants {
@@ -81,6 +90,11 @@ public final class Constants {
 		public static final double highPosition = 0;
 		public static final double inPosition = 0;
 		public static final double defaultPower = .4;
+
+		public static final double homeAngle = -117.5;
+		public static final double maxAngle = 12.0;
+
+		public static final double homeAngleLimit = -110;
 	}
 
 	public static final class DrivetrainConstants {
@@ -100,8 +114,8 @@ public final class Constants {
 		public static final double kUnitsPerRevolution = 2048;
 
 		// for sweetpants
-		public static final double highGearRatio = 5;
-		public static final double lowGearRatio = 10.71;
+		public static final double highGearRatio = 5.4;
+		public static final double lowGearRatio = 8.82;
 
 		// for competition robot
 		// public static final double highGearRatio = 5.68;
@@ -169,7 +183,7 @@ public final class Constants {
 		public static final SimpleMotorFeedforward kFeedForwardL = new SimpleMotorFeedforward(ksVolts,
 				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
 		public static final SimpleMotorFeedforward kFeedForwardR = new SimpleMotorFeedforward(ksVolts,
-				kvVoltSecondsPerMeter*.95, kaVoltSecondsSquaredPerMeter);
+				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
 		public static final double k_MaxVolts = 10;
 		public static final DifferentialDriveVoltageConstraint kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
 				kFeedForward,

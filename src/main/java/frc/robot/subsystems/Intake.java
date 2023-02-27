@@ -59,9 +59,6 @@ public class Intake extends SubsystemBase {
 
 	public void setOutput(double output) {
 		this.output = output;
-	}
-
-	public void runOutput() {
 		this.motor.set(ControlMode.PercentOutput, this.output);
 	}
 }
