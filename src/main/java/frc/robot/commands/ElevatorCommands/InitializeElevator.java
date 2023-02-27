@@ -16,26 +16,30 @@ public class InitializeElevator extends CommandBase {
 	@Override
 	public void initialize() {
 		this.elevator.motor.overrideLimitSwitchesEnable(true);
+		this.elevator.motor.overrideSoftLimitsEnable(false);
 	}
 
 	@Override
 	public void execute() {
-		this.elevator.control(ElevatorConstants.defaultPower);
+		this.elevator.control(ElevatorConstants.homingPower);
 	}
 
 	@Override
 	public void end(boolean interrupted) {
 		this.elevator.motor.overrideLimitSwitchesEnable(true);
+		this.elevator.motor.overrideSoftLimitsEnable(true);
 	}
 
 	@Override
 	public boolean isFinished() {
 		if(this.elevator.limitTopClosed()) {
 			this.elevator.halt();
-			this.elevator.overrideEncoderPosition(0);
+			this.elevator.overrideEncoderPosition(ElevatorConstants.topOffset);
+			return true;
 		} else if(this.elevator.limitHomeClosed()) {
 			this.elevator.halt();
-			this.elevator.overrideEncoderPosition(0);
+			this.elevator.overrideEncoderPosition(ElevatorConstants.homeOffset);
+			return true;
 		}
 		return false;
 	}

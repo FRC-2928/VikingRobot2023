@@ -11,8 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -22,12 +20,29 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
+
+/*/
+
+Bottom:
+	- Soft: 13500
+	- Hard: 15000
+Top:
+	- Soft: -11596
+	- Hard: 
+
+/*/
 
 public class Elevator extends SubsystemBase {
+	// Fwd: Down
+	// Rev: Up
 	public final WPI_TalonFX motor = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
-	public final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.PneumaticIDs.kElevatorLock);
 
-  private ShuffleboardTab tab;
+	// True: Unlocked
+	// False: Locked
+	public final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kElevatorLock);
+
+	private ShuffleboardTab tab;
 	private GenericEntry entryPower, entryPosition;
 	private GenericEntry entryTopLimit, entryHomeLimit;
 
@@ -77,21 +92,19 @@ public class Elevator extends SubsystemBase {
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		}
 
-		// TMP: forward and reverse are flipped via hardware
-
-		// Top limit switch. Stop motor if this switch is triggered.
+		// Home limit switch. Stop motor if this switch is triggered.
 		this.motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
-		// Home limit switch. Read as a digital input
+		// Top limit switch. Read as a digital input
 		this.motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
-		this.motor.configForwardSoftLimitThreshold(100);
-		//this.motor.configReverseSoftLimitThreshold(-100);
+		this.motor.configForwardSoftLimitThreshold(ElevatorConstants.bottomSoftLimit);
+		this.motor.configReverseSoftLimitThreshold(ElevatorConstants.topSoftLimit);
 
-		this.motor.configForwardSoftLimitEnable(false);
-		//this.motor.configReverseSoftLimitEnable(false);
+		this.motor.configForwardSoftLimitEnable(true);
+		this.motor.configReverseSoftLimitEnable(true);
 
-		this.motor.overrideSoftLimitsEnable(false);
+		this.motor.overrideSoftLimitsEnable(true);
 	}
 
 
@@ -102,7 +115,7 @@ public class Elevator extends SubsystemBase {
 			.withPosition(3, 0)
 			.getEntry();
 
-    this.entryPower = tab.add("Elevator Power", this.motor.getMotorOutputPercent())
+    	this.entryPower = tab.add("Elevator Power", this.motor.getMotorOutputPercent())
 			.withPosition(3, 2)
 			.getEntry();
 
@@ -123,6 +136,7 @@ public class Elevator extends SubsystemBase {
 
 	public void control(double power) {
 		SmartDashboard.putNumber("Elevator power", power);
+		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
 		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
 		SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
 
@@ -135,35 +149,39 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void lock(boolean shouldLock) {
-		this.lockingPiston.set(shouldLock);
+		this.lockingPiston.set(!shouldLock);
 		this.motor.set(ControlMode.PercentOutput, 0.0); // just to be safe
 	}
 
 	// ------------- System State -------------------
 
 	public boolean limitTopClosed() {
-		// todo: flip
-		return motor.getSensorCollection().isRevLimitSwitchClosed() == 1;
+		return this.motor.getSensorCollection().isRevLimitSwitchClosed() == 1;
 	}
 
 	public boolean limitHomeClosed() {
-		// todo: flip
-		return motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
+		return this.motor.getSensorCollection().isFwdLimitSwitchClosed() == 1;
 	}
 
 	public double getPosition() {
-		return motor.getSelectedSensorPosition();
+		return this.motor.getSelectedSensorPosition();
 	}
 
 	public void overrideEncoderPosition(double ticks) {
 		this.motor.setSelectedSensorPosition(ticks);
 	}
 
+	public boolean pastBottomLimit() {
+		return this.getPosition() >= ElevatorConstants.bottomSoftLimit;
+	}
+
 	 // ------------- Process State -------------------
 
 	@Override
 	public void periodic() {
-		if(this.limitTopClosed()) this.control(0);
+		if(this.limitTopClosed() || this.pastBottomLimit()) {
+			this.halt();
+		}
 
 		this.publishTelemetry();
 	}

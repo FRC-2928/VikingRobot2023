@@ -61,7 +61,7 @@ public class OperatorOI extends OIBase {
 	}
 
 	public DoubleSupplier getArmSupplier() {
-		return () -> this.controller.getLeftX();
+		return () -> this.controller.getRightY();
 	}
 
 	public Trigger getHigh() {
