@@ -67,12 +67,24 @@ public class RobotContainer {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(
-					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier,
-					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.arcadeDriveMultiplier
+					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier,
+					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier
 				),
 				this.drivetrain
 			)
 		);
+		
+		/*
+		this.drivetrain.setDefaultCommand(
+			new RunCommand(
+				() -> this.drivetrain.diffDrive.tankDrive(
+					this.driverOI.getMoveRSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier,
+					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier
+				),
+				this.drivetrain
+			)
+		);
+		*/
 
 		// Configure gear shifting
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));

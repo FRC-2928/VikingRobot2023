@@ -123,7 +123,7 @@ public class Drivetrain extends SubsystemBase {
 			fx.configNeutralDeadband(0.01);
 
 			// Set to brake mode, will brake the motor when no power is sent
-			fx.setNeutralMode(NeutralMode.Brake);
+			fx.setNeutralMode(NeutralMode.Coast);
 
 			/**
 			 * Setting input side current limit (amps)

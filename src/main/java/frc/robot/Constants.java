@@ -144,7 +144,7 @@ public final class Constants {
 		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
 		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
 		public static final Gains GainsBalance = new Gains(0.1, 0.0025, 0.015, 0, 0, 0.3);
-		public static final Gains GainsRollBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
+		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
 		public static final Gains GainsApproach = new Gains(.65,0.016,0.0,0.0,0,0.3);
@@ -161,7 +161,7 @@ public final class Constants {
 		public static final double yOffsetField = 4.051;
 		//offset for limelight and length of robot
 		public static final double xOffsetField = 6.718 + .91;
-		public static final double arcadeDriveMultiplier = 0.8;
+		public static final double manualDriveMultiplier = 0.6;
 	}
 
 	public static final class AutoConstants {

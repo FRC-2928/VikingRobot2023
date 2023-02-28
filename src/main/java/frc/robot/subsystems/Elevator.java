@@ -137,7 +137,7 @@ public class Elevator extends SubsystemBase {
 	public void control(double power) {
 		SmartDashboard.putNumber("Elevator power", power);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
-		double deadbandPower = MathUtil.applyDeadband(power, 0.05);
+		double deadbandPower = MathUtil.applyDeadband(power, 0.1);
 		SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
 
 		this.lock(deadbandPower == 0);

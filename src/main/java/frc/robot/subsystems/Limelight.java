@@ -14,7 +14,7 @@ import frc.robot.subsystems.LimelightHelpers.LimelightResults;
  */
 public class Limelight {
 	// Pulls values from network tables
-	private NetworkTable limelightNI = NetworkTableInstance.getDefault().getTable("limelight");
+	private NetworkTable limelightNI = NetworkTableInstance.getDefault().getTable("limelight-top");
 
 	// ----------------------------------- ------------------------
 	// Initialization

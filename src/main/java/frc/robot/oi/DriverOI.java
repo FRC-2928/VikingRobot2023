@@ -61,6 +61,10 @@ public class DriverOI extends OIBase {
 		return () -> -this.controller.getLeftY();
 	}
 
+	public DoubleSupplier getMoveRSupplier() {
+		return () -> -this.controller.getRightY();
+	}
+
 	public DoubleSupplier getRotateSupplier() {
 		return () -> this.controller.getRightX();
 	}

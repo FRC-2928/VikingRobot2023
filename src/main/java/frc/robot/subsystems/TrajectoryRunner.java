@@ -62,7 +62,7 @@ public class TrajectoryRunner {
 			
 			Robot.instance.robotContainer.driverOI.signalError();
 
-			return new Trajectory();
+			return new Trajectory(); // TODO: ramsete command cant handle this
 		} else if(!FieldConstants.aprilTags.containsKey(aprilTagID)) {
 			throw new Error("Attempted to go to an AprilTag that does not exist! Id #" + aprilTagID);
 		} else {
