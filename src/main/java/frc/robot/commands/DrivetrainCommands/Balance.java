@@ -16,10 +16,10 @@ public class Balance extends CommandBase {
 		DrivetrainConstants.GainsBalance.D
 	);
 
-	private PIDController roll = new PIDController(
-		DrivetrainConstants.GainsRollBalance.P * 0.25,
-		DrivetrainConstants.GainsRollBalance.I,
-		DrivetrainConstants.GainsRollBalance.D
+	private PIDController align = new PIDController(
+		DrivetrainConstants.GainsAlignBalance.P * 0.25,
+		DrivetrainConstants.GainsAlignBalance.I,
+		DrivetrainConstants.GainsAlignBalance.D
 	);
 
 	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
@@ -36,9 +36,9 @@ public class Balance extends CommandBase {
 		this.balance.setSetpoint(0.0);
 		this.balance.calculate(0.0);
 
-		this.roll.setTolerance(0.3);
-		this.roll.setSetpoint(0.0);
-		this.roll.calculate(0.0);
+		this.align.setTolerance(0.3);
+		this.align.setSetpoint(0.0);
+		this.align.calculate(0.0);
 
 		this.stopAtSetpoint = stopAtSetpoint;
 		this.timeout = timeout;
@@ -74,14 +74,14 @@ public class Balance extends CommandBase {
 	@Override
 	public void execute() {
 		double balanceVolts = this.balance.calculate(this.drivetrain.readPitch());
-		double rollVolts = this.roll.calculate(this.drivetrain.readRoll());
+		double alignVolts = this.align.calculate(this.drivetrain.readRoll());
 
-		if(this.drivetrain.readPitch() > 0) this.drivetrain.tankDriveVolts(-balanceVolts + rollVolts, -balanceVolts - rollVolts);
-		else this.drivetrain.tankDriveVolts(-balanceVolts - rollVolts, -balanceVolts + rollVolts);
+		if(this.drivetrain.readPitch() > 0) this.drivetrain.tankDriveVolts(-balanceVolts + alignVolts, -balanceVolts - alignVolts);
+		else this.drivetrain.tankDriveVolts(-balanceVolts - alignVolts, -balanceVolts + alignVolts);
 	}
 
 	@Override
 	public boolean isFinished() {
-		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.balance.atSetpoint() && this.roll.atSetpoint());
+		return System.currentTimeMillis() > this.time + this.timeout || (this.stopAtSetpoint && this.balance.atSetpoint() && this.align.atSetpoint());
 	}
 }
