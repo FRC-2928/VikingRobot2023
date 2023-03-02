@@ -9,16 +9,24 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.TurnToPid;
+import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
+import frc.robot.commands.ElevatorCommands.StashIntake;
+import frc.robot.commands.IntakeCommands.RunIntake;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
 
 public final class AutonomousRoutines {
-    public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain) {
+    public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain, Elevator elevator, Arm arm, Intake intake) {
 		SendableChooser<Command> chooser = new SendableChooser<>();
 
 		chooser.addOption(
@@ -26,6 +34,19 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				//new DriveTime(-.6, 4.5, drivetrain),
 				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
+			)
+		);
+
+		chooser.addOption("just shoot", 
+			new SequentialCommandGroup(
+				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				new DriveDistance(.6, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new RunIntake(intake, IntakeConstants.intakeCubePower),
+				new WaitCommand(.5),
+				new RunIntake(intake, 0),
+				new DriveDistance(.6, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new StashIntake(elevator, arm)
 			)
 		);
 
