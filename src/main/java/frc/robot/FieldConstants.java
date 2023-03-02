@@ -289,9 +289,9 @@ public final class FieldConstants {
 				.plus(new Transform2d(new Translation2d(0.5, 0),
 					new Rotation2d(Math.PI)));  // 0.5 meters in front
 
-        public static final Transform2d leftOffset = new Transform2d(new Translation2d(0.75, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
-        public static final Transform2d rightOffset = new Transform2d(new Translation2d(0.75, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
-        public static final Transform2d centerOffset = new Transform2d(new Translation2d(0.75, 0), new Rotation2d(Math.PI));
+	public static final Transform2d leftOffset = new Transform2d(new Translation2d(1, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
+	public static final Transform2d rightOffset = new Transform2d(new Translation2d(1, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
+	public static final Transform2d centerOffset = new Transform2d(new Translation2d(1, 0), new Rotation2d(Math.PI));
 
 	public static final class Waypoints {
 		public static final double innerY = Units.inchesToMeters(30);

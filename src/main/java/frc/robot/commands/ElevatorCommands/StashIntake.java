@@ -20,6 +20,7 @@ public class StashIntake extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-                new ArmGoToPosition(arm, ArmConstants.inPosition));
+                new ArmGoToPosition(arm, ArmConstants.inPosition),
+                new ElevatorGoToHeight(elevator, ElevatorConstants.stashHeight));
   }
 }

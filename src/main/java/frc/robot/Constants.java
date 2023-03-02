@@ -19,6 +19,10 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	public enum GamePiece {
+		Cone, // not purple
+		Cube, // purple
+	}
 	public static final class PneumaticIDs {
 		public static final int kDrivetrainShiftPiston = 1;
 
@@ -53,7 +57,7 @@ public final class Constants {
 		// Sensors
 		public static final int PigeonIMU = 0;
 
-		public static final int ArmEncoder = 7;
+		public static final int ArmEncoder = 5;
 	}
 
 	public static final class LimelightConstants {
@@ -62,15 +66,18 @@ public final class Constants {
 	}
 
 	public static final class IntakeConstants {
-		public static final double intakeConePower = -.3;
-		public static final double intakeCubePower = -.3;
-		public static final double shootPower = .5;
+		public static final double intakePower = -0.85;
+		public static final double intakeCubePower = -0.3;
+		public static final double shootConePower = 0.85;
+		public static final double shootCubePower = 0.5;
 	}
 
 	public static final class ElevatorConstants {
 		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
-		public static final double lowHeight = 9000;
-		public static final double highHeight = -10000;
+		//public static final double lowHeight = 9000;
+		public static final double lowHeight = 13674;
+		public static final double highHeight = -11500;
+		public static final double stashHeight = 0;
 		public static final double defaultPower = 0.2;
 		public static final double homingPower = -0.4;
 
@@ -87,14 +94,15 @@ public final class Constants {
 
 	public static final class ArmConstants {
 		public static final Gains armGains = new Gains(0.01, 0.02, 0.0, 0.0, 100, 0.50);
-		public static final double lowPosition = -60;
-		public static final double midPosition = -45;
+		public static final double lowPositionCone = -63.9;
+		public static final double lowPositionCube = -73.5;
+		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
 		public static final double inPosition = -117.5;
 		public static final double defaultPower = .4;
 
 		public static final double homeAngle = -117.5;
-		public static final double maxAngle = 20.0;
+		public static final double maxAngle = 50.0;
 
 		public static final double homeAngleLimit = -110;
 	}
