@@ -13,6 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
+import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.GroundIntake;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
@@ -130,6 +131,11 @@ public class RobotContainer {
 				new Tree("Left", Direction.Left)
 			)
 		));
+
+		this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
+					DrivetrainConstants.honeToHighDistance, drivetrain));
+		this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
+					DrivetrainConstants.honeToHighDistance, drivetrain));
 	}
 
 	private void configureOperatorControls() {
@@ -158,7 +164,7 @@ public class RobotContainer {
 	}
 
 	private void configureAutoChooser() {
-		this.autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain);
+		this.autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain, this.elevator, this.arm, this.intake);
 		SmartDashboard.putData("Autonomous Routine", this.autonomousChooser);
 	}
 

@@ -17,6 +17,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -89,9 +90,18 @@ public class TrajectoryRunner {
 			// Now get the pose
 			Pose2d tag = FieldConstants.aprilTags.get(aprilTagID).toPose2d();
 
-			if(direction == Direction.Left) endPose = tag.plus(FieldConstants.leftOffset);
-			else if(direction == Direction.Right) endPose = tag.plus(FieldConstants.rightOffset);
-			else if(direction == Direction.Center) endPose = tag.plus(FieldConstants.centerOffset);
+			if ((DriverStation.getAlliance() == DriverStation.Alliance.Red)){
+				if(direction == Direction.Left) endPose = tag.plus(FieldConstants.leftRedOffset);
+				else if(direction == Direction.Right) endPose = tag.plus(FieldConstants.rightRedOffset);
+				else if(direction == Direction.Center) endPose = tag.plus(FieldConstants.centerRedOffset);
+
+			} else {
+				if(direction == Direction.Left) endPose = tag.plus(FieldConstants.leftBlueOffset);
+				else if(direction == Direction.Right) endPose = tag.plus(FieldConstants.rightBlueOffset);
+				else if(direction == Direction.Center) endPose = tag.plus(FieldConstants.centerBlueOffset);
+			}
+
+			
 		}
 
 		trajectory = TrajectoryGenerator.generateTrajectory(

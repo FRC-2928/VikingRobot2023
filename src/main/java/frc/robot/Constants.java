@@ -114,6 +114,10 @@ public final class Constants {
 
 		public static final boolean kGyroReversed = true;
 
+		//TODO: find these
+		public static final double honeToHighDistance = 1;
+		public static final double honeToMidDistance = .6;
+
 		public static final int encoderCPR = 2048;
 		public static final double kWheelDiameterMeters = 0.1016;
 
