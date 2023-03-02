@@ -35,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Transmission;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 // Mechanism Subsystems
@@ -63,6 +65,7 @@ public class RobotContainer {
 
 	private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 	//private ShuffleboardTab tab = Shuffleboard.getTab("ElevatorArm");
+
 
 	public RobotContainer() {
 		this.configureAutoChooser();
@@ -141,8 +144,11 @@ public class RobotContainer {
 		//this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
+		
 		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
+		this.operatorOI.getArmHigh().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
 		this.operatorOI.getArmMid().onTrue(new ArmGoToPosition(arm, ArmConstants.midPosition));
+		this.operatorOI.getArmMid().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
 		this.operatorOI.getArmGroundCube().onTrue(new GroundIntake(elevator, arm, GamePiece.Cube));
 		this.operatorOI.getArmGroundCone().onTrue(new GroundIntake(elevator, arm, GamePiece.Cone));
 		this.operatorOI.getArmIn().onTrue(new StashIntake(elevator, arm));

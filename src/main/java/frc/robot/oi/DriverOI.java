@@ -13,18 +13,18 @@ import frc.robot.subsystems.Log;
 public class DriverOI extends OIBase {
 	/*
 
-	A - balance aux
-	B - (maybe)switch between coast and brake
-	X - shift low
-	Y - shift high
+	A - move to place mid
+	B - move to place high
+	X - 
+	Y - balance
 
-	Start(left) - halt
-	Back(right) - start pov selector for tag approaching
+	Start(right) - reset gyro
+	Back(left) - halt
 
-	LB
-	RB
+	LB - start pov selector
+	RB - runs the intake
 
-	LT
+	LT balance aux
 	RT
 
 	LS - y-move
@@ -62,51 +62,71 @@ public class DriverOI extends OIBase {
 		return () -> -this.controller.getLeftY();
 	}
 
-	public DoubleSupplier getMoveRSupplier() {
-		return () -> -this.controller.getRightY();
-	}
+	// public DoubleSupplier getMoveRSupplier() {
+	// 	return () -> -this.controller.getRightY();
+	// }
 
 	public DoubleSupplier getRotateSupplier() {
 		return () -> this.controller.getRightX();
 	}
 
+	public Trigger getMoveToPlaceHigh() {
+		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	}
+
+	public Trigger getMoveToPlaceMid() {
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	}
+
+	
+
+	
+
 	// Shifting
 
 	public Trigger getShiftLowButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kX.value);
+		return new JoystickButton(this.controller, XboxController.Button.kRightStick.value);
 	}
 
 	public Trigger getShiftHighButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kY.value);
+		return new JoystickButton(this.controller, XboxController.Button.kLeftStick.value);
 	}
+
+	// public Trigger getCoastBrakeButton() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kX.value);
+	// }
 
 	// Balance
 
-	public Trigger getBalanceButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
-	}
+	// public Trigger getBalanceButton() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	// }
 
-	public Trigger getRollButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
-	}
+	// public Trigger getRollButton() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
+	// }
 
 	public Trigger getBalanceAuxButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
 	// Misc
 
 	public Trigger getApproachTagButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
+		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
 	}
 
 	public Trigger getResetGyroButton() {
-		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
 	}
 
     public Trigger getHaltButton() {
         return new JoystickButton(this.controller, XboxController.Button.kBack.value);
     }
+
+	public Trigger getRunIntakeButton() {
+		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	}
 
 	public Trigger getOrchestraButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kLeftStick.value);
