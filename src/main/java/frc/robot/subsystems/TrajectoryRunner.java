@@ -28,6 +28,19 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class TrajectoryRunner {
+	/// We use this only once, but it is needed to wrap a Trajectory
+	/// because assigning to a captured variable inside a closure isn't possible,
+	/// so we assign to a field of an existing variable
+	/// 
+	/// See
+	public static class Ref<T> {
+		public T inner;
+
+		public Ref(T value) {
+			this.inner = value;
+		}
+	}
+
 	public static enum Direction {
 		Left,
 		Right,
@@ -64,7 +77,7 @@ public class TrajectoryRunner {
 			
 			Robot.instance.robotContainer.driverOI.signalError();
 
-			return null;
+			//return null;
 		} else if(!FieldConstants.aprilTags.containsKey(aprilTagID)) {
 			throw new Error("Attempted to go to an AprilTag that does not exist! Id #" + aprilTagID);
 		} else {
@@ -87,7 +100,7 @@ public class TrajectoryRunner {
         	endPose,
 			config
 		);
-
+		
         return trajectory;
 	}
 
@@ -111,7 +124,7 @@ public class TrajectoryRunner {
 		);
 
 		// TODO: Test
-		Optional<Trajectory> traj = Optional.empty();
+		Ref<Trajectory> traj = new Ref<Trajectory>(null);
 
 		// Set up a sequence of commands
 		// First, we want to reset the drivetrain odometry
@@ -120,14 +133,14 @@ public class TrajectoryRunner {
 			try {
 				Field field = ramseteCommand.getClass().getDeclaredField("m_trajectory");
 				field.setAccessible(true);
-				field.set(ramseteCommand, traj);
+				field.set(ramseteCommand, traj.inner);
 			} catch(Exception e) {
 				Log.error(e);
 			}
 			drivetrain.resetOdometry(traj.inner.getInitialPose());
 		}, drivetrain)
 			// next, we run the actual ramsete command
-			.andThen(new ConditionalCommand(ramseteCommand, new InstantCommand(), () -> traj.inner != null))
+			.andThen(new ConditionalCommand(ramseteCommand, new InstantCommand(), () -> (traj.inner != null)))
 			// make sure that the robot stops
 			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
 	}

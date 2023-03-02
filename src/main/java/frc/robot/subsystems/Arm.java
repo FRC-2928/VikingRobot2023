@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.CANBusIDs;
 
 public class Arm extends SubsystemBase {
 	public final WPI_TalonFX motorLead = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
@@ -73,8 +74,10 @@ public class Arm extends SubsystemBase {
 			// Either using the integrated Falcon sensor or an external one, will change if
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+			// TODO: convert into custom implemented soft limit
 		
-			fx.configRemoteFeedbackFilter(7, RemoteSensorSource.CANCoder, 0, 0);
+			fx.configRemoteFeedbackFilter(CANBusIDs.ArmEncoder, RemoteSensorSource.CANCoder, 0, 0);
 			fx.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 	
 			fx.configForwardSoftLimitThreshold(ArmConstants.maxAngle);
