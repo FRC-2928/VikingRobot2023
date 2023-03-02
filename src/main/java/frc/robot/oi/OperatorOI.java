@@ -23,16 +23,15 @@ public class OperatorOI extends OIBase {
 	LT
 	RT
 
-	LS up and down controls elevator, right and left controls arm
+	LS up and down controls elevator
 		(probably most movement for these subsystems will be to predesignated positions)
-	RS
+	RS up and down controls arm
 
 	LS Click
 	RS Click
 
-	potentially POV for elevator/arm positions - high, middle, ground
-		- thinking on way up move elevator and then arm, on way down move arm and then elevator
-		- sequential commands to do one and then the other
+	potentially POV for arm positions - high, middle, ground, in
+		
 
 	*/
 
@@ -64,15 +63,27 @@ public class OperatorOI extends OIBase {
 		return () -> this.controller.getRightY();
 	}
 
-	public Trigger getHigh() {
+	public Trigger getArmHigh() {
 		return new Trigger(() -> this.controller.getPOV() == 0);
 	}
 
-	public Trigger getMid() {
+	public Trigger getArmMid() {
 		return new Trigger(() -> this.controller.getPOV() == 90);
 	}
 
-	public Trigger getLow() {
+	public Trigger getArmLow() {
 		return new Trigger(() -> this.controller.getPOV() == 180);
+	}
+
+	public Trigger getArmIn() {
+		return new Trigger(() -> this.controller.getPOV() == 270);
+	}
+
+	public Trigger getElevatorUp(){
+		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
+	}
+
+	public Trigger getElevatorDown(){
+		return new JoystickButton(this.controller, XboxController.Button.kLeftBumper.value);
 	}
 }

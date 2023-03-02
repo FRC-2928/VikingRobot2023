@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.FieldConstants;
@@ -26,7 +28,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class TrajectoryRunner {
-    public static enum Direction {
+	public static enum Direction {
 		Left,
 		Right,
 		Center
@@ -57,12 +59,12 @@ public class TrajectoryRunner {
 
 		List<Translation2d> waypoints = new ArrayList<>();
 
-		if(drivetrain.hasValidLimelightTarget()) {
+		if(!drivetrain.hasValidLimelightTarget()) {
 			Log.warning("LocalTrajectory failed: No limelight target");
 			
 			Robot.instance.robotContainer.driverOI.signalError();
 
-			return new Trajectory(); // TODO: ramsete command cant handle this
+			return null;
 		} else if(!FieldConstants.aprilTags.containsKey(aprilTagID)) {
 			throw new Error("Attempted to go to an AprilTag that does not exist! Id #" + aprilTagID);
 		} else {
@@ -108,21 +110,24 @@ public class TrajectoryRunner {
 			drivetrain
 		);
 
+		// TODO: Test
+		Optional<Trajectory> traj = Optional.empty();
+
 		// Set up a sequence of commands
 		// First, we want to reset the drivetrain odometry
 		return new InstantCommand(() -> {
+			traj.inner = trajectory.get();
 			try {
-				Trajectory traj = trajectory.get();
 				Field field = ramseteCommand.getClass().getDeclaredField("m_trajectory");
 				field.setAccessible(true);
 				field.set(ramseteCommand, traj);
-				drivetrain.resetOdometry(traj.getInitialPose());
 			} catch(Exception e) {
 				Log.error(e);
 			}
+			drivetrain.resetOdometry(traj.inner.getInitialPose());
 		}, drivetrain)
 			// next, we run the actual ramsete command
-			.andThen(ramseteCommand)
+			.andThen(new ConditionalCommand(ramseteCommand, new InstantCommand(), () -> traj.inner != null))
 			// make sure that the robot stops
 			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
 	}

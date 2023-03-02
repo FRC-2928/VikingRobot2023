@@ -11,10 +11,10 @@ public class ArmGoToPosition extends PIDCommand {
 			new PIDController(ArmConstants.armGains.P, ArmConstants.armGains.I, ArmConstants.armGains.D),
 			() -> arm.getPosition(),
 			goalPosition,
-			output -> arm.setPower(output)
+			output -> arm.control(-output)
 		);
 		this.addRequirements(arm);
-		this.m_controller.setTolerance(30);
+		this.m_controller.setTolerance(2);
 	}
 
 	@Override

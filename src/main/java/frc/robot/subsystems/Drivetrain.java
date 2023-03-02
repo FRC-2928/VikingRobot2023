@@ -94,10 +94,10 @@ public class Drivetrain extends SubsystemBase {
 		this.field2d.setRobotPose(this.getEncoderPose());
 		SmartDashboard.putData("Encoder Pose", this.field2d);
 
-		this.fieldEstimated.setRobotPose(getEstimatedPose());
+		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		SmartDashboard.putData("Estimated Pose", this.fieldEstimated);
 
-		this.fieldLimelight.setRobotPose(getLimelightPose2d());
+		this.fieldLimelight.setRobotPose(this.getLimelightPose2d());
 		SmartDashboard.putData("Limelight Pose", this.fieldLimelight);
 	}
 
@@ -117,13 +117,13 @@ public class Drivetrain extends SubsystemBase {
 			fx.configPeakOutputForward(1);
 			fx.configPeakOutputReverse(-1);
 
-			fx.configOpenloopRamp(0.1);
+			fx.configOpenloopRamp(0.2);
 
 			// Setting deadband(area required to start moving the motor) to 1%
 			fx.configNeutralDeadband(0.01);
 
 			// Set to brake mode, will brake the motor when no power is sent
-			fx.setNeutralMode(NeutralMode.Coast);
+			fx.setNeutralMode(NeutralMode.Brake);
 
 			/**
 			 * Setting input side current limit (amps)
@@ -374,7 +374,7 @@ public class Drivetrain extends SubsystemBase {
 			if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 				return this.limelight.getRedPose2d();
 			} else {
-					return this.limelight.getBluePose2d();
+				return this.limelight.getBluePose2d();
 			}
 		} else {
 			// In simulation we just return the encoder pose.
