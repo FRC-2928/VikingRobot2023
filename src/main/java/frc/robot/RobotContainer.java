@@ -1,15 +1,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.ArmConstants;
 //import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 //import frc.robot.Constants.ElevatorConstants;
 //import frc.robot.commands.MoveElevatorAndArm;
 import frc.robot.commands.POVSelector;
+import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
+import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
+import frc.robot.commands.ElevatorCommands.GroundIntake;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
+import frc.robot.commands.ElevatorCommands.StashIntake;
 //import frc.robot.commands.ElevatorCommands.MoveElevator;
 //import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.POVSelector.Tree;
@@ -127,14 +133,18 @@ public class RobotContainer {
 		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(this.operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
 		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.control(this.operatorOI.getArmSupplier().getAsDouble()), this.arm));
 
-		this.operatorOI.getRunIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(IntakeConstants.intakeCubePower)));
-		this.operatorOI.getShootIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(IntakeConstants.shootPower)));
-		this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
+		this.operatorOI.getRunIntakeButton().whileTrue(new RunCommand(() -> this.intake.setOutput(IntakeConstants.intakeCubePower)));
+		this.operatorOI.getShootIntakeButton().whileTrue(new RunCommand(() -> this.intake.setOutput(IntakeConstants.shootPower)));
+		// this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
-		// this.operatorOI.getHigh().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.highPosition));
-		// this.operatorOI.getMid().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.highHeight, ArmConstants.midPosition));
-		// this.operatorOI.getLow().onTrue(new MoveElevatorAndArm(elevator, arm, ElevatorConstants.lowHeight, ArmConstants.lowPosition));
+		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
+		this.operatorOI.getArmMid().onTrue(new ArmGoToPosition(arm, ArmConstants.midPosition));
+		this.operatorOI.getArmLow().onTrue(new GroundIntake(elevator, arm));
+		this.operatorOI.getArmIn().onTrue(new StashIntake(elevator, arm));
+
+		this.operatorOI.getElevatorDown().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.lowHeight));
+		this.operatorOI.getElevatorUp().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
 	}
 
 	private void configureAutoChooser() {

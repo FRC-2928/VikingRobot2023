@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -135,13 +134,12 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void control(double power) {
-		SmartDashboard.putNumber("Elevator power", power);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
-		double deadbandPower = MathUtil.applyDeadband(power, 0.1);
-		SmartDashboard.putNumber("Elevator deadband power", deadbandPower);
+		power = MathUtil.applyDeadband(power, 0.25);
 
-		this.lock(deadbandPower == 0);
-		this.setPower(deadbandPower);
+		this.lock(power == 0);
+		if(power == 0) this.setPower(power);
+		else this.setPower(power - 0.05);
 	}
 
 	public void setPower(double power) {

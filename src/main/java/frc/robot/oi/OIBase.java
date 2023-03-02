@@ -14,6 +14,8 @@ public abstract class OIBase {
 
     protected OIBase(XboxController controller) {
         this.controller = controller;
+
+		controller.setRumble(RumbleType.kBothRumble, 0);
     }
 
     public final void rumble(RumbleType rt, double intensity, Duration time) {

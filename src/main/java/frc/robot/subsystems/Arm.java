@@ -113,7 +113,7 @@ public class Arm extends SubsystemBase {
 	public void control(double power) {
 		SmartDashboard.putNumber("Arm power", power);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
-		double deadbandPower = MathUtil.applyDeadband(power, 0.1);
+		double deadbandPower = MathUtil.applyDeadband(power, 0.25);
 		SmartDashboard.putNumber("Arm deadband power", deadbandPower);
 
 		this.lock(deadbandPower == 0);

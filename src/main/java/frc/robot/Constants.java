@@ -69,8 +69,8 @@ public final class Constants {
 
 	public static final class ElevatorConstants {
 		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
-		public static final double lowHeight = 0;
-		public static final double highHeight = 0;
+		public static final double lowHeight = 9000;
+		public static final double highHeight = -10000;
 		public static final double defaultPower = 0.2;
 		public static final double homingPower = -0.4;
 
@@ -81,18 +81,20 @@ public final class Constants {
 
 		public static final int exitHeight = -10000; // min height to allow arm movement
 		public static final int driveHeight = -9780;
+
+		public static final int averageLockIntervalTicks = -1925; // distance in encoder ticks between locking piston clicks
 	}
 
 	public static final class ArmConstants {
-		public static final Gains armGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
-		public static final double lowPosition = 0;
-		public static final double midPosition = 0;
+		public static final Gains armGains = new Gains(0.01, 0.02, 0.0, 0.0, 100, 0.50);
+		public static final double lowPosition = -60;
+		public static final double midPosition = -45;
 		public static final double highPosition = 0;
-		public static final double inPosition = 0;
+		public static final double inPosition = -117.5;
 		public static final double defaultPower = .4;
 
 		public static final double homeAngle = -117.5;
-		public static final double maxAngle = 12.0;
+		public static final double maxAngle = 20.0;
 
 		public static final double homeAngleLimit = -110;
 	}
@@ -143,7 +145,7 @@ public final class Constants {
 		public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
 		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
 		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
-		public static final Gains GainsBalance = new Gains(0.1, 0.0025, 0.015, 0, 0, 0.3);
+		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
@@ -173,7 +175,7 @@ public final class Constants {
 		// public static final double kvVoltSecondsPerMeter = 0.21907;
 		// public static final double kaVoltSecondsSquaredPerMeter = 0.0096252;
 
-		public static final double ksVolts = 0.024305;
+		public static final double ksVolts = 0.073457;
 		public static final double kvVoltSecondsPerMeter = 3.7486;
 		public static final double kaVoltSecondsSquaredPerMeter = 0.023529;
 
