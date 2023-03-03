@@ -37,7 +37,7 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("just shoot", 
+		chooser.addOption("place cube and back up", 
 			new SequentialCommandGroup(
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highPosition),
@@ -46,7 +46,8 @@ public final class AutonomousRoutines {
 				new WaitCommand(.5),
 				new RunIntake(intake, 0),
 				new DriveDistance(.6, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
-				new StashIntake(elevator, arm)
+				new StashIntake(elevator, arm),
+				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("BackOutOfCommunity"))
 			)
 		);
 
