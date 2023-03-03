@@ -36,8 +36,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Transmission;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 // Mechanism Subsystems
@@ -109,12 +107,6 @@ public class RobotContainer {
 			this.drivetrain.resetEncoders();
 		}, this.drivetrain));
 
-		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
-			Log.writeln("[HALT]");
-			this.drivetrain.halt();
-			CommandScheduler.getInstance().cancelAll();
-		}));
-
 		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
 			null,
@@ -126,16 +118,27 @@ public class RobotContainer {
 			new Tree(
 				"Select tag offset",
 				new Tree("Center", Direction.Center),
-				new Tree("Right", Direction.Right),
+				new Tree("Left", Direction.Left),
 				new Tree(),
-				new Tree("Left", Direction.Left)
+				new Tree("Right", Direction.Right)
 			)
 		));
 
-		this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
-					DrivetrainConstants.honeToHighDistance, drivetrain));
-		this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
-					DrivetrainConstants.honeToHighDistance, drivetrain));
+		// this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
+		// 			DrivetrainConstants.honeToHighDistance, drivetrain));
+		// this.driverOI.getMoveToPlaceMid().onTrue(new DriveDistance(.6, 
+		// 			DrivetrainConstants.honeToMidDistance, drivetrain));
+
+		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
+
+		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
+			CommandScheduler.getInstance().cancelAll();
+			Log.writeln("[HALT - DRIVER]");
+			this.drivetrain.halt();
+			this.elevator.halt();
+			this.arm.halt();
+			this.intake.setOutput(0);
+		}));
 	}
 
 	private void configureOperatorControls() {
@@ -161,6 +164,15 @@ public class RobotContainer {
 
 		this.operatorOI.getElevatorDown().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.stashHeight));
 		this.operatorOI.getElevatorUp().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+
+		this.operatorOI.getHaltButton().onTrue(new InstantCommand(() -> {
+			CommandScheduler.getInstance().cancelAll();
+			Log.writeln("[HALT - OPERATOR]");
+			this.drivetrain.halt();
+			this.elevator.halt();
+			this.arm.halt();
+			this.intake.setOutput(0);
+		}));
 	}
 
 	private void configureAutoChooser() {

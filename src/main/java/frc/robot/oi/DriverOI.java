@@ -3,7 +3,6 @@ package frc.robot.oi;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -70,13 +69,13 @@ public class DriverOI extends OIBase {
 		return () -> this.controller.getRightX();
 	}
 
-	public Trigger getMoveToPlaceHigh() {
-		return new JoystickButton(this.controller, XboxController.Button.kB.value);
-	}
+	// public Trigger getMoveToPlaceHigh() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	// }
 
-	public Trigger getMoveToPlaceMid() {
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	}
+	// public Trigger getMoveToPlaceMid() {
+	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	// }
 
 	
 
@@ -119,10 +118,6 @@ public class DriverOI extends OIBase {
 	public Trigger getResetGyroButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kStart.value);
 	}
-
-    public Trigger getHaltButton() {
-        return new JoystickButton(this.controller, XboxController.Button.kBack.value);
-    }
 
 	public Trigger getRunIntakeButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);

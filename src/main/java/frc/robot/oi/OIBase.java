@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public abstract class OIBase {
 	public final XboxController controller;
@@ -35,5 +37,9 @@ public abstract class OIBase {
             new WaitCommand(1.0),
             new InstantCommand(() -> this.controller.setRumble(RumbleType.kLeftRumble, 0))
         ));
+    }
+
+    public Trigger getHaltButton() {
+        return new JoystickButton(this.controller, XboxController.Button.kBack.value);
     }
 }

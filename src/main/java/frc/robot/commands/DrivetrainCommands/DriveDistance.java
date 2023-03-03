@@ -34,7 +34,7 @@ public class DriveDistance extends CommandBase {
 
 	@Override
 	public void execute() {
-		this.drivetrain.tankDriveVolts(speed * 12 * .95, speed * 12);
+		this.drivetrain.tankDriveVolts(this.speed * 12, this.speed * 12);
 	}
 
 	@Override
@@ -46,6 +46,10 @@ public class DriveDistance extends CommandBase {
 	public boolean isFinished() {
 		// return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
 		// TODO take care of negative distances
-		return this.drivetrain.getEncoderPose().getX() >= endPose.getX();
+		if(this.distance >= 0) {
+			return this.drivetrain.getEncoderPose().getX() >= this.endPose.getX();
+		} else {
+			return this.drivetrain.getEncoderPose().getX() <= this.endPose.getX();
+		}
 	}
 }

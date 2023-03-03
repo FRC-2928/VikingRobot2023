@@ -117,7 +117,7 @@ public class Drivetrain extends SubsystemBase {
 			fx.configPeakOutputForward(1);
 			fx.configPeakOutputReverse(-1);
 
-			fx.configOpenloopRamp(0.2);
+			fx.configOpenloopRamp(0.4);
 
 			// Setting deadband(area required to start moving the motor) to 1%
 			fx.configNeutralDeadband(0.01);

@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmConstants;
@@ -21,6 +22,7 @@ import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.TurnToPid;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
+import frc.robot.commands.ElevatorCommands.InitializeElevator;
 import frc.robot.commands.ElevatorCommands.StashIntake;
 import frc.robot.commands.IntakeCommands.RunIntake;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
@@ -37,15 +39,16 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("just shoot", 
+		chooser.setDefaultOption("just shoot", 
 			new SequentialCommandGroup(
+				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highPosition),
-				new DriveDistance(.6, DrivetrainConstants.honeToHighDistance, drivetrain),
-				new RunIntake(intake, IntakeConstants.intakeCubePower),
+				new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootCubePower), intake),
 				new WaitCommand(.5),
-				new RunIntake(intake, 0),
-				new DriveDistance(.6, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(0), intake),
+				new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 				new StashIntake(elevator, arm)
 			)
 		);

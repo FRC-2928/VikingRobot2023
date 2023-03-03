@@ -12,12 +12,10 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -294,9 +292,9 @@ public final class FieldConstants {
 	public static final Transform2d centerBlueOffset = new Transform2d(new Translation2d(1.5, 0), new Rotation2d(Math.PI));
 
 	//new 3/2 -- check
-	public static final Transform2d leftRedOffset = new Transform2d(new Translation2d(-1.5, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
-	public static final Transform2d rightRedOffset = new Transform2d(new Translation2d(-1.5, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
-	public static final Transform2d centerRedOffset = new Transform2d(new Translation2d(-1.5, 0), new Rotation2d(Math.PI));
+	public static final Transform2d leftRedOffset = new Transform2d(new Translation2d(-1, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
+	public static final Transform2d rightRedOffset = new Transform2d(new Translation2d(-1, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
+	public static final Transform2d centerRedOffset = new Transform2d(new Translation2d(-1, 0), new Rotation2d(Math.PI));
 
 	public static final class Waypoints {
 		public static final double innerY = Units.inchesToMeters(30);
@@ -310,40 +308,5 @@ public final class FieldConstants {
 		public static final Translation2d leftBlue2 = new Translation2d(Units.inchesToMeters(132.375), innerY);
 		public static final Translation2d rightBlue1 = new Translation2d(Units.inchesToMeters(193.25), outerY);
 		public static final Translation2d rightBlue2 = new Translation2d(Units.inchesToMeters(132.375), outerY);
-	}
-
-	// TODO: change integer indices to something indexable by POVSelector and remap everything correctly
-	public static final Map<Integer, Pose3d> targets = new HashMap<>();
-
-	static {
-		FieldConstants.targets.put(1, aprilTags.get(1).plus(new Transform3d(new Translation3d(-26.04, -22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(2, aprilTags.get(1).plus(new Transform3d(new Translation3d(-26.04, 22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(3, aprilTags.get(2).plus(new Transform3d(new Translation3d(-26.04, -22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(4, aprilTags.get(2).plus(new Transform3d(new Translation3d(-26.04, 22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(5, aprilTags.get(3).plus(new Transform3d(new Translation3d(-26.04, -22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(6, aprilTags.get(3).plus(new Transform3d(new Translation3d(-26.04, 22, (46.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(7, aprilTags.get(1).plus(new Transform3d(new Translation3d(-9.027, -22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(8, aprilTags.get(1).plus(new Transform3d(new Translation3d(-9.027, 22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(9, aprilTags.get(2).plus(new Transform3d(new Translation3d(-9.027, -22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-
-		FieldConstants.targets.put(10, aprilTags.get(2).plus(new Transform3d(new Translation3d(-9.027, 22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(11, aprilTags.get(3).plus(new Transform3d(new Translation3d(-9.027, -22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(12, aprilTags.get(3).plus(new Transform3d(new Translation3d(-9.027, 22, (34.0625-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(13, aprilTags.get(1).plus(new Transform3d(new Translation3d(7, -22, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(14, aprilTags.get(1).plus(new Transform3d(new Translation3d(7, 22, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(15, aprilTags.get(2).plus(new Transform3d(new Translation3d(7, -22, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(16, aprilTags.get(2).plus(new Transform3d(new Translation3d(7, 22, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(17, aprilTags.get(3).plus(new Transform3d(new Translation3d(7, -22, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(18, aprilTags.get(3).plus(new Transform3d(new Translation3d(7, 22, -18.15),new Rotation3d(0,0,0))));
-
-		FieldConstants.targets.put(19, aprilTags.get(1).plus(new Transform3d(new Translation3d(7, 0, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(20, aprilTags.get(2).plus(new Transform3d(new Translation3d(7, 0, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(21, aprilTags.get(3).plus(new Transform3d(new Translation3d(7, 0, -18.15),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(22, aprilTags.get(1).plus(new Transform3d(new Translation3d(-9, 0,(23.4-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(23, aprilTags.get(2).plus(new Transform3d(new Translation3d(-9, 0,(23.4-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(24, aprilTags.get(3).plus(new Transform3d(new Translation3d(-9, 0,(23.4-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(25, aprilTags.get(1).plus(new Transform3d(new Translation3d(-9, 0,(35.6-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(26, aprilTags.get(2).plus(new Transform3d(new Translation3d(-9, 0,(35.6-18.15)),new Rotation3d(0,0,0))));
-		FieldConstants.targets.put(27, aprilTags.get(3).plus(new Transform3d(new Translation3d(-9, 0,(35.6-18.15)),new Rotation3d(0,0,0))));
 	}
 }
