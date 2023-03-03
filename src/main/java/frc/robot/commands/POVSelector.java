@@ -76,9 +76,9 @@ public class POVSelector extends CommandBase {
 
         public Tree pov(int pov) {
             if(pov == 0) return this.up;
-            else if(pov == 90) return this.right;
+            else if(pov == 270) return this.right;
             else if(pov == 180) return this.down;
-            else if(pov == 270) return this.left;
+            else if(pov == 90) return this.left;
             else return null;
         }
 
