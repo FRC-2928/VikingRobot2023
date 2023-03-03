@@ -134,6 +134,7 @@ public class Elevator extends SubsystemBase {
 	}
 
 	public void control(double power) {
+		if(this.pastTopLimit()) power = Math.max(power, 0.0);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
 		power = MathUtil.applyDeadband(power, 0.25);
 
@@ -169,7 +170,11 @@ public class Elevator extends SubsystemBase {
 		this.motor.setSelectedSensorPosition(ticks);
 	}
 
-	public boolean pastBottomLimit() {
+	private boolean pastTopLimit() {
+		return this.getPosition() <= ElevatorConstants.topSoftLimit;
+	}
+
+	private boolean pastBottomLimit() {
 		return this.getPosition() >= ElevatorConstants.bottomSoftLimit;
 	}
 
@@ -177,9 +182,7 @@ public class Elevator extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		if(this.limitTopClosed() || this.pastBottomLimit()) {
-			this.halt();
-		}
+		if(this.limitTopClosed() || this.pastBottomLimit() || this.pastTopLimit()) this.halt();
 
 		this.publishTelemetry();
 	}

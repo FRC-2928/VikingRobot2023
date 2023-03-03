@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -133,7 +132,6 @@ public class TrajectoryRunner {
 			drivetrain
 		);
 
-		// TODO: Test
 		Ref<Trajectory> traj = new Ref<Trajectory>(null);
 
 		// Set up a sequence of commands

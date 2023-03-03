@@ -108,10 +108,12 @@ public class DrivebaseSimFX {
 		return sensorCountsPer100ms;
 	}
 
+	/*
 	private double nativeUnitsToDistanceMeters(double sensorCounts) {
 		double motorRotations = (double)sensorCounts / DrivetrainConstants.encoderCPR;
 		double wheelRotations = motorRotations / DrivetrainConstants.lowGearRatio;
 		double positionMeters = wheelRotations * (Math.PI * DrivetrainConstants.kWheelDiameterMeters);
 		return positionMeters;
 	}
+	*/
 }

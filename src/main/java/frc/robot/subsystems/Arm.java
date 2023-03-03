@@ -16,9 +16,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-//import edu.wpi.first.wpilibj.PneumaticsModuleType;
-//import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
@@ -74,17 +71,9 @@ public class Arm extends SubsystemBase {
 			// Either using the integrated Falcon sensor or an external one, will change if
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-
-			// TODO: convert into custom implemented soft limit
 		
 			fx.configRemoteFeedbackFilter(CANBusIDs.ArmEncoder, RemoteSensorSource.CANCoder, 0, 0);
 			fx.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
-	
-			fx.configForwardSoftLimitThreshold(ArmConstants.maxAngle);
-	
-			fx.configForwardSoftLimitEnable(true);
-
-			fx.overrideSoftLimitsEnable(true);
 		}
 
 		this.motorFollower.setInverted(InvertType.FollowMaster);
@@ -114,10 +103,9 @@ public class Arm extends SubsystemBase {
 	}
 
 	public void control(double power) {
-		SmartDashboard.putNumber("Arm power", power);
-		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
+		if(this.pastTopLimit()) power = Math.min(power, 0.0);
+		if(this.pastBottomLimit()) power = Math.max(power, 0.0);
 		double deadbandPower = MathUtil.applyDeadband(power, 0.25);
-		SmartDashboard.putNumber("Arm deadband power", deadbandPower);
 
 		this.lock(deadbandPower == 0);
 		this.setPower(deadbandPower);
@@ -125,7 +113,7 @@ public class Arm extends SubsystemBase {
 
 	public void setPower(double power) {
 		power *= -1;
-		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.2, 0.2));
+		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.5, 0.5));
 	}
 
 	public void lock(boolean shouldLock) {
@@ -141,8 +129,12 @@ public class Arm extends SubsystemBase {
 		return this.encoder.getAbsolutePosition();
 	}
 
-	public boolean pastBottomLimit() {
+	private boolean pastTopLimit() {
 		return this.getPosition() <= ArmConstants.homeAngleLimit;
+	}
+
+	private boolean pastBottomLimit() {
+		return this.getPosition() >= ArmConstants.maxAngleLimit;
 	}
 
 	// -----------------------------------------------------------
@@ -150,6 +142,8 @@ public class Arm extends SubsystemBase {
 	// -----------------------------------------------------------
 	@Override
 	public void periodic() {
+		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
+
 		this.entryPower.setDouble(this.motorLead.getMotorOutputPercent());
 		this.entryPosition.setDouble(this.getPosition());
 		// SmartDashboard.putNumber("Arm Position", getPosition());

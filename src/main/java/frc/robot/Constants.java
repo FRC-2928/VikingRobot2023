@@ -76,7 +76,7 @@ public final class Constants {
 		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
 		//public static final double lowHeight = 9000;
 		public static final double lowHeight = 13674;
-		public static final double highHeight = -11500;
+		public static final double highHeight = -11500 - 2000;
 		public static final double stashHeight = 0;
 		public static final double defaultPower = 0.2;
 		public static final double homingPower = -0.4;
@@ -94,17 +94,17 @@ public final class Constants {
 
 	public static final class ArmConstants {
 		public static final Gains armGains = new Gains(0.01, 0.02, 0.0, 0.0, 100, 0.50);
-		public static final double lowPositionCone = -63.9;
+		public static final double lowPositionCone = -59.4;
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
-		public static final double inPosition = -117.5;
+		public static final double inPosition = -111;
 		public static final double defaultPower = .4;
 
 		public static final double homeAngle = -117.5;
-		public static final double maxAngle = 50.0;
-
+		
 		public static final double homeAngleLimit = -110;
+		public static final double maxAngleLimit = 20.0;
 	}
 
 	public static final class DrivetrainConstants {
@@ -114,8 +114,8 @@ public final class Constants {
 
 		public static final boolean kGyroReversed = true;
 
-		//TODO: find these
-		public static final double honeToHighDistance = 1;
+		// TODO: find these
+		public static final double honeToHighDistance = .2;
 		public static final double honeToMidDistance = .6;
 
 		public static final int encoderCPR = 2048;
@@ -157,7 +157,7 @@ public final class Constants {
 		public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
 		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
 		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
-		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
+		public static final Gains GainsBalance = new Gains(0.06, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
