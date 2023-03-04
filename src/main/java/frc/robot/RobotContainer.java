@@ -131,6 +131,8 @@ public class RobotContainer {
 
 		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
 
+		this.driverOI.getElevatorToStartButton().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.elevatorForStart));
+
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
 			Log.writeln("[HALT - DRIVER]");
@@ -154,16 +156,21 @@ public class RobotContainer {
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
 		
+		this.operatorOI.getArmHigh().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
 		this.operatorOI.getArmHigh().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		this.operatorOI.getArmMid().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmMid().onTrue(new ArmGoToPosition(arm, ArmConstants.midPosition));
 		this.operatorOI.getArmMid().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		this.operatorOI.getArmGroundCube().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmGroundCube().onTrue(new GroundIntake(elevator, arm, GamePiece.Cube));
+		this.operatorOI.getArmGroundCone().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmGroundCone().onTrue(new GroundIntake(elevator, arm, GamePiece.Cone));
 		this.operatorOI.getArmIn().onTrue(new StashIntake(elevator, arm));
 
-		this.operatorOI.getElevatorDown().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.stashHeight));
-		this.operatorOI.getElevatorUp().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		this.operatorOI.getElevatorHome().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.stashHeight));
+		this.operatorOI.getArmHumanPlayer().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
+		this.operatorOI.getArmHumanPlayer().onTrue(new ArmGoToPosition(arm, ArmConstants.humanPlayerPosition));
 
 		this.operatorOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();

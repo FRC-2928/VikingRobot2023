@@ -44,14 +44,37 @@ public final class AutonomousRoutines {
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highPosition),
-				new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
-				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootCubePower), intake),
+				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
-				new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
-				new StashIntake(elevator, arm)
+				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new StashIntake(elevator, arm),
+				new DriveDistance(-.5, -3.5, drivetrain)
 			)
 		);
+
+		// once drive distance works
+		// chooser.setDefaultOption("just shoot", 
+		// 	new SequentialCommandGroup(
+		// 		new InitializeElevator(elevator),
+		// 		new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+		// 		new ArmGoToPosition(arm, ArmConstants.highPosition),
+		// 		new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+		// 		new InstantCommand(()-> intake.setOutput(IntakeConstants.shootCubePower), intake),
+		// 		new WaitCommand(.5),
+		// 		new InstantCommand(()-> intake.setOutput(0), intake),
+		// 		new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+		// 		new StashIntake(elevator, arm)
+		// 	)
+		// );
+
+		//set in pathweaver to go forward a little bit
+		chooser.addOption("test pathweaver", 
+							new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("test")));	
+
+		chooser.addOption("test drive distance", 
+							new DriveDistance(.3, 0.25, drivetrain));	
 
 		chooser.addOption(
 			"Tag1 Routines1",

@@ -89,11 +89,11 @@ public class OperatorOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
-	public Trigger getElevatorUp(){
+	public Trigger getArmHumanPlayer(){
 		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
-	public Trigger getElevatorDown(){
+	public Trigger getElevatorHome(){
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
 	}
 }

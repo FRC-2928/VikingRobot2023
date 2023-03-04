@@ -12,8 +12,8 @@ import frc.robot.subsystems.Log;
 public class DriverOI extends OIBase {
 	/*
 
-	A - move to place mid
-	B - move to place high
+	A - elevator down to start match
+	B - 
 	X - 
 	Y - balance
 
@@ -125,5 +125,9 @@ public class DriverOI extends OIBase {
 
 	public Trigger getOrchestraButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kLeftStick.value);
+	}
+
+	public Trigger getElevatorToStartButton(){
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 }

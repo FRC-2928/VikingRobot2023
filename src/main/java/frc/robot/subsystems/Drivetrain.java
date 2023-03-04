@@ -211,18 +211,18 @@ public class Drivetrain extends SubsystemBase {
 		double leftFeedForward = this.feedForwardL.calculate(leftMetersPerSecond);
 		double rightFeedForward = this.feedForwardR.calculate(rightMetersPerSecond);
 
-		SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
-		SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
+		//SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
+		//SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
 
 		// Convert meters per second to encoder ticks per second
 		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
 		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
 
-		SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
-		SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
+		//SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
+		//SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
 
-		SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
-		SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
+		//SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
+		//SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
 
 		this.rightLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
@@ -382,6 +382,11 @@ public class Drivetrain extends SubsystemBase {
 		}
 	}
 
+	public Pose2d getLimelightPoseBlue(){
+		return this.limelight.getBluePose2d();
+
+	}
+
   	/**
 	 * Returns if current robot estimated pose is left or right of the center
 	 * of the Charging Station taking the team alliance into account.
@@ -453,16 +458,16 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void publishTelemetry() {
-		SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
-		SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
-		SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
-		SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
-		SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
+		//SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
+		//SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
+		//SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
+		//SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
+		//SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
 
-		SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());
-		SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
-		SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
-		SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
+		//SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());
+		//SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
+		//SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
+		//SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
 
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
