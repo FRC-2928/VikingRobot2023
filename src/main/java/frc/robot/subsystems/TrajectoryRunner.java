@@ -66,7 +66,7 @@ public class TrajectoryRunner {
 
 		// Default trajectory if no limelight target is to move back 0.5 meters
 		Pose2d startPose = drivetrain.getEncoderPose();
-		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.5, 0), new Rotation2d()));
+		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.1, 0), new Rotation2d()));
 		
 		TrajectoryConfig config = AutoConstants.kTrajectoryConfigReversed;
 
@@ -82,7 +82,7 @@ public class TrajectoryRunner {
 			throw new Error("Attempted to go to an AprilTag that does not exist! Id #" + aprilTagID);
 		} else {
 			// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
-			startPose = drivetrain.getLimelightPoseRelative();
+			startPose = drivetrain.getLimelightPoseBlue();
 			// Move forward config
 			config = AutoConstants.kTrajectoryConfig;
 
@@ -100,7 +100,7 @@ public class TrajectoryRunner {
 				else if(direction == Direction.Center) endPose = tag.plus(FieldConstants.centerBlueOffset);
 			}
 
-			
+			Log.writeln("start", startPose, "\nend", tag);
 		}
 
 		trajectory = TrajectoryGenerator.generateTrajectory(

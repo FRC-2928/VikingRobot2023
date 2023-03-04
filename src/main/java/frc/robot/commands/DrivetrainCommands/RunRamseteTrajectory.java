@@ -37,12 +37,12 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		this.drivetrain.disableMotorSafety();
 
 		Log.writeln("Odometry Pose: " + this.drivetrain.getPose());
-		SmartDashboard.putNumber("Y start traj", this.trajectory.getInitialPose().getY());
-		SmartDashboard.putNumber("Y start odom", this.drivetrain.getEncoderPose().getY());
-		SmartDashboard.putNumber("X start traj", this.trajectory.getInitialPose().getX());
-		SmartDashboard.putNumber("X start odom", this.drivetrain.getEncoderPose().getX());
-		SmartDashboard.putNumber("start odom heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
-		SmartDashboard.putNumber("start traj heading", this.trajectory.getInitialPose().getRotation().getDegrees());
+		//SmartDashboard.putNumber("Y start traj", this.trajectory.getInitialPose().getY());
+		//SmartDashboard.putNumber("Y start odom", this.drivetrain.getEncoderPose().getY());
+		//SmartDashboard.putNumber("X start traj", this.trajectory.getInitialPose().getX());
+		//SmartDashboard.putNumber("X start odom", this.drivetrain.getEncoderPose().getX());
+		//SmartDashboard.putNumber("start odom heading", this.drivetrain.getEncoderPose().getRotation().getDegrees());
+		//SmartDashboard.putNumber("start traj heading", this.trajectory.getInitialPose().getRotation().getDegrees());
 
 		// printTrajectory();
 	}

@@ -86,10 +86,14 @@ public final class Constants {
 		public static final int bottomSoftLimit = 11000;
 		public static final int topSoftLimit = -11600;
 
+		public static final int elevatorForStart = -1300;
+
+
 		public static final int exitHeight = -10000; // min height to allow arm movement
 		public static final int driveHeight = -9780;
 
 		public static final int averageLockIntervalTicks = -1925; // distance in encoder ticks between locking piston clicks
+		public static final int elevatorForHumanPlayer = 8545 - 2 * averageLockIntervalTicks;
 	}
 
 	public static final class ArmConstants {
@@ -98,12 +102,13 @@ public final class Constants {
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
-		public static final double inPosition = -111;
+		public static final double inPosition = -115;
 		public static final double defaultPower = .4;
+		public static final double humanPlayerPosition = -7;
 
-		public static final double homeAngle = -116;
+		//public static final double homeAngle = -116;
 		
-		public static final double homeAngleLimit = -119;
+		public static final double homeAngleLimit = -120;
 		public static final double maxAngleLimit = 20.0;
 	}
 

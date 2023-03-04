@@ -13,9 +13,10 @@ public class DriveDistance extends CommandBase {
 	private final double speed;
 	private Pose2d endPose;
 
+	//TODO fix negatives
 	public DriveDistance(double speed, double meters, Drivetrain drivetrain) {
-		this.distance = meters;
-		this.speed = speed;
+		this.distance = -meters;
+		this.speed = -speed;
 		this.drivetrain = drivetrain;
 		this.addRequirements(drivetrain);
 	}
@@ -29,12 +30,12 @@ public class DriveDistance extends CommandBase {
 		// this.drivetrain.resetOdometry(new Pose2d());
 		this.endPose = this.drivetrain
 			.getEncoderPose()
-			.plus(new Transform2d(new Translation2d(this.distance, 0), new Rotation2d()));
+			.plus(new Transform2d(new Translation2d(-this.distance, 0), new Rotation2d()));
 	}
 
 	@Override
 	public void execute() {
-		this.drivetrain.tankDriveVolts(this.speed * 12, this.speed * 12);
+		this.drivetrain.tankDriveVolts(-this.speed * 12, -this.speed * 12);
 	}
 
 	@Override
@@ -47,9 +48,9 @@ public class DriveDistance extends CommandBase {
 		// return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
 		// TODO take care of negative distances
 		if(this.distance >= 0) {
-			return this.drivetrain.getEncoderPose().getX() >= this.endPose.getX();
-		} else {
 			return this.drivetrain.getEncoderPose().getX() <= this.endPose.getX();
+		} else {
+			return this.drivetrain.getEncoderPose().getX() >= this.endPose.getX();
 		}
 	}
 }
