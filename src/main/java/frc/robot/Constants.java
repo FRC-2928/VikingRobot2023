@@ -101,9 +101,9 @@ public final class Constants {
 		public static final double inPosition = -111;
 		public static final double defaultPower = .4;
 
-		public static final double homeAngle = -117.5;
+		public static final double homeAngle = -116;
 		
-		public static final double homeAngleLimit = -110;
+		public static final double homeAngleLimit = -119;
 		public static final double maxAngleLimit = 20.0;
 	}
 
