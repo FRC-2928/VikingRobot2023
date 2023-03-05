@@ -87,4 +87,8 @@ public class DriverOI extends OIBase {
 	public Trigger getElevatorToStartButton(){
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
+
+	public Trigger getShiftTrigger() {
+		return new Trigger(() -> this.controller.getLeftTriggerAxis())
+	}
 }
