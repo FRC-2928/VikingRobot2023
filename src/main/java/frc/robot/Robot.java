@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
+import frc.robot.subsystems.Log;
 import frc.robot.subsystems.Telemetry;
 
 /**
@@ -41,10 +42,12 @@ public class Robot extends TimedRobot {
 		Telemetry.track("Gyroscope", this.robotContainer.drivetrain::readGyro, false);
 
 		try {
-			Field field = this.getClass().getSuperclass().getSuperclass().getField("m_watchdog");
+			Field field = this.getClass().getSuperclass().getSuperclass().getDeclaredField("m_watchdog");
 			field.setAccessible(true);
 			((Watchdog)field.get(this)).setTimeout(1.0 / 10.0); // increase timer to prevent loop overrun messages
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			Log.error(e);
+		}
 
 		new InitializeElevator(this.robotContainer.elevator).schedule();
 	}

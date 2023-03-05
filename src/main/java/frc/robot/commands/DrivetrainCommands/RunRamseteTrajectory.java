@@ -18,8 +18,8 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		super(
 			trajectory,
 			drivetrain::getEncoderPose,
-			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-			DrivetrainConstants.kDriveKinematics,
+			new RamseteController(AutoConstants.ramseteB, AutoConstants.ramseteZeta),
+			DrivetrainConstants.driveKinematics,
 			drivetrain::setOutputMetersPerSecond,
 			drivetrain
 		);

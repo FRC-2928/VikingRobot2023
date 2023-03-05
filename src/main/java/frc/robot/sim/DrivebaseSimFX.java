@@ -30,8 +30,8 @@ public class DrivebaseSimFX {
 		DrivetrainConstants.lowGearRatio,     // Gearing reduction.
 		2.1,                //MOI of 2.1 kg m^2 (from CAD model).
 		26.5,                         //Mass of the robot is 26.5 kg.
-		DrivetrainConstants.kWheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
-		DrivetrainConstants.kTrackWidthMeters,      //Distance between wheels is _ meters.
+		DrivetrainConstants.wheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
+		DrivetrainConstants.trackWidthMeters,      //Distance between wheels is _ meters.
 
 		// The standard deviations for measurement noise:
 		// x and y:          0.001 m
@@ -94,14 +94,14 @@ public class DrivebaseSimFX {
 	// Helper methods to convert between meters and native units
 
 	private int distanceToNativeUnits(double positionMeters) {
-		double wheelRotations = positionMeters/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
+		double wheelRotations = positionMeters/(Math.PI * DrivetrainConstants.wheelDiameterMeters);
 		double motorRotations = wheelRotations * DrivetrainConstants.lowGearRatio;
 		int sensorCounts = (int)(motorRotations * DrivetrainConstants.encoderCPR);
 		return sensorCounts;
 	}
 
 	private int velocityToNativeUnits(double velocityMetersPerSecond) {
-		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * DrivetrainConstants.kWheelDiameterMeters);
+		double wheelRotationsPerSecond = velocityMetersPerSecond/(Math.PI * DrivetrainConstants.wheelDiameterMeters);
 		double motorRotationsPerSecond = wheelRotationsPerSecond * DrivetrainConstants.lowGearRatio;
 		double motorRotationsPer100ms = motorRotationsPerSecond / k100msPerSecond;
 		int sensorCountsPer100ms = (int)(motorRotationsPer100ms * DrivetrainConstants.encoderCPR);
