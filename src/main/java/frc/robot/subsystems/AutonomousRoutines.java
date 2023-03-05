@@ -83,6 +83,22 @@ public final class AutonomousRoutines {
 				new DriveDistance(-.5, -1, drivetrain),
 				new Balance(drivetrain, false, 15000))
 							);	
+		
+		chooser.addOption("shoot high drive over and balance?", 
+							new SequentialCommandGroup(
+									new InitializeElevator(elevator),
+									new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+									new ArmGoToPosition(arm, ArmConstants.highPosition),
+									//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+									new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+									new WaitCommand(.5),
+									new InstantCommand(()-> intake.setOutput(0), intake),
+									//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+									new StashIntake(elevator, arm),
+									new DriveDistance(-.5, -3, drivetrain),
+									new DriveDistance(.5, 1.5, drivetrain),
+									new Balance(drivetrain, false, 15000))
+												);	
 
 
 		chooser.addOption("shoot middddd", 
