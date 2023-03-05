@@ -24,10 +24,10 @@ public final class Constants {
 		Cube, // purple
 	}
 	public static final class PneumaticIDs {
-		public static final int kDrivetrainShiftPiston = 1;
+		public static final int drivetrainShiftPiston = 1;
 
-		public static final int kElevatorLock = 2;
-		public static final int kArmLock = 0;
+		public static final int elevatorLock = 2;
+		public static final int armLock = 0;
 	}
 
 	public static final class CANBusIDs {
@@ -88,7 +88,6 @@ public final class Constants {
 
 		public static final int elevatorForStart = -1300;
 
-
 		public static final int exitHeight = -10000; // min height to allow arm movement
 		public static final int driveHeight = -9780;
 
@@ -113,35 +112,28 @@ public final class Constants {
 	}
 
 	public static final class DrivetrainConstants {
-		public static final double kTrackWidthMeters = 0.7; // Placeholder
-		public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
-				kTrackWidthMeters);
-
-		public static final boolean kGyroReversed = true;
+		public static final double trackWidthMeters = 0.7; // Placeholder
+		public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
 
 		// TODO: find these
 		public static final double honeToHighDistance = .2;
 		public static final double honeToMidDistance = .6;
 
 		public static final int encoderCPR = 2048;
-		public static final double kWheelDiameterMeters = 0.1016;
+		public static final double wheelDiameterMeters = 0.1016;
 
-		public static final double kEncoderDistancePerPulse =
-				// Assumes the encoders are directly mounted on the wheel shafts
-				(kWheelDiameterMeters * Math.PI) / (double) encoderCPR;
+		// Assumes the encoders are directly mounted on the wheel shafts
+		public static final double kEncoderDistancePerPulse = (wheelDiameterMeters * Math.PI) / (double)encoderCPR;
 
-		public static final double kUnitsPerRevolution = 2048;
+		public static final double unitsPerRevolution = 2048;
 
-		// for sweetpants
 		public static final double highGearRatio = 5.4;
 		public static final double lowGearRatio = 8.82;
 
-		// for competition robot
-		// public static final double highGearRatio = 5.68;
-		// public static final double lowGearRatio = 8.82;
-
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
-				AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelMetersPerSecondSquared);
+			AutoConstants.maxSpeedMetersPerSecond,
+			AutoConstants.maxAccelMetersPerSecondSquared
+		);
 
 		// PID Constants
 		// The WPILib feedforward has kS (static friction), kV (velocity), and kA
@@ -158,17 +150,9 @@ public final class Constants {
 		 *
 		 * kP kI kD kF Iz PeakOut
 		 */
-		public static final Gains GainsDistance = new Gains(0.1, 0.0, 0.0, 0.0, 100, 0.50);
-		public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
-		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
-		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
 		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
-		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
-		public static final Gains GainsApproach = new Gains(.65,0.016,0.0,0.0,0,0.3);
-		// public static final double kDistanceToleranceMeters = 0.1;
-		// public static final double kVelocityToleranceMeters = 0.1;
 
 		//trajectories and localization
 
@@ -180,8 +164,11 @@ public final class Constants {
 		public static final double yOffsetField = 4.051;
 		//offset for limelight and length of robot
 		public static final double xOffsetField = 6.718 + .91;
+
 		public static final double manualDriveMultiplier = 1;
 		public static final double manualTurnMultiplier = .6;
+
+		public static final double reductFactor = 0.5;
 	}
 
 	public static final class AutoConstants {
@@ -198,38 +185,50 @@ public final class Constants {
 		public static final double kaVoltSecondsSquaredPerMeter = 0.023529;
 
 		// Feedforward contraints
-		public static final SimpleMotorFeedforward kFeedForward = new SimpleMotorFeedforward(ksVolts,
-				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
-		public static final SimpleMotorFeedforward kFeedForwardL = new SimpleMotorFeedforward(ksVolts,
-				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
-		public static final SimpleMotorFeedforward kFeedForwardR = new SimpleMotorFeedforward(ksVolts,
-				kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
-		public static final double k_MaxVolts = 10;
-		public static final DifferentialDriveVoltageConstraint kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-				kFeedForward,
-				DrivetrainConstants.kDriveKinematics,
-				k_MaxVolts);
+		public static final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(
+			ksVolts,
+			kvVoltSecondsPerMeter,
+			kaVoltSecondsSquaredPerMeter
+		);
+		public static final SimpleMotorFeedforward feedForwardL = new SimpleMotorFeedforward(
+			ksVolts,
+			kvVoltSecondsPerMeter,
+			kaVoltSecondsSquaredPerMeter
+		);
+		public static final SimpleMotorFeedforward feedForwardR = new SimpleMotorFeedforward(
+			ksVolts,
+			kvVoltSecondsPerMeter,
+			kaVoltSecondsSquaredPerMeter
+		);
+		public static final double maxVolts = 10;
+		public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+			feedForward,
+			DrivetrainConstants.driveKinematics,
+			maxVolts
+		);
 
-		public static final double kMaxSpeedMetersPerSecond = 1.0;
-		public static final double kMaxAccelMetersPerSecondSquared = 1.0;
+		public static final double maxSpeedMetersPerSecond = 1.0;
+		public static final double maxAccelMetersPerSecondSquared = 1.0;
 
 		// Setup trajectory constraints
-		public static final TrajectoryConfig kTrajectoryConfig = new TrajectoryConfig(
-				kMaxSpeedMetersPerSecond,
-				kMaxAccelMetersPerSecondSquared)
-				.setKinematics(DrivetrainConstants.kDriveKinematics)
-				.addConstraint(kAutoVoltageConstraint);
+		public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
+			maxSpeedMetersPerSecond,
+			maxAccelMetersPerSecondSquared
+		)
+			.setKinematics(DrivetrainConstants.driveKinematics)
+			.addConstraint(autoVoltageConstraint);
 
-		public static final TrajectoryConfig kTrajectoryConfigReversed = new TrajectoryConfig(
-			kMaxSpeedMetersPerSecond,
-			kMaxAccelMetersPerSecondSquared)
-			.setKinematics(DrivetrainConstants.kDriveKinematics)
-			.addConstraint(kAutoVoltageConstraint)
+		public static final TrajectoryConfig trajectoryConfigReversed = new TrajectoryConfig(
+			maxSpeedMetersPerSecond,
+			maxAccelMetersPerSecondSquared
+		)
+			.setKinematics(DrivetrainConstants.driveKinematics)
+			.addConstraint(autoVoltageConstraint)
 			.setReversed(true);
 
 		// Reasonable baseline values for a RAMSETE follower in units of meters and
 		// seconds
-		public static final double kRamseteB = 2;
-		public static final double kRamseteZeta = 0.7;
+		public static final double ramseteB = 2;
+		public static final double ramseteZeta = 0.7;
 	}
 }

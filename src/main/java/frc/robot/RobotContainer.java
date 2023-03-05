@@ -13,6 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
+import frc.robot.commands.DrivetrainCommands.Shift;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.GroundIntake;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Transmission;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
+import frc.robot.subsystems.Transmission.GearState;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -74,8 +76,8 @@ public class RobotContainer {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(
-					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier,
-					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.manualTurnMultiplier
+					this.driverOI.getMoveSupplier().getAsDouble() * this.driverOI.getReductFactor() * DrivetrainConstants.manualDriveMultiplier,
+					this.driverOI.getRotateSupplier().getAsDouble() * this.driverOI.getReductFactor() * DrivetrainConstants.manualTurnMultiplier
 				),
 				this.drivetrain
 			)
@@ -84,6 +86,7 @@ public class RobotContainer {
 		// Configure gear shifting
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
+		this.driverOI.getShiftButton().whileTrue(new Shift(this.transmission, GearState.HIGH));
 
 		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
 

@@ -68,7 +68,7 @@ public class TrajectoryRunner {
 		Pose2d startPose = drivetrain.getEncoderPose();
 		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.1, 0), new Rotation2d()));
 		
-		TrajectoryConfig config = AutoConstants.kTrajectoryConfigReversed;
+		TrajectoryConfig config = AutoConstants.trajectoryConfigReversed;
 
 		List<Translation2d> waypoints = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class TrajectoryRunner {
 			// Get the aprilTag that the robot is looking at and it's pose relative to the tag.
 			startPose = drivetrain.getLimelightPoseBlue();
 			// Move forward config
-			config = AutoConstants.kTrajectoryConfig;
+			config = AutoConstants.trajectoryConfig;
 
 			// Now get the pose
 			Pose2d tag = FieldConstants.aprilTags.get(aprilTagID).toPose2d();
@@ -126,8 +126,8 @@ public class TrajectoryRunner {
 		RamseteCommand ramseteCommand = new RamseteCommand(
 			new Trajectory(),
 			drivetrain::getPose,
-			new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-			DrivetrainConstants.kDriveKinematics,
+			new RamseteController(AutoConstants.ramseteB, AutoConstants.ramseteZeta),
+			DrivetrainConstants.driveKinematics,
 			drivetrain::setOutputMetersPerSecond,
 			drivetrain
 		);

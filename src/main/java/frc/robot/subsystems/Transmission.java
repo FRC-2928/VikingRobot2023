@@ -17,14 +17,14 @@ public class Transmission extends SubsystemBase {
 	}
 
 	public Transmission() {
-		this.shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kDrivetrainShiftPiston);
+		this.shiftPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.drivetrainShiftPiston);
 
 		this.gearState = GearState.LOW;
 
 		Telemetry.track("Gear", () -> this.gearState.toString(), false);
 	}
 
-	public void setGearState(GearState state) {
+	public void shift(GearState state) {
 		if(this.gearState == state) return;
 
 		this.gearState = state;
@@ -45,15 +45,15 @@ public class Transmission extends SubsystemBase {
 	}
 
 	public void setHigh() {
-		this.setGearState(GearState.HIGH);
+		this.shift(GearState.HIGH);
 	}
 
 	public void setLow() {
-		this.setGearState(GearState.LOW);
+		this.shift(GearState.LOW);
 	}
 
 	public void toggle() {
-		this.setGearState(this.gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
+		this.shift(this.gearState == GearState.LOW ? GearState.HIGH : GearState.LOW);
 	}
 
 	public GearState getGearState() {

@@ -74,8 +74,8 @@ public class Drivetrain extends SubsystemBase {
 
 		this.diffDrive = new DifferentialDrive(rightLeader, leftLeader);
 
-		this.feedForwardL = AutoConstants.kFeedForwardL;
-		this.feedForwardR = AutoConstants.kFeedForwardR;
+		this.feedForwardL = AutoConstants.feedForwardL;
+		this.feedForwardR = AutoConstants.feedForwardR;
 
 		this.resetEncoders();
 		this.zeroGyro();
@@ -88,7 +88,7 @@ public class Drivetrain extends SubsystemBase {
 
 		// Start with default Pose2d(0, 0, 0)
 		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
-		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.kDriveKinematics,
+		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.driveKinematics,
 									new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose2d());
 
 		this.field2d.setRobotPose(this.getEncoderPose());
@@ -227,11 +227,11 @@ public class Drivetrain extends SubsystemBase {
 		this.rightLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				leftFeedForward / AutoConstants.k_MaxVolts);
+				leftFeedForward / AutoConstants.maxVolts);
 		this.leftLeader.set(ControlMode.Velocity,
 				rightVelocityTicksPerSec / 10.0,
 				DemandType.ArbitraryFeedForward,
-				rightFeedForward / AutoConstants.k_MaxVolts);
+				rightFeedForward / AutoConstants.maxVolts);
 
 		this.diffDrive.feed();
 	}
@@ -253,7 +253,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double wheelRotationsToMeters(double wheelRotations) {
-		return DrivetrainConstants.kWheelDiameterMeters * Math.PI * wheelRotations;
+		return DrivetrainConstants.wheelDiameterMeters * Math.PI * wheelRotations;
 	}
 
 	// Encoder ticks to meters
@@ -332,7 +332,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double metersToWheelRotations(double metersPerSecond) {
-		return metersPerSecond / (DrivetrainConstants.kWheelDiameterMeters * Math.PI);
+		return metersPerSecond / (DrivetrainConstants.wheelDiameterMeters * Math.PI);
 	}
 
 	public double wheelRotationsToEncoderTicks(double wheelRotations, Transmission.GearState gearState) {

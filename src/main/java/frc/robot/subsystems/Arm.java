@@ -31,7 +31,7 @@ public class Arm extends SubsystemBase {
 
 	// True: Unlocked
 	// False: Locked
-	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.kArmLock);
+	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.armLock);
 
 	// -----------------------------------------------------------
 	// Initialization

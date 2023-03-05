@@ -38,7 +38,7 @@ public class TurnDegrees extends CommandBase {
 			placement distance of 0.7 meters = 700 mm - width of the wheel (20 mm) = 720 mm
 			We then take into consideration the width of the tires.
 		*/
-		double metersPerDegree = Math.PI * DrivetrainConstants.kTrackWidthMeters / 360;
+		double metersPerDegree = Math.PI * DrivetrainConstants.trackWidthMeters / 360;
 		// Compare distance travelled from start to distance based on degree turn
 		return this.getAverageTurningDistance() >= (metersPerDegree * this.degrees);
 	}
