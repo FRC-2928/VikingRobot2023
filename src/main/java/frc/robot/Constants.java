@@ -102,13 +102,13 @@ public final class Constants {
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
-		public static final double inPosition = -110;
+		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 		public static final double humanPlayerPosition = -9.5;
 
 		//public static final double homeAngle = -116;
 		
-		public static final double homeAngleLimit = -119;
+		public static final double homeAngleLimit = -117;
 		public static final double maxAngleLimit = 18.0;
 	}
 
