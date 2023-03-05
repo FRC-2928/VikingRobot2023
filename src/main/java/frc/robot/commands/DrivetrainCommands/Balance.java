@@ -32,7 +32,7 @@ public class Balance extends CommandBase {
 	public Balance(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		this.drivetrain = drivetrain;
 
-		this.balance.setTolerance(1.0);
+		this.balance.setTolerance(8.0);
 		this.balance.setSetpoint(0.0);
 		this.balance.calculate(0.0);
 

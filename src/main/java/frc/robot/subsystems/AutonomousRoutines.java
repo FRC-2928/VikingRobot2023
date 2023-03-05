@@ -19,6 +19,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
+import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.TurnToPid;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
@@ -46,6 +47,51 @@ public final class AutonomousRoutines {
 				new ArmGoToPosition(arm, ArmConstants.highPosition),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new WaitCommand(.5),
+				new InstantCommand(()-> intake.setOutput(0), intake),
+				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new StashIntake(elevator, arm),
+				new DriveDistance(-.5, -3.5, drivetrain)
+			)
+		);
+
+		chooser.addOption("just shoot high don't drive", 
+			new SequentialCommandGroup(
+				new InitializeElevator(elevator),
+				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new WaitCommand(.5),
+				new InstantCommand(()-> intake.setOutput(0), intake),
+				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new StashIntake(elevator, arm)
+			)
+		);
+
+		chooser.addOption("shoot high and balance?", 
+		new SequentialCommandGroup(
+				new InitializeElevator(elevator),
+				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new WaitCommand(.5),
+				new InstantCommand(()-> intake.setOutput(0), intake),
+				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+				new StashIntake(elevator, arm),
+				new DriveDistance(-.5, -1, drivetrain),
+				new Balance(drivetrain, false, 15000))
+							);	
+
+
+		chooser.addOption("shoot middddd", 
+			new SequentialCommandGroup(
+				new InitializeElevator(elevator),
+				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+				new ArmGoToPosition(arm, ArmConstants.midPosition),
+				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower * .75), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),

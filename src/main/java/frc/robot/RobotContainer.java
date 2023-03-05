@@ -13,7 +13,6 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.POVSelector;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
-import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.GroundIntake;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
@@ -63,8 +62,6 @@ public class RobotContainer {
 	public final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
 	private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
-	//private ShuffleboardTab tab = Shuffleboard.getTab("ElevatorArm");
-
 
 	public RobotContainer() {
 		this.configureAutoChooser();
@@ -78,34 +75,17 @@ public class RobotContainer {
 			new RunCommand(
 				() -> this.drivetrain.diffDrive.arcadeDrive(
 					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier,
-					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier
+					this.driverOI.getRotateSupplier().getAsDouble() * DrivetrainConstants.manualTurnMultiplier
 				),
 				this.drivetrain
 			)
 		);
-		
-		/*
-		this.drivetrain.setDefaultCommand(
-			new RunCommand(
-				() -> this.drivetrain.diffDrive.tankDrive(
-					this.driverOI.getMoveRSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier,
-					this.driverOI.getMoveSupplier().getAsDouble() * DrivetrainConstants.manualDriveMultiplier
-				),
-				this.drivetrain
-			)
-		);
-		*/
 
 		// Configure gear shifting
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 
-		this.driverOI.getBalanceAuxButton().whileTrue(Balance.manual(this.drivetrain));
-
-		this.driverOI.getResetGyroButton().onTrue(new InstantCommand(() -> {
-			this.drivetrain.zeroGyro();
-			this.drivetrain.resetEncoders();
-		}, this.drivetrain));
+		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
 
 		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
@@ -144,8 +124,6 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorControls() {
-		// default command should run only in absence of other commands - shouldn't be a problem for these to be default even though they're backup. (CHECK THOUGH)
-		// why is this a good idea -nova
 		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(this.operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
 		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.control(this.operatorOI.getArmSupplier().getAsDouble()), this.arm));
 

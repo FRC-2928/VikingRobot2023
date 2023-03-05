@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class OperatorOI extends OIBase {
-	
-	
 	/* prototype
 
 	A - stash
@@ -16,7 +14,7 @@ public class OperatorOI extends OIBase {
 	X - elevator up
 	Y - elevator down
 
-	Start(left)
+	Start(left) - c-stop
 	Back(right)
 
 	LB shoot cone
@@ -25,12 +23,12 @@ public class OperatorOI extends OIBase {
 	LT
 	RT
 
-	LS up and down controls elevator
+	LS - up and down controls elevator
 		(probably most movement for these subsystems will be to predesignated positions)
-	RS up and down controls arm
+	RS - up and down controls arm
 
-	LS Click - rehome
-	RS Click 
+	LS Click - rehome elevator
+	RS Click
 
 	potentially POV for arm positions - high, middle, cube ground, cone ground
 		

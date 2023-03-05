@@ -102,14 +102,14 @@ public final class Constants {
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
-		public static final double inPosition = -115;
+		public static final double inPosition = -110;
 		public static final double defaultPower = .4;
-		public static final double humanPlayerPosition = -7;
+		public static final double humanPlayerPosition = -9.5;
 
 		//public static final double homeAngle = -116;
 		
-		public static final double homeAngleLimit = -120;
-		public static final double maxAngleLimit = 20.0;
+		public static final double homeAngleLimit = -119;
+		public static final double maxAngleLimit = 18.0;
 	}
 
 	public static final class DrivetrainConstants {
@@ -162,7 +162,7 @@ public final class Constants {
 		public static final Gains GainsTurning = new Gains(0.10, 0.0, 0.0, 0.0, 200, 1.00);
 		public static final Gains GainsVelocity = new Gains(0.1, 0.001, 5, 1023.0 / 20660.0, 300, 1.00);
 		public static final Gains GainsMotProf = new Gains(1.0, 0.0, 0.0, 1023.0 / 20660.0, 400, 1.00);
-		public static final Gains GainsBalance = new Gains(0.06, 0.005, 0.0025, 0, 0, 0.3);
+		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 		public static final Gains GainsApproachTurn = new Gains(.1,0,0.0,0.0,0,0.3);
@@ -180,7 +180,8 @@ public final class Constants {
 		public static final double yOffsetField = 4.051;
 		//offset for limelight and length of robot
 		public static final double xOffsetField = 6.718 + .91;
-		public static final double manualDriveMultiplier = 0.6;
+		public static final double manualDriveMultiplier = 1;
+		public static final double manualTurnMultiplier = .6;
 	}
 
 	public static final class AutoConstants {
