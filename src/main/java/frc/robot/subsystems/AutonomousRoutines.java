@@ -13,19 +13,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
-import frc.robot.commands.DrivetrainCommands.DriveTime;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
 import frc.robot.commands.DrivetrainCommands.TurnToPid;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
 import frc.robot.commands.ElevatorCommands.StashIntake;
-import frc.robot.commands.IntakeCommands.RunIntake;
 import frc.robot.subsystems.TrajectoryRunner.Direction;
 
 public final class AutonomousRoutines {
@@ -221,7 +218,7 @@ public final class AutonomousRoutines {
 			// List.of(new Translation2d(2.0, 0.0))
 			List.of(),
 			new Pose2d(4, 0.0, new Rotation2d(0)), // left
-			AutoConstants.kTrajectoryConfig
+			AutoConstants.trajectoryConfig
 		);
   	}
 }
