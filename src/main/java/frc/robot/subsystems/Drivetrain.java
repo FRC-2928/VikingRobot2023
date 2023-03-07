@@ -117,6 +117,7 @@ public class Drivetrain extends SubsystemBase {
 			fx.configPeakOutputForward(1);
 			fx.configPeakOutputReverse(-1);
 
+			// TODO: fix this once weight is added
 			fx.configOpenloopRamp(0.4);
 
 			// Setting deadband(area required to start moving the motor) to 1%

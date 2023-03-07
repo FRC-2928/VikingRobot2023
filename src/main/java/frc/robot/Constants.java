@@ -150,6 +150,7 @@ public final class Constants {
 		 *
 		 * kP kI kD kF Iz PeakOut
 		 */
+		// TODO: tune when weight is added
 		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
