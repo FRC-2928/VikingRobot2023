@@ -21,6 +21,19 @@ public class ElevatorGoToHeight extends PIDCommand {
 		this.elevator = elevator;
 	}
 
+	public ElevatorGoToHeight(Elevator elevator, double goalHeight, double speedFactor) {
+		super(
+			new PIDController(ElevatorConstants.elevatorGains.P * speedFactor, ElevatorConstants.elevatorGains.I, ElevatorConstants.elevatorGains.D),
+			() -> elevator.getPosition(),
+			(goalHeight - ElevatorConstants.averageLockIntervalTicks),
+			output -> elevator.control(output)
+		);
+
+		this.m_controller.setTolerance(1000);
+		this.addRequirements(elevator);
+		this.elevator = elevator;
+	}
+
 	@Override
 	public void initialize() {}
 

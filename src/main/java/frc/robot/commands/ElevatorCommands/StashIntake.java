@@ -10,8 +10,8 @@ import frc.robot.subsystems.Elevator;
 public class StashIntake extends SequentialCommandGroup {
 	public StashIntake(Elevator elevator, Arm arm) {
 		this.addCommands(
-			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-			new ArmGoToPosition(arm, ArmConstants.inPosition)
+			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight, 1.5),
+			new ArmGoToPosition(arm, ArmConstants.inPosition, 1.5)
 		);
 	}
 }

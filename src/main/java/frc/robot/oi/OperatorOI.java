@@ -11,14 +11,14 @@ public class OperatorOI extends OIBase {
 
 	A - stash
 	B - run intake in
-	X - elevator up
-	Y - elevator down
+	X - double substation cube
+	Y - double substation cone
 
 	Start(left) - c-stop
 	Back(right)
 
-	LB shoot cone
-	RB shoot cube
+	LB - shoot cone
+	RB - shoot cube
 
 	LT
 	RT
@@ -30,8 +30,10 @@ public class OperatorOI extends OIBase {
 	LS Click - rehome elevator
 	RS Click
 
-	potentially POV for arm positions - high, middle, cube ground, cone ground
-		
+	POV Up - arm high
+	POV Right - arm mid
+	POV Down - arm ground cube
+	POV Left - arm ground cone
 
 	*/
 
@@ -87,11 +89,11 @@ public class OperatorOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
-	public Trigger getArmHumanPlayer(){
+	public Trigger getArmCone(){
 		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
-	public Trigger getElevatorHome(){
+	public Trigger getArmCube(){
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
 	}
 }
