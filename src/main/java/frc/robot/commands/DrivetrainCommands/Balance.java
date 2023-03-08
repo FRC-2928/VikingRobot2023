@@ -69,6 +69,8 @@ public class Balance extends CommandBase {
 	@Override
 	public void initialize() {
 		this.time = System.currentTimeMillis();
+		
+		this.drivetrain.brakeOverride = true;
 	}
 
 	@Override
@@ -78,6 +80,11 @@ public class Balance extends CommandBase {
 
 		if(this.drivetrain.readPitch() > 0) this.drivetrain.tankDriveVolts(-balanceVolts + alignVolts, -balanceVolts - alignVolts);
 		else this.drivetrain.tankDriveVolts(-balanceVolts - alignVolts, -balanceVolts + alignVolts);
+	}
+
+	@Override
+	public void end(boolean interrupted) {
+		this.drivetrain.brakeOverride = false;
 	}
 
 	@Override

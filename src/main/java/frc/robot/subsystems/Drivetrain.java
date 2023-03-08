@@ -44,6 +44,9 @@ public class Drivetrain extends SubsystemBase {
 
 	public final DifferentialDrive diffDrive;
 
+	// TODO: make this work
+	public boolean brakeOverride = false;
+
 	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.PigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
@@ -123,8 +126,8 @@ public class Drivetrain extends SubsystemBase {
 			// Setting deadband(area required to start moving the motor) to 1%
 			fx.configNeutralDeadband(0.01);
 
-			// Set to brake mode, will brake the motor when no power is sent
-			fx.setNeutralMode(NeutralMode.Brake);
+			// Set to coast mode, will not brake the motor when no power is sent
+			fx.setNeutralMode(NeutralMode.Coast);
 
 			/**
 			 * Setting input side current limit (amps)
@@ -453,6 +456,14 @@ public class Drivetrain extends SubsystemBase {
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		if(this.limelight.getHasValidTargets()) {
 			this.poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
+		}
+		
+		NeutralMode neutralMode = (Robot.instance.isAutonomousEnabled() || this.brakeOverride || Robot.instance.robotContainer.driverOI.getReductFactor() < 0.4) ? NeutralMode.Brake : NeutralMode.Coast;
+
+		SmartDashboard.putString("Neutral Mode", neutralMode.name());
+
+		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
+			fx.setNeutralMode(neutralMode);
 		}
 
 		this.publishTelemetry();

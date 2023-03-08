@@ -96,15 +96,19 @@ public final class Constants {
 	}
 
 	public static final class ArmConstants {
-		public static final Gains armGains = new Gains(0.01, 0.02, 0.0, 0.0, 100, 0.50);
+		// TODO: make more accurate
+		public static final Gains armGains = new Gains(0.01, 0.02, 0, 0.0, 100, 0.50);
 		public static final double lowPositionCone = -59.4;
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
-		public static final double humanPlayerPosition = -9.5;
 
+		public static final double doubleSubstationCone = -2 - 4;
+		public static final double doubleSubstationCube = -7 - 4;
+
+		// TODO: use & tune this once arm limit switch is added
 		//public static final double homeAngle = -116;
 		
 		public static final double homeAngleLimit = -117;
@@ -170,6 +174,7 @@ public final class Constants {
 		public static final double manualTurnMultiplier = .6;
 
 		public static final double reductFactor = 0.5;
+		public static final double reductFactorRotation = 0.75;
 	}
 
 	public static final class AutoConstants {

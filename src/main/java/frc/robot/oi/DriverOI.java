@@ -12,18 +12,18 @@ import frc.robot.oi.DriverOI;
 public class DriverOI extends OIBase {
 	/*
 
-	A - stash arm
+	A - 
 	B - 
 	X - 
 	Y - balance
 
-	Start(right) - c-stop
-	Back(left) - halt
+	Start(right) - 
+	Back(left) - c-stop
 
 	LB - start pov selector for tag
 	RB - runs the intake
 
-	LT - speed reduct (fully pull for 50% speed)
+	LT - speed reduct
 	RT - hold to shift high
 
 	LS - y-move
@@ -74,7 +74,10 @@ public class DriverOI extends OIBase {
 	/// The reduction factor can be modified in Constants.DrivetrainConstants.ReductFactor
 	public double getReductFactor() {
 		return MathUtil.interpolate(1, Constants.DrivetrainConstants.reductFactor, this.controller.getLeftTriggerAxis()); // Pulling the trigger more moves slower
-		//return this.controller.getLeftTriggerAxis() > 0.5 ? 0.5 : 1; // On/off only, no intermediate
+	}
+
+	public double getReductFactorRotation() {
+		return MathUtil.interpolate(1, Constants.DrivetrainConstants.reductFactor, this.controller.getLeftTriggerAxis()); // Pulling the trigger more moves slower
 	}
 
 	// public Trigger getCoastBrakeButton() {
@@ -97,7 +100,7 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
 	}
 
-	public Trigger getElevatorToStartButton(){
-		return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	}
+	// public Trigger getElevatorToStartButton(){
+	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	// }
 }
