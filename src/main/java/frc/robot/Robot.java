@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
 		// to continue until interrupted by another command, remove
 		// this line or comment it out.
 		if(this.autonomousCommand != null) this.autonomousCommand.cancel();
+		this.robotContainer.onTeleopInit();
 	}
 
 	@Override

@@ -134,7 +134,7 @@ public class Drivetrain extends SubsystemBase {
 			fx.configNeutralDeadband(0.01);
 
 			// Set to coast mode, will not brake the motor when no power is sent
-			fx.setNeutralMode(NeutralMode.Coast);
+			fx.setNeutralMode(NeutralMode.Brake);
 
 			/**
 			 * Setting input side current limit (amps)
