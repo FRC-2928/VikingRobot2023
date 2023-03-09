@@ -104,12 +104,13 @@ public final class Constants {
 		public static final double highPosition = 0;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
+		
+		//TODO: make encoder reset right
 		public static final double absoluteEncoderReset = -117;
 		public static final double doubleSubstationCone = -2;
 		public static final double doubleSubstationCube = -7;
 
-		// TODO: use & tune this once arm limit switch is added
-		//public static final double homeAngle = -116;
+		
 		
 		public static final double homeAngleLimit = -117;
 		public static final double maxAngleLimit = 18.0;
