@@ -27,7 +27,7 @@ public class ArmGoToPosition extends PIDCommand {
 		);
 
 		this.addRequirements(arm);
-		this.m_controller.setTolerance(6);
+		this.m_controller.setTolerance(2);
 	}
 
 	@Override
