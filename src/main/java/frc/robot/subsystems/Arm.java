@@ -137,6 +137,14 @@ public class Arm extends SubsystemBase {
 		return this.getPosition() >= ArmConstants.maxAngleLimit;
 	}
 
+	/**
+	 * 
+	 * @return whether the arm is far enough out to limit speed - beyond pickup position
+	 */
+	public boolean armIsOut(){
+		return (getPosition() > ArmConstants.lowPositionCone + 10);
+	}
+
 	// -----------------------------------------------------------
 	// Processing
 	// -----------------------------------------------------------

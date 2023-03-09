@@ -52,10 +52,10 @@ import frc.robot.subsystems.Intake;
  */
 public class RobotContainer {
 	public final Transmission transmission = Transmission.instance;
-	public final Drivetrain drivetrain = new Drivetrain();
+	public final Arm arm = new Arm();
+	public final Drivetrain drivetrain = new Drivetrain(arm);
 
 	public final Elevator elevator = new Elevator();
-	public final Arm arm = new Arm();
 	public final Intake intake = new Intake();
 
 	private final XboxController driverController = new XboxController(0);
@@ -88,6 +88,9 @@ public class RobotContainer {
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 		this.driverOI.getShiftButton().whileTrue(new Shift(this.transmission, GearState.HIGH));
 
+		this.driverOI.getSetBrakeButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
+		this.driverOI.getSetCoastButton().onTrue(new InstantCommand(this.drivetrain::setCoastMode, this.drivetrain));
+
 		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
 
 		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
@@ -107,15 +110,9 @@ public class RobotContainer {
 			)
 		));
 
-		// this.driverOI.getMoveToPlaceHigh().onTrue(new DriveDistance(.6, 
-		// 			DrivetrainConstants.honeToHighDistance, drivetrain));
-		// this.driverOI.getMoveToPlaceMid().onTrue(new DriveDistance(.6, 
-		// 			DrivetrainConstants.honeToMidDistance, drivetrain));
-
 		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
 
-		// this.driverOI.getElevatorToStartButton().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.elevatorForStart));
-
+		
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
 			Log.writeln("[HALT - DRIVER]");

@@ -48,13 +48,13 @@ public class DriverOI extends OIBase {
 		return () -> this.controller.getRightX();
 	}
 
-	// public Trigger getMoveToPlaceHigh() {
-	// 	return new JoystickButton(this.controller, XboxController.Button.kB.value);
-	// }
+	public Trigger getSetBrakeButton(){
+		return new JoystickButton(this.controller, XboxController.Button.kB.value);
+	}
 
-	// public Trigger getMoveToPlaceMid() {
-	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	// }
+	public Trigger getSetCoastButton(){
+		return new JoystickButton(this.controller, XboxController.Button.kA.value);
+	}
 
 	// Shifting
 

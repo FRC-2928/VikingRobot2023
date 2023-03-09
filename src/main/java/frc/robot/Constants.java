@@ -120,7 +120,7 @@ public final class Constants {
 		public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
 
 		// TODO: find these
-		public static final double honeToHighDistance = .2;
+		public static final double toHighDistance = .2;
 		public static final double honeToMidDistance = .6;
 
 		public static final int encoderCPR = 2048;
