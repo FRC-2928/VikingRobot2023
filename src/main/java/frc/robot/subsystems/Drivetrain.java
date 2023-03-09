@@ -47,6 +47,9 @@ public class Drivetrain extends SubsystemBase {
 	// TODO: make this work
 	public boolean brakeOverride = false;
 
+	private Arm m_arm;
+
+
 	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.PigeonIMU);
 
 	// Drivetrain kinematics, feed it width between wheels
@@ -54,6 +57,8 @@ public class Drivetrain extends SubsystemBase {
 	private SimpleMotorFeedforward feedForwardR;
 
 	private double offset;
+	private double speedMultiplier = 1;
+	private boolean speedMultiplierOn = false;
 
 	private MedianFilter filterVertical = new MedianFilter(10);
 
@@ -69,7 +74,7 @@ public class Drivetrain extends SubsystemBase {
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
-	public Drivetrain() {
+	public Drivetrain(Arm arm) {
 		// Configure Talon motors
 		this.configureMotors();
 
@@ -82,6 +87,8 @@ public class Drivetrain extends SubsystemBase {
 
 		this.resetEncoders();
 		this.zeroGyro();
+
+		m_arm = arm;
 
 		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			this.pigeon.setYaw(0);
@@ -245,6 +252,28 @@ public class Drivetrain extends SubsystemBase {
 		rightLeader.setVoltage(-power);
 	}
 
+	// public void setSpeedMultiplier(double multiplier){
+	// 	speedMultiplier = multiplier;
+	// }
+
+	// public void setManualMultiplierOn(boolean multiplierOn){
+	// 	speedMultiplierOn = multiplierOn;
+	// }
+
+	public void setCoastMode(){
+		rightLeader.setNeutralMode(NeutralMode.Coast);
+		leftLeader.setNeutralMode(NeutralMode.Coast);
+		rightFollower.setNeutralMode(NeutralMode.Coast);
+		leftFollower.setNeutralMode(NeutralMode.Coast);
+	}
+
+	public void setBrakeMode(){
+		rightLeader.setNeutralMode(NeutralMode.Brake);
+		leftLeader.setNeutralMode(NeutralMode.Brake);
+		rightFollower.setNeutralMode(NeutralMode.Brake);
+		leftFollower.setNeutralMode(NeutralMode.Brake);
+	}
+
 	// -----------------------------------------------------------
 	// System State
 	// -----------------------------------------------------------
@@ -388,7 +417,6 @@ public class Drivetrain extends SubsystemBase {
 
 	public Pose2d getLimelightPoseBlue(){
 		return this.limelight.getBluePose2d();
-
 	}
 
   	/**
@@ -451,6 +479,16 @@ public class Drivetrain extends SubsystemBase {
 		// } else {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		// }
+
+
+		// TODO test?
+		if (m_arm.armIsOut()){
+			this.diffDrive.setMaxOutput(.6);
+		} else {
+			this.diffDrive.setMaxOutput(1);
+		}
+
+		
 
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());

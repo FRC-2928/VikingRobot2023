@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
@@ -37,7 +38,7 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.setDefaultOption("just shoot", 
+		chooser.setDefaultOption("shoot high and drive", 
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -52,7 +53,22 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("just shoot high don't drive", 
+		chooser.addOption("shoot cone high and drive?", 
+			new SequentialCommandGroup(
+				new InitializeElevator(elevator),
+				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				new DriveDistance(.3, DrivetrainConstants.toHighDistance, drivetrain),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new WaitCommand(.5),
+				new InstantCommand(()-> intake.setOutput(0), intake),
+				new DriveDistance(-.3, -1 * DrivetrainConstants.toHighDistance, drivetrain),
+				new StashIntake(elevator, arm),
+				new DriveDistance(-.5, -3.5, drivetrain)
+			)
+		);
+
+		chooser.addOption("shoot high don't drive", 
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
