@@ -85,7 +85,7 @@ public class Arm extends SubsystemBase {
 
 		this.setupShuffleboard();
 	}
-	public void ArmLimitSwitch(){
+	public void armLimitSwitch(){
 		if(this.motorLead.getSensorCollection().isFwdLimitSwitchClosed()==1){limitSwitch = true;}
 		else{limitSwitch = false;}
 		SmartDashboard.putBoolean("At Limit Switch", limitSwitch);
@@ -166,7 +166,7 @@ public class Arm extends SubsystemBase {
 	@Override
 	public void periodic() {
 		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
-		ArmLimitSwitch();
+		armLimitSwitch();
 		this.entryPower.setDouble(this.motorLead.getMotorOutputPercent());
 		this.entryPosition.setDouble(this.getPosition());
 		// SmartDashboard.putNumber("Arm Position", getPosition());
