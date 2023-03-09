@@ -168,6 +168,13 @@ public class RobotContainer {
 		}));
 	}
 
+	/**
+	 * runs when teleop initializes
+	 */
+	public void onTeleopInit(){
+		drivetrain.setBrakeMode();
+	}
+
 	private void configureAutoChooser() {
 		this.autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain, this.elevator, this.arm, this.intake);
 		SmartDashboard.putData("Autonomous Routine", this.autonomousChooser);
