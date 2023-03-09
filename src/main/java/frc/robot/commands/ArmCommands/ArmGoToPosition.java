@@ -10,7 +10,7 @@ public class ArmGoToPosition extends PIDCommand {
 		super(
 			new PIDController(ArmConstants.armGains.P, ArmConstants.armGains.I, ArmConstants.armGains.D),
 			() -> arm.getPosition(),
-			goalPosition,
+			(goalPosition + arm.getOffset()),
 			output -> arm.control(-output)
 		);
 		
@@ -22,7 +22,7 @@ public class ArmGoToPosition extends PIDCommand {
 		super(
 			new PIDController(ArmConstants.armGains.P * speedFactor, ArmConstants.armGains.I, ArmConstants.armGains.D),
 			() -> arm.getPosition(),
-			goalPosition,
+			(goalPosition + arm.getOffset()),
 			output -> arm.control(-output)
 		);
 
