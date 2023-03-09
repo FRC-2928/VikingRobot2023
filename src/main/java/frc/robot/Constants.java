@@ -97,7 +97,7 @@ public final class Constants {
 
 	public static final class ArmConstants {
 		// TODO: make more accurate
-		public static final Gains armGains = new Gains(0.01, 0.02, 0, 0.0, 100, 0.50);
+		public static final Gains armGains = new Gains(0.01, 0.0, 0, 0.0, 100, 0.50);
 		public static final double lowPositionCone = -59.4;
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
