@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
@@ -25,10 +28,10 @@ public class Arm extends SubsystemBase {
 	public final WPI_TalonFX motorLead = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon1);
 	public final WPI_TalonFX motorFollower = new WPI_TalonFX(Constants.CANBusIDs.ArmTalon2);
 	public final WPI_CANCoder encoder = new WPI_CANCoder(Constants.CANBusIDs.ArmEncoder);
-
 	private ShuffleboardTab tab;
 	private GenericEntry entryPower, entryPosition;
-
+	public boolean limitSwitch = false;
+	
 	// True: Unlocked
 	// False: Locked
 	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.armLock);
@@ -78,10 +81,22 @@ public class Arm extends SubsystemBase {
 
 		this.motorFollower.setInverted(InvertType.FollowMaster);
 		this.motorFollower.follow(this.motorLead);
+		
 
 		this.setupShuffleboard();
 	}
-
+	public void ArmLimitSwitch(){
+		if(this.motorLead.getSensorCollection().isFwdLimitSwitchClosed()==1){limitSwitch = true;}
+		else{limitSwitch = false;}
+		SmartDashboard.putBoolean("At Limit Switch", limitSwitch);
+		if(limitSwitch){
+			//reset absolute encoder
+			this.encoder.setPosition(ArmConstants.absoluteEncoderReset);
+		}
+	}
+	public boolean atLimitSwitchArm(){
+		return limitSwitch;
+	}
 	public void setupShuffleboard() {
 		this.tab = Shuffleboard.getTab("ElevatorArm");
 
@@ -101,7 +116,7 @@ public class Arm extends SubsystemBase {
 	public void halt() {
 		this.lock(true);
 	}
-
+	
 	public void control(double power) {
 		if(this.pastTopLimit()) power = Math.min(power, 0.0);
 		if(this.pastBottomLimit()) power = Math.max(power, 0.0);
@@ -143,7 +158,7 @@ public class Arm extends SubsystemBase {
 	@Override
 	public void periodic() {
 		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
-
+		ArmLimitSwitch();
 		this.entryPower.setDouble(this.motorLead.getMotorOutputPercent());
 		this.entryPosition.setDouble(this.getPosition());
 		// SmartDashboard.putNumber("Arm Position", getPosition());
