@@ -31,6 +31,7 @@ public class Arm extends SubsystemBase {
 	private ShuffleboardTab tab;
 	private GenericEntry entryPower, entryPosition;
 	public boolean limitSwitch = false;
+	public double armOffset;
 	
 	// True: Unlocked
 	// False: Locked
@@ -81,19 +82,33 @@ public class Arm extends SubsystemBase {
 
 		this.motorFollower.setInverted(InvertType.FollowMaster);
 		this.motorFollower.follow(this.motorLead);
+
+		this.motorLead.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 		
+		this.armOffset = 0;
 
 		this.setupShuffleboard();
 	}
 	public void armLimitSwitch(){
-		if(this.motorLead.getSensorCollection().isRevLimitSwitchClosed()==1){limitSwitch = true;}
-		else{limitSwitch = false;}
+		if(this.motorLead.getSensorCollection().isRevLimitSwitchClosed() == 1) {limitSwitch = true;}
+		else { limitSwitch = false;}
 		SmartDashboard.putBoolean("At Limit Switch", limitSwitch);
 		if(limitSwitch){
 			//reset absolute encoder
-			this.encoder.setPosition(ArmConstants.absoluteEncoderReset);
+			//this.encoder.setPosition(ArmConstants.armLimitSwitchEncoderValue);
+
+			adjustOffset(this.encoder.getAbsolutePosition() - (ArmConstants.armLimitSwitchEncoderValue));
 		}
 	}
+
+	public void adjustOffset(double newOffset){
+		armOffset = newOffset;
+	}
+
+	public double getOffset(){
+		return armOffset;
+	}
+
 	public boolean atLimitSwitchArm(){
 		return limitSwitch;
 	}
@@ -165,7 +180,7 @@ public class Arm extends SubsystemBase {
 	// -----------------------------------------------------------
 	@Override
 	public void periodic() {
-		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
+		if(this.pastBottomLimit() || this.pastTopLimit()) {this.halt();}
 		armLimitSwitch();
 		this.entryPower.setDouble(this.motorLead.getMotorOutputPercent());
 		this.entryPosition.setDouble(this.getPosition());

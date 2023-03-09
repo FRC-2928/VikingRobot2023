@@ -106,13 +106,13 @@ public final class Constants {
 		public static final double defaultPower = .4;
 		
 		//TODO: make encoder reset right
-		public static final double absoluteEncoderReset = -117;
+		public static final double armLimitSwitchEncoderValue = -117;
 		public static final double doubleSubstationCone = -2;
 		public static final double doubleSubstationCube = -7;
 
 		
 		
-		public static final double homeAngleLimit = -117;
+		public static final double homeAngleLimit = -120;
 		public static final double maxAngleLimit = 18.0;
 	}
 
