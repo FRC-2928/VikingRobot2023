@@ -86,7 +86,7 @@ public class Arm extends SubsystemBase {
 		this.setupShuffleboard();
 	}
 	public void armLimitSwitch(){
-		if(this.motorLead.getSensorCollection().isFwdLimitSwitchClosed()==1){limitSwitch = true;}
+		if(this.motorLead.getSensorCollection().isRevLimitSwitchClosed()==1){limitSwitch = true;}
 		else{limitSwitch = false;}
 		SmartDashboard.putBoolean("At Limit Switch", limitSwitch);
 		if(limitSwitch){
