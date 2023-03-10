@@ -75,10 +75,14 @@ public class RobotContainer {
 	private void configureDriverControls() {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
-				() -> this.drivetrain.diffDrive.arcadeDrive(
-					this.driverOI.getMoveSupplier().getAsDouble() * this.driverOI.getReductFactor() * DrivetrainConstants.manualDriveMultiplier,
-					this.driverOI.getRotateSupplier().getAsDouble() * this.driverOI.getReductFactorRotation() * DrivetrainConstants.manualTurnMultiplier
-				),
+				() -> {
+					double clampTo = this.arm.armIsOut() ? 0.6 : 1;
+
+					this.drivetrain.diffDrive.arcadeDrive(
+					    Math.min(this.driverOI.getMoveSupplier().getAsDouble() * this.driverOI.getReductFactor() * DrivetrainConstants.manualDriveMultiplier, clampTo),
+					    Math.min(this.driverOI.getRotateSupplier().getAsDouble() * this.driverOI.getReductFactorRotation() * DrivetrainConstants.manualTurnMultiplier, clampTo)
+				    );
+				},
 				this.drivetrain
 			)
 		);
