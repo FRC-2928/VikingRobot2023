@@ -101,13 +101,13 @@ public final class Constants {
 		public static final double lowPositionCone = -67.5;
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
-		public static final double highPosition = 0;
+		public static final double highPosition = 0 - 4;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 		
 		//TODO: make encoder reset right
 		public static final double armLimitSwitchEncoderValue = -114;
-		public static final double doubleSubstationCone = -2 - 4;
+		public static final double doubleSubstationCone = -4 - 4;
 		public static final double doubleSubstationCube = -7 - 3;
 		
 		public static final double homeAngleLimit = -120;

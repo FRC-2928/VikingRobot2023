@@ -482,11 +482,13 @@ public class Drivetrain extends SubsystemBase {
 
 
 		// TODO test?
+		/*
 		if (m_arm.armIsOut()){
 			this.diffDrive.setMaxOutput(.6);
 		} else {
 			this.diffDrive.setMaxOutput(1);
 		}
+		*/
 
 		
 

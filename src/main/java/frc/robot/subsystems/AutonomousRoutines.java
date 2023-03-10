@@ -108,8 +108,8 @@ public final class AutonomousRoutines {
 									new InstantCommand(()-> intake.setOutput(0), intake),
 									//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 									new StashIntake(elevator, arm),
-									new DriveDistance(-.5, -3, drivetrain),
-									new DriveDistance(.5, 1.5, drivetrain),
+									new DriveDistance(-.35, -2, drivetrain),
+									new DriveDistance(.5, 1, drivetrain),
 									new Balance(drivetrain, false, 15000))
 												);	
 
