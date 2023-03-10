@@ -97,7 +97,11 @@ public class Arm extends SubsystemBase {
 			//reset absolute encoder
 			//this.encoder.setPosition(ArmConstants.armLimitSwitchEncoderValue);
 
-			adjustOffset(this.encoder.getAbsolutePosition() - (ArmConstants.armLimitSwitchEncoderValue));
+			//Log.writeln(this.encoder.getAbsolutePosition());
+			//this.adjustOffset(this.encoder.getAbsolutePosition() - (ArmConstants.armLimitSwitchEncoderValue));
+
+			this.encoder.configMagnetOffset(this.encoder.configGetMagnetOffset() - (this.encoder.getAbsolutePosition() - ArmConstants.armLimitSwitchEncoderValue));
+			
 		}
 	}
 
@@ -143,7 +147,7 @@ public class Arm extends SubsystemBase {
 
 	public void setPower(double power) {
 		power *= -1;
-		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.5, 0.5));
+		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -.5, .5));
 	}
 
 	public void lock(boolean shouldLock) {

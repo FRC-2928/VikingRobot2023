@@ -97,8 +97,8 @@ public final class Constants {
 
 	public static final class ArmConstants {
 		// TODO: make more accurate
-		public static final Gains armGains = new Gains(0.01, 0.0, 0, 0.0, 100, 0.50);
-		public static final double lowPositionCone = -59.4;
+		public static final Gains armGains = new Gains(0.01, 0.02, 0.0015, 0.0, 100, 0.50);
+		public static final double lowPositionCone = -67.5;
 		public static final double lowPositionCube = -73.5;
 		public static final double midPosition = -22.6;
 		public static final double highPosition = 0;
@@ -106,11 +106,9 @@ public final class Constants {
 		public static final double defaultPower = .4;
 		
 		//TODO: make encoder reset right
-		public static final double armLimitSwitchEncoderValue = -117;
-		public static final double doubleSubstationCone = -2;
-		public static final double doubleSubstationCube = -7;
-
-		
+		public static final double armLimitSwitchEncoderValue = -114;
+		public static final double doubleSubstationCone = -2 - 4;
+		public static final double doubleSubstationCube = -7 - 3;
 		
 		public static final double homeAngleLimit = -120;
 		public static final double maxAngleLimit = 18.0;
