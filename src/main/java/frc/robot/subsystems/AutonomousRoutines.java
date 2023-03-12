@@ -38,7 +38,8 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.setDefaultOption("shoot high and drive",
+		chooser.setDefaultOption(
+			"shoot high and drive",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -53,7 +54,8 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("shoot cone high and drive?",
+		chooser.addOption(
+			"shoot cone high and drive?",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -68,7 +70,8 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("shoot high don't drive",
+		chooser.addOption(
+			"shoot high don't drive",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -82,7 +85,8 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption("shoot high and balance?",
+		chooser.addOption(
+			"shoot high and balance?",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -94,27 +98,13 @@ public final class AutonomousRoutines {
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 				new StashIntake(elevator, arm),
 				new DriveDistance(-.5, -1, drivetrain),
-				new Balance(drivetrain, false, 15000))
-							);	
-		
-		chooser.addOption("shoot high drive over and balance?", 
-							new SequentialCommandGroup(
-									new InitializeElevator(elevator),
-									new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-									new ArmGoToPosition(arm, ArmConstants.highPosition),
-									//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
-									new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
-									new WaitCommand(.5),
-									new InstantCommand(()-> intake.setOutput(0), intake),
-									//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
-									new StashIntake(elevator, arm),
-									new DriveDistance(-.35, -2, drivetrain),
-									new DriveDistance(.5, 1, drivetrain),
-									new Balance(drivetrain, false, 15000)
-							)
+				new Balance(drivetrain, false, 15000)
+			)
 		);	
-
-		chooser.addOption("shoot high drive over and balance?",
+		
+		// TODO: fix
+		chooser.addOption(
+			"shoot high drive over and balance?",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -125,13 +115,34 @@ public final class AutonomousRoutines {
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 				new StashIntake(elevator, arm),
-				new DriveDistance(-.35, -2, drivetrain),
-				new DriveDistance(.5, 1, drivetrain),
+				new InstantCommand(() -> Log.writeln("stashed")),
+				new DriveDistance(-.15, -3, drivetrain),
+				new WaitCommand(1),
+				new DriveDistance(.15, 1, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);
 
-		chooser.addOption("shoot middddd",
+		// chooser.addOption(
+		// 	"shoot high drive over and balance?",
+		// 	new SequentialCommandGroup(
+		// 		new InitializeElevator(elevator),
+		// 		new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+		// 		new ArmGoToPosition(arm, ArmConstants.highPosition),
+		// 		//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
+		// 		new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+		// 		new WaitCommand(.5),
+		// 		new InstantCommand(()-> intake.setOutput(0), intake),
+		// 		//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
+		// 		new StashIntake(elevator, arm),
+		// 		new DriveDistance(-.35, -2, drivetrain),
+		// 		new DriveDistance(.5, 1, drivetrain),
+		// 		new Balance(drivetrain, false, 15000)
+		// 	)
+		// );
+
+		chooser.addOption(
+			"shoot middddd",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),

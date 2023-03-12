@@ -71,6 +71,8 @@ public class Robot extends TimedRobot {
 
 		// schedule the autonomous command (example)
 		if(this.autonomousCommand != null) this.autonomousCommand.schedule();
+
+		this.robotContainer.drivetrain.setBrakeMode();
 	}
 
 	@Override
@@ -81,6 +83,8 @@ public class Robot extends TimedRobot {
 		// this line or comment it out.
 		if(this.autonomousCommand != null) this.autonomousCommand.cancel();
 		this.robotContainer.onTeleopInit();
+
+		this.robotContainer.drivetrain.setCoastMode();
 	}
 
 	@Override

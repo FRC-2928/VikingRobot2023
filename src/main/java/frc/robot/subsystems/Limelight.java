@@ -21,8 +21,8 @@ public class Limelight {
 	// Initialization
 	// -----------------------------------------------------------
 	public Limelight(String limelightName) {
+		this.limelightNI = NetworkTableInstance.getDefault().getTable(limelightName);
 		this.setStream(0);
-		limelightNI = NetworkTableInstance.getDefault().getTable(limelightName);
 	}
 
 	// -----------------------------------------------------------
