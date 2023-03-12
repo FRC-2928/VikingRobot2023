@@ -16,17 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
-/*/
-
-Bottom:
-	- Soft: 13500
-	- Hard: 15000
-Top:
-	- Soft: -11596
-	- Hard: 
-
-/*/
-
 public class Elevator extends SubsystemBase {
 	// Fwd: Down
 	// Rev: Up
@@ -37,7 +26,7 @@ public class Elevator extends SubsystemBase {
 	public final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.elevatorLock);
 
 	// ------------ Initialization -----------------------------
-  
+
 	public Elevator() {
 		this.configureMotors();
 		this.lock(true);

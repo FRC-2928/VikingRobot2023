@@ -12,12 +12,12 @@ import frc.robot.oi.DriverOI;
 public class DriverOI extends OIBase {
 	/*
 
-	A - 
-	B - 
-	X - 
+	A
+	B
+	X
 	Y - balance
 
-	Start(right) - 
+	Start(right)
 	Back(left) - c-stop
 
 	LB - start pov selector for tag
@@ -33,7 +33,7 @@ public class DriverOI extends OIBase {
 	RS Click - shift low
 
 	*/
-	
+
 	public DriverOI(XboxController controller) {
 		super(controller);
 	}

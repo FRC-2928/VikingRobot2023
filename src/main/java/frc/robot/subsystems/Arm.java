@@ -32,7 +32,7 @@ public class Arm extends SubsystemBase {
 	private GenericEntry entryPower, entryPosition;
 	public boolean limitSwitch = false;
 	public double armOffset;
-	
+
 	// True: Unlocked
 	// False: Locked
 	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.armLock);
@@ -75,7 +75,7 @@ public class Arm extends SubsystemBase {
 			// Either using the integrated Falcon sensor or an external one, will change if
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-		
+
 			fx.configRemoteFeedbackFilter(CANBusIDs.ArmEncoder, RemoteSensorSource.CANCoder, 0, 0);
 			fx.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 		}
@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
 		this.motorFollower.follow(this.motorLead);
 
 		this.motorLead.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-		
+
 		this.armOffset = 0;
 
 		this.setupShuffleboard();
@@ -101,7 +101,7 @@ public class Arm extends SubsystemBase {
 			//this.adjustOffset(this.encoder.getAbsolutePosition() - (ArmConstants.armLimitSwitchEncoderValue));
 
 			this.encoder.configMagnetOffset(this.encoder.configGetMagnetOffset() - (this.encoder.getAbsolutePosition() - ArmConstants.armLimitSwitchEncoderValue));
-			
+
 		}
 	}
 
@@ -127,7 +127,7 @@ public class Arm extends SubsystemBase {
 			.withPosition(8, 2)
 			.getEntry();
 	}
-			
+
 	// -----------------------------------------------------------
 	// Control Input
 	// -----------------------------------------------------------
@@ -135,7 +135,7 @@ public class Arm extends SubsystemBase {
 	public void halt() {
 		this.lock(true);
 	}
-	
+
 	public void control(double power) {
 		if(this.pastTopLimit()) power = Math.min(power, 0.0);
 		if(this.pastBottomLimit()) power = Math.max(power, 0.0);
@@ -172,7 +172,7 @@ public class Arm extends SubsystemBase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return whether the arm is far enough out to limit speed - beyond pickup position
 	 */
 	public boolean armIsOut(){
