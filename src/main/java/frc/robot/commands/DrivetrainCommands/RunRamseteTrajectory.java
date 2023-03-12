@@ -23,16 +23,16 @@ public class RunRamseteTrajectory extends RamseteCommand {
 			drivetrain::setOutputMetersPerSecond,
 			drivetrain
 		);
+
 		this.drivetrain = drivetrain;
 		this.trajectory = trajectory;
+
 		this.addRequirements(drivetrain);
 	}
 
 	public void initialize() {
 		super.initialize();
-		//Log.writeln("Initial Pose: " + this.trajectory.getInitialPose());
 		this.drivetrain.resetOdometry(this.trajectory.getInitialPose());
-		this.drivetrain.disableMotorSafety();
 
 		//Log.writeln("Odometry Pose: " + this.drivetrain.getPose());
 		//SmartDashboard.putNumber("Y start traj", this.trajectory.getInitialPose().getY());
@@ -59,7 +59,6 @@ public class RunRamseteTrajectory extends RamseteCommand {
 		super.end(interrupted);
 		//SmartDashboard.putNumber("end heading", this.drivetrain.getHeading());
 		this.drivetrain.halt();
-		this.drivetrain.enableMotorSafety();
 	}
 
 	public void printTrajectory() {

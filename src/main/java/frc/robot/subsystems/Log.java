@@ -63,7 +63,7 @@ public final class Log extends SubsystemBase {
 		DriverStationJNI.sendConsoleLine(str);
 
 		System.err.print(str);
-		
+
 		Log.instance.log.append(str);
 		Log.instance.lines += str.lines().count();
 		Log.instance.dirty = true;

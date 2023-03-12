@@ -69,7 +69,7 @@ public class Balance extends CommandBase {
 	@Override
 	public void initialize() {
 		this.time = System.currentTimeMillis();
-		
+
 		this.drivetrain.brakeOverride = true;
 	}
 

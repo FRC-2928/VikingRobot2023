@@ -52,10 +52,10 @@ import frc.robot.subsystems.Intake;
  */
 public class RobotContainer {
 	public final Transmission transmission = Transmission.instance;
-	public final Arm arm = new Arm();
-	public final Drivetrain drivetrain = new Drivetrain(arm);
+	public final Drivetrain drivetrain = new Drivetrain();
 
 	public final Elevator elevator = new Elevator();
+	public final Arm arm = new Arm();
 	public final Intake intake = new Intake();
 
 	private final XboxController driverController = new XboxController(0);
@@ -117,7 +117,6 @@ public class RobotContainer {
 
 		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
 
-		
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
 			Log.writeln("[HALT - DRIVER]");
@@ -138,7 +137,7 @@ public class RobotContainer {
 		//this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
-		
+
 		this.operatorOI.getArmHigh().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
 		this.operatorOI.getArmHigh().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));

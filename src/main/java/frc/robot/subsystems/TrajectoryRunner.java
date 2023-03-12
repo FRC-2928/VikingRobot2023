@@ -31,7 +31,7 @@ public class TrajectoryRunner {
 	/// We use this only once, but it is needed to wrap a Trajectory
 	/// because assigning to a captured variable inside a closure isn't possible,
 	/// so we assign to a field of an existing variable
-	/// 
+	///
 	/// See
 	public static class Ref<T> {
 		public T inner;
@@ -67,14 +67,14 @@ public class TrajectoryRunner {
 		// Default trajectory if no limelight target is to move back 0.5 meters
 		Pose2d startPose = drivetrain.getEncoderPose();
 		Pose2d endPose = startPose.plus(new Transform2d(new Translation2d(-0.1, 0), new Rotation2d()));
-		
+
 		TrajectoryConfig config = AutoConstants.trajectoryConfigReversed;
 
 		List<Translation2d> waypoints = new ArrayList<>();
 
 		if(!drivetrain.hasValidLimelightTarget()) {
 			Log.warning("LocalTrajectory failed: No limelight target");
-			
+
 			Robot.instance.robotContainer.driverOI.signalError();
 
 			//return null;
@@ -109,7 +109,7 @@ public class TrajectoryRunner {
         	endPose,
 			config
 		);
-		
+
         return trajectory;
 	}
 
