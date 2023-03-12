@@ -27,17 +27,21 @@ public class TurnToPid extends ProfiledPIDCommand {
 		this.drivetrain = drivetrain;
 	}
 
+	@Override
 	public void initialize() {
 		super.initialize();
 		Log.writeln("TurnToPid Start Pose: " + this.drivetrain.getEncoderPose());
-		this.drivetrain.disableMotorSafety();
+	}
+
+	@Override
+	public void execute() {
+		this.drivetrain.diffDrive.feed();
 	}
 
 	@Override
 	public void end(boolean interrupted) {
 		super.end(interrupted);
 		Log.writeln("TurnToPid End Pose: " + this.drivetrain.getEncoderPose());
-		this.drivetrain.enableMotorSafety();
 	}
 
 	@Override
