@@ -133,6 +133,10 @@ public final class Constants {
 		public static final double highGearRatio = 5.4;
 		public static final double lowGearRatio = 8.82;
 
+		public static final double poleVertical = 20;
+		public static final double poleHorizontal = 0;
+
+
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
 			AutoConstants.maxSpeedMetersPerSecond,
 			AutoConstants.maxAccelMetersPerSecondSquared
@@ -157,6 +161,9 @@ public final class Constants {
 		public static final Gains GainsBalance = new Gains(0.08, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
+
+		public static final Gains GainsTurnRetroflective = new Gains(.1, 0, 0, 0, 0, .5);
+		public static final Gains GainsGoRetroflective = new Gains(.1, 0, 0, 0, 0, .5);
 
 		//trajectories and localization
 

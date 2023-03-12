@@ -110,8 +110,9 @@ public final class AutonomousRoutines {
 									new StashIntake(elevator, arm),
 									new DriveDistance(-.35, -2, drivetrain),
 									new DriveDistance(.5, 1, drivetrain),
-									new Balance(drivetrain, false, 15000))
-												);	
+									new Balance(drivetrain, false, 15000)
+							)
+		);	
 
 
 		chooser.addOption("shoot middddd", 
