@@ -40,7 +40,8 @@ public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
 	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
 
-  	private final Limelight limelight = new Limelight();
+  	private final Limelight limelight = new Limelight("limelight-top");
+	private final Limelight bottomLimelight = new Limelight("limelight-bottom");
 
 	public final DifferentialDrive diffDrive;
 
@@ -61,6 +62,7 @@ public class Drivetrain extends SubsystemBase {
 	private boolean speedMultiplierOn = false;
 
 	private MedianFilter filterVertical = new MedianFilter(10);
+	private MedianFilter filterVerticalBottomLimelight = new MedianFilter(5);
 
 	private DifferentialDriveOdometry odometry;
 	private DifferentialDrivePoseEstimator poseEstimator;
@@ -450,6 +452,21 @@ public class Drivetrain extends SubsystemBase {
 			this.offset = this.limelight.getVerticalOffset();
 		}
 		return this.filterVertical.calculate(this.offset);
+	}
+
+	/**
+	 * Gets the angle of the target relative to the robot
+	 * @return offset angle between target and the robot
+	 */
+	public double getBottomLimelightTargetHorizontalOffset() {
+		return (DrivetrainConstants.poleHorizontal - this.bottomLimelight.getHorizontalOffset());
+	}
+
+	public double getBottomLimelightTargetVerticalOffset() {
+		if(this.bottomLimelight.getVerticalOffset() != 0) {
+			this.offset = this.limelight.getVerticalOffset();
+		}
+		return (DrivetrainConstants.poleVertical - this.filterVerticalBottomLimelight.calculate(this.offset));
 	}
 
 	public boolean hasValidLimelightTarget() {
