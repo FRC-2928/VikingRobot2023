@@ -175,7 +175,7 @@ public class RobotContainer {
 	 * runs when teleop initializes
 	 */
 	public void onTeleopInit(){
-		drivetrain.setBrakeMode();
+		this.drivetrain.setCoastMode();
 	}
 
 	private void configureAutoChooser() {
