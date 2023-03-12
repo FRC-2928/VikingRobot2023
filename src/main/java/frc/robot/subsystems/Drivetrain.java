@@ -40,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
 	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
 
   	private final Limelight limelight = new Limelight("limelight-top");
-	private final Limelight bottomLimelight = new Limelight("limelight-bottom");
+	private final Limelight bottomLimelight = new Limelight("limelight-intake");
 
 	public final DifferentialDrive diffDrive;
 

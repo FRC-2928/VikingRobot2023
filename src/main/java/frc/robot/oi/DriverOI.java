@@ -100,6 +100,10 @@ public class DriverOI extends OIBase {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
 	}
 
+	public Trigger getCenterOnPoleButton(){
+		return new JoystickButton(this.controller, XboxController.Button.kX.value);
+	}
+
 	// public Trigger getElevatorToStartButton(){
 	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	// }
