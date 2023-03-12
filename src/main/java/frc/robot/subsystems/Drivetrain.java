@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,18 +47,9 @@ public class Drivetrain extends SubsystemBase {
 	// TODO: make this work
 	public boolean brakeOverride = false;
 
-	private Arm m_arm;
-
-
 	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.PigeonIMU);
 
-	// Drivetrain kinematics, feed it width between wheels
-	private SimpleMotorFeedforward feedForwardL;
-	private SimpleMotorFeedforward feedForwardR;
-
 	private double offset;
-	private double speedMultiplier = 1;
-	private boolean speedMultiplierOn = false;
 
 	private MedianFilter filterVertical = new MedianFilter(10);
 	private MedianFilter filterVerticalBottomLimelight = new MedianFilter(5);
@@ -76,21 +66,14 @@ public class Drivetrain extends SubsystemBase {
 	// -----------------------------------------------------------
 	// Initialization
 	// -----------------------------------------------------------
-	public Drivetrain(Arm arm) {
+	public Drivetrain() {
 		// Configure Talon motors
 		this.configureMotors();
 
-		this.setWheelPIDF();
-
 		this.diffDrive = new DifferentialDrive(rightLeader, leftLeader);
-
-		this.feedForwardL = AutoConstants.feedForwardL;
-		this.feedForwardR = AutoConstants.feedForwardR;
 
 		this.resetEncoders();
 		this.zeroGyro();
-
-		m_arm = arm;
 
 		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			this.pigeon.setYaw(0);
@@ -99,9 +82,18 @@ public class Drivetrain extends SubsystemBase {
 		}
 
 		// Start with default Pose2d(0, 0, 0)
-		this.odometry = new DifferentialDriveOdometry(new Rotation2d(this.readYaw()), 0, 0);
-		this.poseEstimator = new DifferentialDrivePoseEstimator(DrivetrainConstants.driveKinematics,
-									new Rotation2d(this.readYaw()), 0, 0, this.getLimelightPose2d());
+		this.odometry = new DifferentialDriveOdometry(
+			new Rotation2d(this.readYaw()),
+			0,
+			0
+		);
+		this.poseEstimator = new DifferentialDrivePoseEstimator(
+			DrivetrainConstants.driveKinematics,
+			new Rotation2d(this.readYaw()),
+			0,
+			0,
+			this.getLimelightPose2d()
+		);
 
 		this.field2d.setRobotPose(this.getEncoderPose());
 		SmartDashboard.putData("Encoder Pose", this.field2d);
@@ -150,6 +142,12 @@ public class Drivetrain extends SubsystemBase {
 			// Either using the integrated Falcon sensor or an external one, will change if
 			// needed
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+			// Set PID values
+            fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
+            fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
+            fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
+            fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
 		}
 
 		// New Talon FX inverts. Would replace InvertType.InvertMotorOutput
@@ -167,32 +165,11 @@ public class Drivetrain extends SubsystemBase {
 		this.leftLeader.setInverted(InvertType.InvertMotorOutput);
 	}
 
-	public void setWheelPIDF() {
-
-        // set the PID values for each individual wheel
-        for(TalonFX fx : new TalonFX[] {rightLeader, leftLeader}) {
-
-            fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
-            fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
-            fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
-            fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
-            // m_talonsMaster.config_IntegralZone(0, 30);
-        }
-    }
-
 	// -----------------------------------------------------------
 	// Control Input
 	// -----------------------------------------------------------
 	public void halt() {
 		this.tankDriveVolts(0, 0);
-	}
-
-	public void enableMotorSafety() {
-		this.diffDrive.setSafetyEnabled(true);
-	}
-
-	public void disableMotorSafety() {
-		this.diffDrive.setSafetyEnabled(false);
 	}
 
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -221,8 +198,8 @@ public class Drivetrain extends SubsystemBase {
 //
 	public void setOutputMetersPerSecond(double rightMetersPerSecond, double leftMetersPerSecond) {
 		// Calculate feedforward for the left and right wheels.
-		double leftFeedForward = this.feedForwardL.calculate(leftMetersPerSecond);
-		double rightFeedForward = this.feedForwardR.calculate(rightMetersPerSecond);
+		double leftFeedForward = AutoConstants.feedForwardL.calculate(leftMetersPerSecond);
+		double rightFeedForward = AutoConstants.feedForwardR.calculate(rightMetersPerSecond);
 
 		//SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
 		//SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
@@ -497,7 +474,6 @@ public class Drivetrain extends SubsystemBase {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		// }
 
-
 		// TODO test?
 		/*
 		if (m_arm.armIsOut()){
@@ -507,14 +483,12 @@ public class Drivetrain extends SubsystemBase {
 		}
 		*/
 
-		
-
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		if(this.limelight.getHasValidTargets()) {
 			this.poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
-		
+
 		NeutralMode neutralMode = (Robot.instance.isAutonomousEnabled() || this.brakeOverride || Robot.instance.robotContainer.driverOI.getReductFactor() < 0.4) ? NeutralMode.Brake : NeutralMode.Coast;
 
 		SmartDashboard.putString("Neutral Mode", neutralMode.name());
