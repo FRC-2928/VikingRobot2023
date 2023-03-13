@@ -14,6 +14,7 @@ import frc.robot.commands.POVSelector;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.Shift;
+import frc.robot.commands.DrivetrainCommands.TurnToPole;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.GroundIntake;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
@@ -97,6 +98,8 @@ public class RobotContainer {
 		this.driverOI.getBalanceButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
 
 		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
+
+		this.driverOI.getCenterOnPoleButton().onTrue(new TurnToPole(drivetrain));
 
 		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
