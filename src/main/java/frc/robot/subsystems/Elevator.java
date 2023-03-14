@@ -72,6 +72,7 @@ public class Elevator extends SubsystemBase {
 
 		// Home limit switch. Stop motor if this switch is triggered.
 		this.motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+		
 
 		// Top limit switch. Read as a digital input
 		this.motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);

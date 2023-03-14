@@ -79,12 +79,13 @@ public final class Constants {
 		public static final double highHeight = -11500 - 2000;
 		public static final double stashHeight = 0;
 		public static final double defaultPower = 0.2;
-		public static final double homingPower = -0.4;
+		public static final double homingPower = -0.55;
 
 		public static final int homeOffset = 1900;
+		//TODO: maybe fix
 		public static final int topOffset = -11650;
 		public static final int bottomSoftLimit = 11000;
-		public static final int topSoftLimit = -11600;
+		public static final int topSoftLimit = -13600;
 
 		public static final int elevatorForStart = -1300;
 

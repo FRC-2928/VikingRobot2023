@@ -30,16 +30,8 @@ public final class AutonomousRoutines {
     public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain, Elevator elevator, Arm arm, Intake intake) {
 		SendableChooser<Command> chooser = new SendableChooser<>();
 
-		chooser.addOption(
-			"Tag7/2 Balance",
-			new SequentialCommandGroup(
-				//new DriveTime(-.6, 4.5, drivetrain),
-				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
-			)
-		);
-
 		chooser.setDefaultOption(
-			"shoot high and drive",
+			"shoot high, drive out of community",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
@@ -114,16 +106,16 @@ public final class AutonomousRoutines {
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highPosition),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
-				new WaitCommand(.3),
+				new WaitCommand(.2),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 				new StashIntake(elevator, arm),
 				new InstantCommand(() -> Log.writeln("stashed")),
-				new DriveDistance(-.15, -3, drivetrain),
-				new WaitCommand(1),
-				new DriveDistance(.15, 1, drivetrain),
+				new DriveDistance(-.35, -3, drivetrain),
+				new WaitCommand(.75),
+				new DriveDistance(.35, 1.2, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);
