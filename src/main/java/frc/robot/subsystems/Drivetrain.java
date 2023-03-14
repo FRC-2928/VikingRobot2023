@@ -421,7 +421,7 @@ public class Drivetrain extends SubsystemBase {
 	 * @return offset angle between target and the robot
 	 */
 	public double getTargetHorizontalOffset() {
-		return this.limelight.getHorizontalOffset();
+		return this.bottomLimelight.getHorizontalOffset();
 	}
 
 	public double getTargetVerticalOffset() {

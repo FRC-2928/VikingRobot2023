@@ -35,7 +35,7 @@ public class TurnToPole extends PIDCommand {
 
         m_drivetrain = drivetrain;
         addRequirements(m_drivetrain);
-        getController().setTolerance(2);
+        getController().setTolerance(1.5);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
   }

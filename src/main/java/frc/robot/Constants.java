@@ -163,7 +163,7 @@ public final class Constants {
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);
 
-		public static final Gains GainsTurnRetroflective = new Gains(.1, 0, 0, 0, 0, .5);
+		public static final Gains GainsTurnRetroflective = new Gains(.008, 0, 0.001, 0, 0, .5);
 		public static final Gains GainsGoRetroflective = new Gains(.1, 0, 0, 0, 0, .5);
 
 		//trajectories and localization
