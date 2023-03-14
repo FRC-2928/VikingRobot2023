@@ -73,7 +73,7 @@ public final class Constants {
 	}
 
 	public static final class ElevatorConstants {
-		public static final Gains elevatorGains = new Gains(0.01, 0.0, 0.0, 0.0, 100, 0.50);
+		public static final Gains elevatorGains = new Gains(0.015, 0.0, 0.0, 0.0, 100, 0.50);
 		//public static final double lowHeight = 9000;
 		public static final double lowHeight = 13674;
 		public static final double highHeight = -11500 - 2000;
