@@ -9,6 +9,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmConstants;
@@ -93,7 +94,7 @@ public final class AutonomousRoutines {
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
 				new StashIntake(elevator, arm),
-				new DriveDistance(-.5, -1, drivetrain),
+				new DriveDistance(-.5, -1.2, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);	
@@ -104,18 +105,19 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				new ArmGoToPosition(arm, ArmConstants.highPosition + 4),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new WaitCommand(.2),
-				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
-				new StashIntake(elevator, arm),
-				new InstantCommand(() -> Log.writeln("stashed")),
-				new DriveDistance(-.35, -3, drivetrain),
+				new ParallelCommandGroup(
+					new StashIntake(elevator, arm),
+					new InstantCommand(() -> Log.writeln("stashed")),
+					new SequentialCommandGroup(new WaitCommand(1), new DriveDistance(-.35, -3.4, drivetrain))),
 				new WaitCommand(.75),
-				new DriveDistance(.35, 1.2, drivetrain),
+				new DriveDistance(.35, 1.6, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);
@@ -181,74 +183,74 @@ public final class AutonomousRoutines {
 			new DriveDistance(.3, 0.25, drivetrain)
 		);
 
-		chooser.addOption(
-			"Tag1 Routines1",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Rotate3.0")),
-				new TurnToPid(180, drivetrain),
-				new DriveDistance(.5, .5, drivetrain),
-				new TurnToPid(0, drivetrain),
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate3.0-Tag6")),
-				TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag1 Routines1",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Rotate3.0")),
+		// 		new TurnToPid(180, drivetrain),
+		// 		new DriveDistance(.5, .5, drivetrain),
+		// 		new TurnToPid(0, drivetrain),
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate3.0-Tag6")),
+		// 		TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Tag3 Routines1",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Rotate4")),
-				new TurnToPid(180, drivetrain),
-				new DriveDistance(.5, .5, drivetrain),
-				new TurnToPid(0, drivetrain),
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate4-AprilTag8")),
-				TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag3 Routines1",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Rotate4")),
+		// 		new TurnToPid(180, drivetrain),
+		// 		new DriveDistance(.5, .5, drivetrain),
+		// 		new TurnToPid(0, drivetrain),
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate4-AprilTag8")),
+		// 		TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Tag6 Routines1",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Rotate3.0")),
-				new TurnToPid(0, drivetrain),
-				new DriveDistance(.5, .5, drivetrain),
-				new TurnToPid(180, drivetrain),
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate3.0-Tag6")),
-				TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag6 Routines1",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Rotate3.0")),
+		// 		new TurnToPid(0, drivetrain),
+		// 		new DriveDistance(.5, .5, drivetrain),
+		// 		new TurnToPid(180, drivetrain),
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate3.0-Tag6")),
+		// 		TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Tag8 Routines1",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Rotate4")),
-				new TurnToPid(0, drivetrain),
-				new DriveDistance(.5, .5, drivetrain),
-				new TurnToPid(180, drivetrain),
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate4-AprilTag8")),
-				TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag8 Routines1",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Rotate4")),
+		// 		new TurnToPid(0, drivetrain),
+		// 		new DriveDistance(.5, .5, drivetrain),
+		// 		new TurnToPid(180, drivetrain),
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Rotate4-AprilTag8")),
+		// 		TrajectoryRunner.generateRamseteCommand(drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(drivetrain, Direction.Center))
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Tag8/3 Balance",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Around-Balance")),
-				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag8/3 Balance",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag8-Around-Balance")),
+		// 		Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Tag6/1 Balance",
-			new SequentialCommandGroup(
-				new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Around-Balance")),
-				Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
-			)
-		);
+		// chooser.addOption(
+		// 	"Tag6/1 Balance",
+		// 	new SequentialCommandGroup(
+		// 		new RunRamseteTrajectory(drivetrain, TrajectoryRunner.loadTrajectory("Tag6-Around-Balance")),
+		// 		Balance.timed(drivetrain, 1000),Balance.manual(drivetrain)
+		// 	)
+		// );
 
-		chooser.addOption(
-			"Calibrate Trajectory",
-			new RunRamseteTrajectory(drivetrain, AutonomousRoutines.calibrateTrajectory())
-		);
+		// chooser.addOption(
+		// 	"Calibrate Trajectory",
+		// 	new RunRamseteTrajectory(drivetrain, AutonomousRoutines.calibrateTrajectory())
+		// );
 
         return chooser;
 	}
