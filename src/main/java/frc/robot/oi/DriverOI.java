@@ -12,8 +12,8 @@ import frc.robot.oi.DriverOI;
 public class DriverOI extends OIBase {
 	/*
 
-	A
-	B
+	A - set coast mode
+	B - brake
 	X
 	Y - balance
 
@@ -103,6 +103,8 @@ public class DriverOI extends OIBase {
 	public Trigger getCenterOnPoleButton(){
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
 	}
+
+	
 
 	// public Trigger getElevatorToStartButton(){
 	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
