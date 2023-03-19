@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
 		if(this.autonomousCommand != null) this.autonomousCommand.cancel();
 		this.robotContainer.onTeleopInit();
 
-		this.robotContainer.drivetrain.setCoastMode();
+		
 	}
 
 	@Override

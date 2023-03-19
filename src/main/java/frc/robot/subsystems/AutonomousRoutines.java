@@ -70,10 +70,10 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition),
-				new WaitCommand(.3),
+				new ArmGoToPosition(arm, ArmConstants.highPosition + 4),
+				new WaitCommand(.2),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
-				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
 				//new DriveDistance(-.3, -1 * DrivetrainConstants.honeToHighDistance, drivetrain),
@@ -106,7 +106,6 @@ public final class AutonomousRoutines {
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highPosition + 4),
-				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new WaitCommand(.2),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
@@ -115,9 +114,9 @@ public final class AutonomousRoutines {
 				new ParallelCommandGroup(
 					new StashIntake(elevator, arm),
 					new InstantCommand(() -> Log.writeln("stashed")),
-					new SequentialCommandGroup(new WaitCommand(1), new DriveDistance(-.35, -3.4, drivetrain))),
+					new SequentialCommandGroup(new WaitCommand(1), new DriveDistance(-.35, -3, drivetrain))),
 				new WaitCommand(.75),
-				new DriveDistance(.35, 1.6, drivetrain),
+				new DriveDistance(.35, 1.8, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);

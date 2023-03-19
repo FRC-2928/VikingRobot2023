@@ -76,14 +76,14 @@ public final class Constants {
 		public static final Gains elevatorGains = new Gains(0.015, 0.0, 0.0, 0.0, 100, 0.50);
 		//public static final double lowHeight = 9000;
 		public static final double lowHeight = 13674;
-		public static final double highHeight = -11500 - 2000;
+		public static final double highHeight = -11500 - 500;
 		public static final double stashHeight = 0;
 		public static final double defaultPower = 0.2;
 		public static final double homingPower = -0.55;
 
 		public static final int homeOffset = 1900;
 		//TODO: maybe fix
-		public static final int topOffset = -11650;
+		public static final int topOffset = -12176;
 		public static final int bottomSoftLimit = 11000;
 		public static final int topSoftLimit = -13600;
 
@@ -101,7 +101,7 @@ public final class Constants {
 		public static final Gains armGains = new Gains(0.01, 0.02, 0.0015, 0.0, 100, 0.50);
 		public static final double lowPositionCone = -67.5;
 		public static final double lowPositionCube = -75;
-		public static final double midPosition = -22.6;
+		public static final double midPosition = -22.2 - 4;
 		public static final double highPosition = 0 - 4;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;

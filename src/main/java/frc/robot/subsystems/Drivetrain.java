@@ -489,13 +489,13 @@ public class Drivetrain extends SubsystemBase {
 			this.poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
 
-		NeutralMode neutralMode = (Robot.instance.isAutonomousEnabled() || this.brakeOverride || Robot.instance.robotContainer.driverOI.getReductFactor() < 0.4) ? NeutralMode.Brake : NeutralMode.Coast;
+		// NeutralMode neutralMode = (Robot.instance.isAutonomousEnabled() || this.brakeOverride || Robot.instance.robotContainer.driverOI.getReductFactor() < 0.4) ? NeutralMode.Brake : NeutralMode.Coast;
 
-		SmartDashboard.putString("Neutral Mode", neutralMode.name());
+		// SmartDashboard.putString("Neutral Mode", neutralMode.name());
 
-		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
-			fx.setNeutralMode(neutralMode);
-		}
+		// for(WPI_TalonFX fx : new WPI_TalonFX[] { this.leftLeader, this.leftFollower, this.rightLeader, this.rightFollower }) {
+		// 	fx.setNeutralMode(neutralMode);
+		// }
 
 		this.publishTelemetry();
 	}
