@@ -87,8 +87,8 @@ public class RobotContainer {
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
 		this.driverOI.getShiftButton().whileTrue(new Shift(this.transmission, GearState.HIGH));
 
-		this.driverOI.getSetBrakeButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
-		this.driverOI.getSetCoastButton().onTrue(new InstantCommand(this.drivetrain::setCoastMode, this.drivetrain));
+		// this.driverOI.getSetBrakeButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
+		// this.driverOI.getSetCoastButton().onTrue(new InstantCommand(this.drivetrain::setCoastMode, this.drivetrain));
 		this.driverOI.getBalanceButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
 
 		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
@@ -166,13 +166,6 @@ public class RobotContainer {
 			this.arm.halt();
 			this.intake.setOutput(0);
 		}));
-	}
-
-	/**
-	 * runs when teleop initializes
-	 */
-	public void onTeleopInit(){
-		this.drivetrain.setCoastMode();
 	}
 
 	public Command getAutonomousCommand() {

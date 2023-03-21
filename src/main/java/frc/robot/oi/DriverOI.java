@@ -14,7 +14,7 @@ public class DriverOI extends OIBase {
 
 	A - coast
 	B - brake
-	X - slow down
+	X - pole
 	Y - balance
 
 	Start(right)
@@ -99,6 +99,8 @@ public class DriverOI extends OIBase {
 	public Trigger getCenterOnPoleButton(){
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
 	}
+
+	
 
 	// public Trigger getElevatorToStartButton(){
 	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
