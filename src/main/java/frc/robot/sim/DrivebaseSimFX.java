@@ -15,28 +15,28 @@ public class DrivebaseSimFX {
 	private TalonFXSimCollection _leftMasterSim, _rightMasterSim;
 	private BasePigeonSimCollection _pidgeySim;
 
-	//These numbers are an example AndyMark Drivetrain with some additional weight.  This is a fairly light robot.
+	//These numbers are an example AndyMark Drivetrain with some additional weight. This is a fairly light robot.
 	//Note you can utilize results from robot characterization instead of theoretical numbers.
 	//https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html#introduction-to-robot-characterization
-	// private final int kCountsPerRev = 2048;  //Encoder counts per revolution of the motor shaft.
-	// private final double kSensorGearRatio = 1; //Gear ratio is the ratio between the *encoder* and the wheels.  On the AndyMark drivetrain, encoders mount 1:1 with the gearbox shaft.
+	// private final int kCountsPerRev = 2048; //Encoder counts per revolution of the motor shaft.
+	// private final double kSensorGearRatio = 1; //Gear ratio is the ratio between the *encoder* and the wheels. On the AndyMark drivetrain, encoders mount 1:1 with the gearbox shaft.
 	// private final double kGearRatio = 10.71; //Switch kSensorGearRatio to this gear ratio if encoder is on the motor instead of on the gearbox.
 	// private final double kWheelRadiusInches = 3;
 	private final int k100msPerSecond = 10;
 
 	//Simulation model of the drivetrain
 	private DifferentialDrivetrainSim _driveSim = new DifferentialDrivetrainSim(
-		DCMotor.getFalcon500(2),  //2 Falcon 500s on each side of the drivetrain.
-		DrivetrainConstants.lowGearRatio,     // Gearing reduction.
-		2.1,                //MOI of 2.1 kg m^2 (from CAD model).
-		26.5,                         //Mass of the robot is 26.5 kg.
-		DrivetrainConstants.wheelDiameterMeters/2,  //Robot uses 3" radius (6" diameter) wheels.
-		DrivetrainConstants.trackWidthMeters,      //Distance between wheels is _ meters.
+		DCMotor.getFalcon500(2), //2 Falcon 500s on each side of the drivetrain.
+		DrivetrainConstants.lowGearRatio, // Gearing reduction.
+		2.1, //MOI of 2.1 kg m^2 (from CAD model).
+		26.5, //Mass of the robot is 26.5 kg.
+		DrivetrainConstants.wheelDiameterMeters/2, //Robot uses 3" radius (6" diameter) wheels.
+		DrivetrainConstants.trackWidthMeters, //Distance between wheels is _ meters.
 
 		// The standard deviations for measurement noise:
-		// x and y:          0.001 m
-		// heading:          0.001 rad
-		// l and r velocity: 0.1   m/s
+		// x and y: 0.001 m
+		// heading: 0.001 rad
+		// l and r velocity: 0.1 m/s
 		// l and r position: 0.005 m
 		null //VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005) //Uncomment this line to add measurement noise.
 	);
@@ -66,7 +66,7 @@ public class DrivebaseSimFX {
 		// Advance the model by 20 ms. Note that if you are running this
 		// subsystem in a separate thread or have changed the nominal timestep
 		// of TimedRobot, this value needs to match it.
-        // Reduced from 0.02 to 0.008 to make sim smoother while running trajectories
+		// Reduced from 0.02 to 0.008 to make sim smoother while running trajectories
 		_driveSim.update(0.02);
 
 		// Update all of our sensors.

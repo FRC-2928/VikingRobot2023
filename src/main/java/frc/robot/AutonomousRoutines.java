@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot;
 
 import java.util.List;
 
@@ -21,14 +21,18 @@ import frc.robot.commands.ArmCommands.ArmGoToPosition;
 import frc.robot.commands.DrivetrainCommands.Balance;
 import frc.robot.commands.DrivetrainCommands.DriveDistance;
 import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
-import frc.robot.commands.DrivetrainCommands.TurnToPid;
 import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
 import frc.robot.commands.ElevatorCommands.InitializeElevator;
 import frc.robot.commands.ElevatorCommands.StashIntake;
-import frc.robot.subsystems.TrajectoryRunner.Direction;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Log;
+import frc.robot.subsystems.TrajectoryRunner;
 
 public final class AutonomousRoutines {
-    public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain, Elevator elevator, Arm arm, Intake intake) {
+	public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain, Elevator elevator, Arm arm, Intake intake) {
 		SendableChooser<Command> chooser = new SendableChooser<>();
 
 		chooser.setDefaultOption(
@@ -99,7 +103,6 @@ public final class AutonomousRoutines {
 			)
 		);	
 		
-		// TODO: fix
 		chooser.addOption(
 			"shoot high drive over and balance?",
 			new SequentialCommandGroup(
@@ -252,14 +255,14 @@ public final class AutonomousRoutines {
 		// 	new RunRamseteTrajectory(drivetrain, AutonomousRoutines.calibrateTrajectory())
 		// );
 
-        return chooser;
+		return chooser;
 	}
 
-    /**
+	/**
 	 * Drives a straight line 4 meters so as you can calibrate your Romi
 	 * You should make sure that the robot ends up right on the 2 meter mark.
 	 */
-  	public static Trajectory calibrateTrajectory() {
+	public static Trajectory calibrateTrajectory() {
 		return TrajectoryGenerator.generateTrajectory(
 			// Start at the origin facing the +X direction
 			new Pose2d(0, 0, new Rotation2d(0)),
@@ -268,5 +271,5 @@ public final class AutonomousRoutines {
 			new Pose2d(4, 0.0, new Rotation2d(0)), // left
 			AutoConstants.trajectoryConfig
 		);
-  	}
+	}
 }

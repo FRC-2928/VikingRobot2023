@@ -34,10 +34,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
-	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalonFX);
-	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalonFX);
-	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalonFX);
-	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalonFX);
+	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalon);
+	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalon);
+	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalon);
+	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalon);
 
   	private final Limelight limelight = new Limelight("limelight-top");
 	private final Limelight bottomLimelight = new Limelight("limelight-intake");
@@ -47,7 +47,7 @@ public class Drivetrain extends SubsystemBase {
 	// TODO: make this work
 	public boolean brakeOverride = false;
 
-	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.PigeonIMU);
+	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.Pigeon);
 
 	private double offset;
 
@@ -121,7 +121,6 @@ public class Drivetrain extends SubsystemBase {
 			fx.configPeakOutputForward(1);
 			fx.configPeakOutputReverse(-1);
 
-			// TODO: fix this once weight is added
 			fx.configOpenloopRamp(0.4);
 
 			// Setting deadband(area required to start moving the motor) to 1%
@@ -144,10 +143,10 @@ public class Drivetrain extends SubsystemBase {
 			fx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
 			// Set PID values
-            fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
-            fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
-            fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
-            fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
+			fx.config_kP(0, AutoConstants.GainsAuto.P, 0);
+			fx.config_kI(0, AutoConstants.GainsAuto.I, 0);
+			fx.config_kD(0, AutoConstants.GainsAuto.D, 0);
+			fx.config_kF(0, AutoConstants.GainsAuto.F, 0);
 		}
 
 		// New Talon FX inverts. Would replace InvertType.InvertMotorOutput
@@ -201,18 +200,9 @@ public class Drivetrain extends SubsystemBase {
 		double leftFeedForward = AutoConstants.feedForwardL.calculate(leftMetersPerSecond);
 		double rightFeedForward = AutoConstants.feedForwardR.calculate(rightMetersPerSecond);
 
-		//SmartDashboard.putNumber("left meters per sec", leftMetersPerSecond);
-		//SmartDashboard.putNumber("right meters per sec", rightMetersPerSecond);
-
 		// Convert meters per second to encoder ticks per second
 		double leftVelocityTicksPerSec = metersToEncoderTicks(leftMetersPerSecond);
 		double rightVelocityTicksPerSec = metersToEncoderTicks(rightMetersPerSecond);
-
-		//SmartDashboard.putNumber("Velocity ticks per second Left", leftVelocityTicksPerSec);
-		//SmartDashboard.putNumber("Velocity ticks per second Right", rightVelocityTicksPerSec);
-
-		//SmartDashboard.putNumber("FeedForward Left", leftFeedForward);
-		//SmartDashboard.putNumber("FeedForward Right", rightFeedForward);
 
 		this.rightLeader.set(ControlMode.Velocity,
 				leftVelocityTicksPerSec / 10.0,
@@ -355,11 +345,13 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public double metersToEncoderTicks(double metersPerSecond) {
-		GearState gearState = Transmission.instance.getGearState();
+		GearState gearState = Robot.instance.robotContainer.transmission.getGearState();
+
 		double encoderTicks = this.wheelRotationsToEncoderTicks(
 			this.metersToWheelRotations(metersPerSecond),
 			gearState
 		);
+		
 		return encoderTicks;
 	}
 
@@ -421,12 +413,12 @@ public class Drivetrain extends SubsystemBase {
 	 * @return offset angle between target and the robot
 	 */
 	public double getTargetHorizontalOffset() {
-		return this.bottomLimelight.getHorizontalOffset();
+		return this.bottomLimelight.getTargetHorizontalOffset();
 	}
 
 	public double getTargetVerticalOffset() {
-		if(this.limelight.getVerticalOffset() != 0) {
-			this.offset = this.limelight.getVerticalOffset();
+		if(this.limelight.getTargetVerticalOffset() != 0) {
+			this.offset = this.limelight.getTargetVerticalOffset();
 		}
 		return this.filterVertical.calculate(this.offset);
 	}
@@ -436,19 +428,19 @@ public class Drivetrain extends SubsystemBase {
 	 * @return offset angle between target and the robot
 	 */
 	public double getBottomLimelightTargetHorizontalOffset() {
-		return (DrivetrainConstants.poleHorizontal - this.bottomLimelight.getHorizontalOffset());
+		return (DrivetrainConstants.poleHorizontal - this.bottomLimelight.getTargetHorizontalOffset());
 	}
 
 	public double getBottomLimelightTargetVerticalOffset() {
-		if(this.bottomLimelight.getVerticalOffset() != 0) {
-			this.offset = this.limelight.getVerticalOffset();
+		if(this.bottomLimelight.getTargetVerticalOffset() != 0) {
+			this.offset = this.limelight.getTargetVerticalOffset();
 		}
 		return (DrivetrainConstants.poleVertical - this.filterVerticalBottomLimelight.calculate(this.offset));
 	}
 
 	public boolean hasValidLimelightTarget() {
 		if(RobotBase.isReal()) {
-			return this.limelight.getHasValidTargets();
+			return this.limelight.hasValidTargets();
 		} else {
 			return this.getHasValidTargetsSim();
 		}
@@ -456,36 +448,24 @@ public class Drivetrain extends SubsystemBase {
 
 	public int getAprilTagID() {
 		if(RobotBase.isReal()) {
-			return this.limelight.getAprilTagID();
+			return this.limelight.getTargetAprilTagID();
 		} else {
-			return this.getAprilTagIDSim();
+			return 8;
 		}
 	}
 
-	// -----------------------------------------------------------
-	// Processing
-	// -----------------------------------------------------------
 	@Override
 	public void periodic() {
-		//if limelight sees april tags, use limelight odometry, otherwise update from pigeon and encoders
+		//if limelight sees apriltags, use limelight odometry, otherwise update from pigeon and encoders
 		// if(limelight.getHasValidTargets() == 1) {
 		// 	updateOdometryFromLimelight();
 		// } else {
 		// 	  odometry.update(readYawRot(), getLeftDistanceMeters(), getRightDistanceMeters());
 		// }
 
-		// TODO test?
-		/*
-		if (m_arm.armIsOut()){
-			this.diffDrive.setMaxOutput(.6);
-		} else {
-			this.diffDrive.setMaxOutput(1);
-		}
-		*/
-
 		this.odometry.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
 		this.poseEstimator.update(this.readYawRot(), this.getLeftDistanceMeters(), this.getRightDistanceMeters());
-		if(this.limelight.getHasValidTargets()) {
+		if(this.limelight.hasValidTargets()) {
 			this.poseEstimator.addVisionMeasurement(this.getLimelightPose2d(), Timer.getFPGATimestamp() - 0.3);
 		}
 
@@ -501,33 +481,10 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void publishTelemetry() {
-		//SmartDashboard.putNumber("Odometry X", this.odometry.getPoseMeters().getX());
-		//SmartDashboard.putNumber("Odometry Y", this.odometry.getPoseMeters().getY());
-		//SmartDashboard.putNumber("Odometry Theta", this.odometry.getPoseMeters().getRotation().getDegrees());
-		//SmartDashboard.putNumber("left encoder", this.rightLeader.getSelectedSensorPosition());
-		//SmartDashboard.putNumber("right encoder", this.leftLeader.getSelectedSensorPosition());
-
-		//SmartDashboard.putNumber("Limelight X", this.getLimelightPoseRelative().getX());
-		//SmartDashboard.putNumber("Limelight Y", this.getLimelightPoseRelative().getY());
-		//SmartDashboard.putNumber("Limelight Deg.", this.getLimelightPoseRelative().getRotation().getDegrees());
-		//SmartDashboard.putNumber("Limelight Rad.", this.getLimelightPoseRelative().getRotation().getRadians());
-
 		this.field2d.setRobotPose(this.getEncoderPose());
 		this.fieldEstimated.setRobotPose(this.getEstimatedPose());
 		this.fieldLimelight.setRobotPose(this.getLimelightPoseRelative());
-
-		SmartDashboard.putNumber("April Tag", this.getAprilTagID());
-
-		// SmartDashboard.putNumber("motor output", this.getMotorOutput());
-		// SmartDashboard.putNumber("right enoder ticks", this.rightLeader.getSelectedSensorPosition());
-		// SmartDashboard.putNumber("left enoder ticks", this.leftLeader.getSelectedSensorPosition());
-		// SmartDashboard.putNumber("poseX", this.getEncoderPose().getX());
-		// SmartDashboard.putNumber("botposeX", (this.limelight.getPose()[0] - DrivetrainConstants.xOffsetField));
 	}
-
-	// ----------------------------------------------------
-	// Simulation
-	// ----------------------------------------------------
 
 	public void simulationInit() {
 		// PhysicsSim.getInstance().addTalonFX(rightFollower, 0.75, 20660);
@@ -535,19 +492,15 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	@Override
-    public void simulationPeriodic() {
+	public void simulationPeriodic() {
 		// PhysicsSim.getInstance().run();
-        this.driveSim.run();
-    }
+		this.driveSim.run();
+	}
 
 	public boolean getHasValidTargetsSim() {
 		double heading = this.getEncoderPose().getRotation().getDegrees();
 
 		if(DriverStation.getAlliance() == DriverStation.Alliance.Red) return heading < 75 || heading > -75;
 		else return heading > 135 || heading < -135;
-	}
-
-	public int getAprilTagIDSim() {
-		return 8;
 	}
 }

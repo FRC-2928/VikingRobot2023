@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class OperatorOI extends OIBase {
-	/* prototype
+	/*
 
 	A - stash
 	B - run intake in
@@ -20,8 +20,8 @@ public class OperatorOI extends OIBase {
 	LB - shoot cone
 	RB - shoot cube
 
-	LT
-	RT
+	LT - signal cone
+	RT - signal cube
 
 	LS - up and down controls elevator
 		(probably most movement for these subsystems will be to predesignated positions)
@@ -41,15 +41,11 @@ public class OperatorOI extends OIBase {
 		super(controller);
 	}
 
-	public Trigger getRunIntakeButton() {
+	public Trigger getIntakeButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
 
-    // public Trigger getStopIntakeButton() {
-	// 	return new JoystickButton(this.controller, XboxController.Button.kA.value);
-	// }
-
-    public Trigger getShootCubeButton() {
+	public Trigger getShootCubeButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kRightBumper.value);
 	}
 
@@ -66,7 +62,7 @@ public class OperatorOI extends OIBase {
 	}
 
 	public DoubleSupplier getArmSupplier() {
-		return () -> this.controller.getRightY();
+		return () -> -this.controller.getRightY();
 	}
 
 	public Trigger getArmHigh() {
@@ -85,15 +81,15 @@ public class OperatorOI extends OIBase {
 		return new Trigger(() -> this.controller.getPOV() == 270);
 	}
 
-	public Trigger getArmIn() {
+	public Trigger getArmStash() {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
-	public Trigger getArmCone(){
+	public Trigger getArmSubstationCone() {
 		return new JoystickButton(this.controller, XboxController.Button.kY.value);
 	}
 
-	public Trigger getArmCube(){
+	public Trigger getArmSubstationCube() {
 		return new JoystickButton(this.controller, XboxController.Button.kX.value);
 	}
 }

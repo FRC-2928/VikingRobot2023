@@ -11,164 +11,164 @@ import frc.robot.subsystems.Telemetry;
 import frc.robot.subsystems.Telemetry.TelemetryData;
 
 public class POVSelector extends CommandBase {
-    public static final class Tree {
-        public static enum Discriminator {
-            // Another layer of selection
-            Select,
+	public static final class Tree {
+		public static enum Discriminator {
+			// Another layer of selection
+			Select,
 
-            // Leaf node, returns a value
-            Leaf,
+			// Leaf node, returns a value
+			Leaf,
 
-            // Cancel POVSelect
-            Cancel,
-        }
+			// Cancel POVSelect
+			Cancel,
+		}
 
-        public final String name;
+		public final String name;
 
-        public final Discriminator discrim;
+		public final Discriminator discrim;
 
-        public final Object leaf;
+		public final Object leaf;
 
-        public final Tree up;
-        public final Tree right;
-        public final Tree down;
-        public final Tree left;
+		public final Tree up;
+		public final Tree right;
+		public final Tree down;
+		public final Tree left;
 
-        public Tree() {
-            this.name = "<exit>";
+		public Tree() {
+			this.name = "<exit>";
 
-            this.discrim = Discriminator.Cancel;
+			this.discrim = Discriminator.Cancel;
 
-            this.leaf = null;
+			this.leaf = null;
 
-            this.up = null;
-            this.right = null;
-            this.down = null;
-            this.left = null;
-        }
+			this.up = null;
+			this.right = null;
+			this.down = null;
+			this.left = null;
+		}
 
-        public Tree(String name, Object leaf) {
-            this.name = name;
+		public Tree(String name, Object leaf) {
+			this.name = name;
 
-            this.discrim = Discriminator.Leaf;
+			this.discrim = Discriminator.Leaf;
 
-            this.leaf = leaf;
+			this.leaf = leaf;
 
-            this.up = null;
-            this.right = null;
-            this.down = null;
-            this.left = null;
-        }
+			this.up = null;
+			this.right = null;
+			this.down = null;
+			this.left = null;
+		}
 
-        public Tree(String name, Tree up, Tree right, Tree down, Tree left) {
-            this.name = name;
+		public Tree(String name, Tree up, Tree right, Tree down, Tree left) {
+			this.name = name;
 
-            this.discrim = Discriminator.Select;
+			this.discrim = Discriminator.Select;
 
-            this.leaf = null;
+			this.leaf = null;
 
-            this.up = up;
-            this.right = right;
-            this.down = down;
-            this.left = left;
-        }
+			this.up = up;
+			this.right = right;
+			this.down = down;
+			this.left = left;
+		}
 
-        public Tree pov(int pov) {
-            if(pov == 0) return this.up;
-            else if(pov == 90) return this.right;
-            else if(pov == 180) return this.down;
-            else if(pov == 270) return this.left;
-            else return null;
-        }
+		public Tree pov(int pov) {
+			if(pov == 0) return this.up;
+			else if(pov == 90) return this.right;
+			else if(pov == 180) return this.down;
+			else if(pov == 270) return this.left;
+			else return null;
+		}
 
-        public int totalDepth() {
-            if(this.discrim != Discriminator.Select) return 1;
+		public int totalDepth() {
+			if(this.discrim != Discriminator.Select) return 1;
 
-            return Math.max(
-                Math.max(
-                    this.up.totalDepth(),
-                    this.right.totalDepth()
-                ),
-                Math.max(
-                    this.down.totalDepth(),
-                    this.left.totalDepth()
-                )
-            );
-        }
-    }
+			return Math.max(
+				Math.max(
+					this.up.totalDepth(),
+					this.right.totalDepth()
+				),
+				Math.max(
+					this.down.totalDepth(),
+					this.left.totalDepth()
+				)
+			);
+		}
+	}
 
-    private final TelemetryData telem = Telemetry.track("POV Selector", () -> {
-        if(!this.isScheduled()) return "<inactive>";
+	private final TelemetryData telem = Telemetry.track("POV Selector", () -> {
+		if(!this.isScheduled()) return "<inactive>";
 
-        return String.join(" > ", this.state.stream().map(tree -> tree.name).toArray(String[]::new)) + " > ?";
-    }, true);
+		return String.join(" > ", this.state.stream().map(tree -> tree.name).toArray(String[]::new)) + " > ?";
+	}, true);
 
-    private final OIBase oi;
-    private final Tree root;
+	private final OIBase oi;
+	private final Tree root;
 
-    private ArrayList<Tree> state;
-    private boolean pressed;
+	private ArrayList<Tree> state;
+	private boolean pressed;
 
-    public Consumer<String[]> hook;
-    public BiConsumer<Object, String[]> finished;
+	public Consumer<String[]> hook;
+	public BiConsumer<Object, String[]> finished;
 
 	public POVSelector(OIBase oi, Consumer<String[]> hook, BiConsumer<Object, String[]> finished, Tree root) {
-        this.oi = oi;
-        this.hook = hook;
-        this.finished = finished;
-        this.root = root;
-        this.state = new ArrayList<Tree>(this.root.totalDepth());
+		this.oi = oi;
+		this.hook = hook;
+		this.finished = finished;
+		this.root = root;
+		this.state = new ArrayList<Tree>(this.root.totalDepth());
 
-        this.telem.publish();
+		this.telem.publish();
 	}
 
 	@Override
 	public void initialize() {
-        this.state.clear();
-        this.state.add(this.root);
+		this.state.clear();
+		this.state.add(this.root);
 
-        Log.writeln("[POV Selector Started]");
+		Log.writeln("[POV Selector Started]");
 
-        this.telem.publish();
+		this.telem.publish();
 	}
 
-    @Override
-    public void execute() {
-        int pov = this.oi.controller.getPOV();
+	@Override
+	public void execute() {
+		int pov = this.oi.controller.getPOV();
 
-        if(pov == -1) {
-            this.pressed = false;
-            return;
-        }
+		if(pov == -1) {
+			this.pressed = false;
+			return;
+		}
 
-        if(this.pressed) return;
+		if(this.pressed) return;
 
-        this.pressed = true;
+		this.pressed = true;
 
-        Tree next = this.state.get(this.state.size() - 1).pov(pov);
+		Tree next = this.state.get(this.state.size() - 1).pov(pov);
 
-        if(next != null) {
-            this.state.add(next);
+		if(next != null) {
+			this.state.add(next);
 
-            String[] names = this.state.stream().map(tree -> tree.name).toArray(String[]::new);
+			String[] names = this.state.stream().map(tree -> tree.name).toArray(String[]::new);
 
-            if(this.hook != null) this.hook.accept(names);
+			if(this.hook != null) this.hook.accept(names);
 
-            if(next.discrim == Tree.Discriminator.Leaf) {
-                if(this.finished != null) this.finished.accept(next.leaf, names);
-                this.cancel();
-            } else if(next.discrim == Tree.Discriminator.Cancel) {
-                this.cancel();
-            }
+			if(next.discrim == Tree.Discriminator.Leaf) {
+				if(this.finished != null) this.finished.accept(next.leaf, names);
+				this.cancel();
+			} else if(next.discrim == Tree.Discriminator.Cancel) {
+				this.cancel();
+			}
 
-            this.telem.publish();
-        }
-    }
+			this.telem.publish();
+		}
+	}
 
-    @Override
-    public void end(boolean interrupted) {
-        this.telem.publish();
-    }
+	@Override
+	public void end(boolean interrupted) {
+		this.telem.publish();
+	}
 
 	@Override
 	public boolean isFinished() {

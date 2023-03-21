@@ -19,7 +19,7 @@ public class TurnDegrees extends CommandBase {
 	@Override
 	public void initialize() {
 		this.drivetrain.halt();
-		this.drivetrain.resetEncoders(); // todo: is this a good idea?
+		this.drivetrain.resetEncoders();
 	}
 
 	@Override

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.DrivetrainCommands;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -9,40 +5,25 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TurnToPole extends PIDCommand {
+	public TurnToPole(Drivetrain drivetrain) {
+		super(
+			new PIDController(
+				DrivetrainConstants.GainsTurnRetroflective.P, 
+				DrivetrainConstants.GainsTurnRetroflective.I, 
+				DrivetrainConstants.GainsTurnRetroflective.D
+			),
+			() -> drivetrain.getTargetHorizontalOffset(),
+			0,
+			output -> drivetrain.tankDriveVolts(output * 12, -output * 12)
+		);
 
-  Drivetrain m_drivetrain;
+		this.addRequirements(drivetrain);
+		this.m_controller.setTolerance(1.5);
+	}
 
-  /** Creates a new TurnToPole. */
-  public TurnToPole(Drivetrain drivetrain) {
-    super(
-        // The controller that the command will use
-        new PIDController(DrivetrainConstants.GainsTurnRetroflective.P, 
-                          DrivetrainConstants.GainsTurnRetroflective.I, 
-                          DrivetrainConstants.GainsTurnRetroflective.D),
-        // This should return the measurement
-        () -> 0,
-        // This should return the setpoint (can also be a constant)
-        () -> drivetrain.getTargetHorizontalOffset(),
-        // This uses the output
-        output -> {
-          // Use the output here
-          drivetrain.tankDriveVolts(-output * 12, output * 12);
-        });
-
-        m_drivetrain = drivetrain;
-        addRequirements(m_drivetrain);
-        getController().setTolerance(1.5);
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return getController().atSetpoint();
-  }
+	@Override
+	public boolean isFinished() {
+		return this.m_controller.atSetpoint();
+	}
 }

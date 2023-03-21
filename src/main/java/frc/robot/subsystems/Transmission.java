@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Transmission extends SubsystemBase {
-	public static final Transmission instance = new Transmission();
-
 	private Solenoid shiftPiston;
 	private GearState gearState;
 

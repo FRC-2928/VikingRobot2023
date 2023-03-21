@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-	public final WPI_TalonSRX motor = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon1);
+	public final WPI_TalonSRX motor = new WPI_TalonSRX(Constants.CANBusIDs.IntakeTalon);
 	private double output = 0;
 
 	public Intake() {

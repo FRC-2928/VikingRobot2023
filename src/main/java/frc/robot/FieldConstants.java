@@ -31,13 +31,13 @@ import java.util.Map;
  * methods to flip these values based on the current alliance color.
  */
 public final class FieldConstants {
-    public static final double fieldLength = Units.inchesToMeters(651.25);
-    public static final double fieldWidth = Units.inchesToMeters(315.5);
-    public static final double tapeWidth = Units.inchesToMeters(2.0);
-    public static final double aprilTagWidth = Units.inchesToMeters(6.0);
+	public static final double fieldLength = Units.inchesToMeters(651.25);
+	public static final double fieldWidth = Units.inchesToMeters(315.5);
+	public static final double tapeWidth = Units.inchesToMeters(2.0);
+	public static final double aprilTagWidth = Units.inchesToMeters(6.0);
 
-    // Dimensions for community and charging station, including the tape.
-    public static final class Community {
+	// Dimensions for community and charging station, including the tape.
+	public static final class Community {
 	// Region dimensions
 	public static final double innerX = 0.0;
 	public static final double midX = Units.inchesToMeters(132.375); // Tape to the left of charging station
@@ -78,214 +78,222 @@ public final class FieldConstants {
 		new Translation2d(cableBumpOuterX, 0.0),
 		new Translation2d(cableBumpOuterX, chargingStationRightY)
 	};
-    }
-
-    // Dimensions for grids and nodes
-    public static final class Grids {
-	// X layout
-	public static final double outerX = Units.inchesToMeters(54.25);
-	public static final double lowX = outerX - (Units.inchesToMeters(14.25) / 2.0); // Centered when under cube
-											// nodes
-	public static final double midX = outerX - Units.inchesToMeters(22.75);
-	public static final double highX = outerX - Units.inchesToMeters(39.75);
-
-	// Y layout
-	public static final int nodeRowCount = 9;
-	public static final double nodeFirstY = Units.inchesToMeters(20.19);
-	public static final double nodeSeparationY = Units.inchesToMeters(22.0);
-
-	// Z layout
-	public static final double cubeEdgeHigh = Units.inchesToMeters(3.0);
-	public static final double highCubeZ = Units.inchesToMeters(35.5) - cubeEdgeHigh;
-	public static final double midCubeZ = Units.inchesToMeters(23.5) - cubeEdgeHigh;
-	public static final double highConeZ = Units.inchesToMeters(46.0);
-	public static final double midConeZ = Units.inchesToMeters(34.0);
-
-	// Translations (all nodes in the same column/row have the same X/Y coordinate)
-	public static final Translation2d[] lowTranslations = new Translation2d[nodeRowCount];
-	public static final Translation2d[] midTranslations = new Translation2d[nodeRowCount];
-	public static final Translation3d[] mid3dTranslations = new Translation3d[nodeRowCount];
-	public static final Translation2d[] highTranslations = new Translation2d[nodeRowCount];
-	public static final Translation3d[] high3dTranslations = new Translation3d[nodeRowCount];
-
-	static {
-	    for(int i = 0; i < nodeRowCount; i++) {
-		boolean isCube = i == 1 || i == 4 || i == 7;
-		lowTranslations[i] = new Translation2d(lowX, nodeFirstY + nodeSeparationY * i);
-		midTranslations[i] = new Translation2d(midX, nodeFirstY + nodeSeparationY * i);
-		mid3dTranslations[i] = new Translation3d(midX, nodeFirstY + nodeSeparationY * i,
-			isCube ? midCubeZ : midConeZ);
-		high3dTranslations[i] = new Translation3d(
-			highX, nodeFirstY + nodeSeparationY * i, isCube ? highCubeZ : highConeZ);
-		highTranslations[i] = new Translation2d(highX, nodeFirstY + nodeSeparationY * i);
-	    }
 	}
 
-	// Complex low layout (shifted to account for cube vs cone rows and wide edge
-	// nodes)
-	public static final double complexLowXCones = outerX - Units.inchesToMeters(16.0) / 2.0; // Centered X under
-												 // cone nodes
-	public static final double complexLowXCubes = lowX; // Centered X under cube nodes
-	public static final double complexLowOuterYOffset = nodeFirstY - Units.inchesToMeters(3.0)
-		- (Units.inchesToMeters(25.75) / 2.0);
+	// Dimensions for grids and nodes
+	public static final class Grids {
+		// X layout
+		public static final double outerX = Units.inchesToMeters(54.25);
+		public static final double lowX = outerX - (Units.inchesToMeters(14.25) / 2.0); // Centered when under cube
+												// nodes
+		public static final double midX = outerX - Units.inchesToMeters(22.75);
+		public static final double highX = outerX - Units.inchesToMeters(39.75);
 
-	public static final Translation2d[] complexLowTranslations = new Translation2d[] {
-		new Translation2d(complexLowXCones, nodeFirstY - complexLowOuterYOffset),
-		new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 1),
-		new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 2),
-		new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 3),
-		new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 4),
-		new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 5),
-		new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 6),
-		new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 7),
-		new Translation2d(
-			complexLowXCones, nodeFirstY + nodeSeparationY * 8 + complexLowOuterYOffset),
-	};
-    }
+		// Y layout
+		public static final int nodeRowCount = 9;
+		public static final double nodeFirstY = Units.inchesToMeters(20.19);
+		public static final double nodeSeparationY = Units.inchesToMeters(22.0);
 
-    // Dimensions for loading zone and substations, including the tape
-    public static final class LoadingZone {
-	// Region dimensions
-	public static final double width = Units.inchesToMeters(99.0);
-	public static final double innerX = FieldConstants.fieldLength;
-	public static final double midX = fieldLength - Units.inchesToMeters(132.25);
-	public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
-	public static final double leftY = FieldConstants.fieldWidth;
-	public static final double midY = leftY - Units.inchesToMeters(50.5);
-	public static final double rightY = leftY - width;
-	public static final Translation2d[] regionCorners = new Translation2d[] {
-		new Translation2d(
-			midX, rightY), // Start at lower left next to border with opponent community
-		new Translation2d(midX, midY),
-		new Translation2d(outerX, midY),
-		new Translation2d(outerX, leftY),
-		new Translation2d(innerX, leftY),
-		new Translation2d(innerX, rightY),
-	};
+		// Z layout
+		public static final double cubeEdgeHigh = Units.inchesToMeters(3.0);
+		public static final double highCubeZ = Units.inchesToMeters(35.5) - cubeEdgeHigh;
+		public static final double midCubeZ = Units.inchesToMeters(23.5) - cubeEdgeHigh;
+		public static final double highConeZ = Units.inchesToMeters(46.0);
+		public static final double midConeZ = Units.inchesToMeters(34.0);
 
-	// Double substation dimensions
-	public static final double doubleSubstationLength = Units.inchesToMeters(14.0);
-	public static final double doubleSubstationX = innerX - doubleSubstationLength;
-	public static final double doubleSubstationShelfZ = Units.inchesToMeters(37.375);
+		// Translations (all nodes in the same column/row have the same X/Y coordinate)
+		public static final Translation2d[] lowTranslations = new Translation2d[nodeRowCount];
+		public static final Translation2d[] midTranslations = new Translation2d[nodeRowCount];
+		public static final Translation3d[] mid3dTranslations = new Translation3d[nodeRowCount];
+		public static final Translation2d[] highTranslations = new Translation2d[nodeRowCount];
+		public static final Translation3d[] high3dTranslations = new Translation3d[nodeRowCount];
 
-	// Single substation dimensions
-	public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
-	public static final double singleSubstationLeftX = FieldConstants.fieldLength - doubleSubstationLength
-		- Units.inchesToMeters(88.77);
-	public static final double singleSubstationCenterX = singleSubstationLeftX + (singleSubstationWidth / 2.0);
-	public static final double singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth;
-	public static final Translation2d singleSubstationTranslation = new Translation2d(singleSubstationCenterX,
-		leftY);
+		static {
+			for(int i = 0; i < nodeRowCount; i++) {
+				boolean isCube = i == 1 || i == 4 || i == 7;
+				lowTranslations[i] = new Translation2d(lowX, nodeFirstY + nodeSeparationY * i);
+				midTranslations[i] = new Translation2d(midX, nodeFirstY + nodeSeparationY * i);
+				mid3dTranslations[i] = new Translation3d(midX, nodeFirstY + nodeSeparationY * i, isCube ? midCubeZ : midConeZ);
+				high3dTranslations[i] = new Translation3d(highX, nodeFirstY + nodeSeparationY * i, isCube ? highCubeZ : highConeZ);
+				highTranslations[i] = new Translation2d(highX, nodeFirstY + nodeSeparationY * i);
+			}
+		}
 
-	public static final double singleSubstationHeight = Units.inchesToMeters(18.0);
-	public static final double singleSubstationLowZ = Units.inchesToMeters(27.125);
-	public static final double singleSubstationCenterZ = singleSubstationLowZ + (singleSubstationHeight / 2.0);
-	public static final double singleSubstationHighZ = singleSubstationLowZ + singleSubstationHeight;
-    }
+		// Complex low layout (shifted to account for cube vs cone rows and wide edge
+		// nodes)
+		public static final double complexLowXCones = outerX - Units.inchesToMeters(16.0) / 2.0; // Centered X under cone nodes
+		public static final double complexLowXCubes = lowX; // Centered X under cube nodes
+		public static final double complexLowOuterYOffset = nodeFirstY - Units.inchesToMeters(3.0)
+			- (Units.inchesToMeters(25.75) / 2.0);
 
-    // Locations of staged game pieces
-    public static final class StagingLocations {
-	public static final double centerOffsetX = Units.inchesToMeters(47.36);
-	public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
-	public static final double firstY = Units.inchesToMeters(36.19);
-	public static final double separationY = Units.inchesToMeters(48.0);
-	public static final Translation2d[] translations = new Translation2d[4];
-
-	static {
-	    for(int i = 0; i < translations.length; i++) {
-		translations[i] = new Translation2d(positionX, firstY + (i * separationY));
-	    }
+		public static final Translation2d[] complexLowTranslations = new Translation2d[] {
+			new Translation2d(complexLowXCones, nodeFirstY - complexLowOuterYOffset),
+			new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 1),
+			new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 2),
+			new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 3),
+			new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 4),
+			new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 5),
+			new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 6),
+			new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 7),
+			new Translation2d(
+				complexLowXCones, nodeFirstY + nodeSeparationY * 8 + complexLowOuterYOffset),
+		};
 	}
-    }
 
-    // AprilTag locations (do not flip for red alliance)
-    public static final Map<Integer, Pose3d> aprilTags = Map.of(
-	    1,
-	    new Pose3d(
-		    Units.inchesToMeters(610.77),
-		    Units.inchesToMeters(42.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d(0.0, 0.0, Math.PI)),
-	    2,
-	    new Pose3d(
-		    Units.inchesToMeters(610.77),
-		    Units.inchesToMeters(108.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d(0.0, 0.0, Math.PI)),
-	    3,
-	    new Pose3d(
-		    Units.inchesToMeters(610.77),
-		    Units.inchesToMeters(174.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d(0.0, 0.0, Math.PI)),
-	    4,
-	    new Pose3d(
-		    Units.inchesToMeters(636.96),
-		    Units.inchesToMeters(265.74),
-		    Units.inchesToMeters(27.38),
-		    new Rotation3d(0.0, 0.0, Math.PI)),
-	    5,
-	    new Pose3d(
-		    Units.inchesToMeters(14.25),
-		    Units.inchesToMeters(265.74),
-		    Units.inchesToMeters(27.38),
-		    new Rotation3d()),
-	    6,
-	    new Pose3d(
-		    Units.inchesToMeters(40.45),
-		    Units.inchesToMeters(174.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d()),
-	    7,
-	    new Pose3d(
-		    Units.inchesToMeters(40.45),
-		    Units.inchesToMeters(108.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d()),
-	    8,
-	    new Pose3d(
-		    Units.inchesToMeters(40.45),
-		    Units.inchesToMeters(42.19),
-		    Units.inchesToMeters(18.22),
-		    new Rotation3d()));
+	// Dimensions for loading zone and substations, including the tape
+	public static final class LoadingZone {
+		// Region dimensions
+		public static final double width = Units.inchesToMeters(99.0);
+		public static final double innerX = FieldConstants.fieldLength;
+		public static final double midX = fieldLength - Units.inchesToMeters(132.25);
+		public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
+		public static final double leftY = FieldConstants.fieldWidth;
+		public static final double midY = leftY - Units.inchesToMeters(50.5);
+		public static final double rightY = leftY - width;
+		public static final Translation2d[] regionCorners = new Translation2d[] {
+			new Translation2d(midX, rightY), // Start at lower left next to border with opponent community
+			new Translation2d(midX, midY),
+			new Translation2d(outerX, midY),
+			new Translation2d(outerX, leftY),
+			new Translation2d(innerX, leftY),
+			new Translation2d(innerX, rightY),
+		};
+
+		// Double substation dimensions
+		public static final double doubleSubstationLength = Units.inchesToMeters(14.0);
+		public static final double doubleSubstationX = innerX - doubleSubstationLength;
+		public static final double doubleSubstationShelfZ = Units.inchesToMeters(37.375);
+
+		// Single substation dimensions
+		public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
+		public static final double singleSubstationLeftX = FieldConstants.fieldLength - doubleSubstationLength
+			- Units.inchesToMeters(88.77);
+		public static final double singleSubstationCenterX = singleSubstationLeftX + (singleSubstationWidth / 2.0);
+		public static final double singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth;
+		public static final Translation2d singleSubstationTranslation = new Translation2d(singleSubstationCenterX,
+			leftY);
+
+		public static final double singleSubstationHeight = Units.inchesToMeters(18.0);
+		public static final double singleSubstationLowZ = Units.inchesToMeters(27.125);
+		public static final double singleSubstationCenterZ = singleSubstationLowZ + (singleSubstationHeight / 2.0);
+		public static final double singleSubstationHighZ = singleSubstationLowZ + singleSubstationHeight;
+	}
+
+	// Locations of staged game pieces
+	public static final class StagingLocations {
+		public static final double centerOffsetX = Units.inchesToMeters(47.36);
+		public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+		public static final double firstY = Units.inchesToMeters(36.19);
+		public static final double separationY = Units.inchesToMeters(48.0);
+		public static final Translation2d[] translations = new Translation2d[4];
+
+		static {
+			for(int i = 0; i < translations.length; i++) {
+				translations[i] = new Translation2d(positionX, firstY + (i * separationY));
+			}
+		}
+	}
+
+	// AprilTag locations (do not flip for red alliance)
+	public static final Map<Integer, Pose3d> aprilTags = Map.of(
+		1,
+		new Pose3d(
+			Units.inchesToMeters(610.77),
+			Units.inchesToMeters(42.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d(0.0, 0.0, Math.PI)),
+		2,
+		new Pose3d(
+			Units.inchesToMeters(610.77),
+			Units.inchesToMeters(108.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d(0.0, 0.0, Math.PI)),
+		3,
+		new Pose3d(
+			Units.inchesToMeters(610.77),
+			Units.inchesToMeters(174.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d(0.0, 0.0, Math.PI)),
+		4,
+		new Pose3d(
+			Units.inchesToMeters(636.96),
+			Units.inchesToMeters(265.74),
+			Units.inchesToMeters(27.38),
+			new Rotation3d(0.0, 0.0, Math.PI)),
+		5,
+		new Pose3d(
+			Units.inchesToMeters(14.25),
+			Units.inchesToMeters(265.74),
+			Units.inchesToMeters(27.38),
+			new Rotation3d()),
+		6,
+		new Pose3d(
+			Units.inchesToMeters(40.45),
+			Units.inchesToMeters(174.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d()),
+		7,
+		new Pose3d(
+			Units.inchesToMeters(40.45),
+			Units.inchesToMeters(108.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d()),
+		8,
+		new Pose3d(
+			Units.inchesToMeters(40.45),
+			Units.inchesToMeters(42.19),
+			Units.inchesToMeters(18.22),
+			new Rotation3d()));
 
 	// Cargo locations (do not flip for red alliance)
-    public static final Map<Integer, Pose3d> cargo = Map.of(
-	    6,
-	    new Pose3d(
-		    6.831,
-		    3.331,
-		    0,
-		    new Rotation3d(0.0, 0.0, 0)),
-	    7,
-	    new Pose3d(
-		    6.831,
-		    2.138,
-		    0,
-		    new Rotation3d(0.0, 0.0, 0)),
-	    2,
-	    new Pose3d(
-		    9.668,
-		    2.127,
-		    0,
-		    new Rotation3d(0.0, 0.0, Math.PI)),
+	public static final Map<Integer, Pose3d> cargo = Map.of(
+		6,
+		new Pose3d(
+			6.831,
+			3.331,
+			0,
+			new Rotation3d(0.0, 0.0, 0)),
+		7,
+		new Pose3d(
+			6.831,
+			2.138,
+			0,
+			new Rotation3d(0.0, 0.0, 0)),
+		2,
+		new Pose3d(
+			9.668,
+			2.127,
+			0,
+			new Rotation3d(0.0, 0.0, Math.PI)),
 
-	    3,
-	    new Pose3d(
-		    9.668,
-		    3.331,
-		    0,
-		    new Rotation3d(0.0, 0.0, Math.PI)));
+		3,
+		new Pose3d(
+			9.668,
+			3.331,
+			0,
+			new Rotation3d(0.0, 0.0, Math.PI)));
 
 	public static final Pose2d tag6 = aprilTags.get(6).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.5, 0),
-				      new Rotation2d(Math.PI)));  // 0.5 meters in front
+		.plus(
+			new Transform2d(
+				new Translation2d(0.5, 0), // 0.5 meters in front
+				new Rotation2d(Math.PI)
+			)
+		);
 	public static final Pose2d tag7 = aprilTags.get(7).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.75, 0),
-					new Rotation2d(Math.PI)));  // 0.5 meters in front
+		.plus(
+			new Transform2d(
+				new Translation2d(0.75, 0), // 0.75 meters in front
+				new Rotation2d(Math.PI)
+			)
+		);
 	public static final Pose2d tag8 = aprilTags.get(8).toPose2d()
-				.plus(new Transform2d(new Translation2d(0.5, 0),
-					new Rotation2d(Math.PI)));  // 0.5 meters in front
+		.plus(
+			new Transform2d(
+				new Translation2d(0.5, 0), // 0.5 meters in front
+				new Rotation2d(Math.PI)
+			)
+		);
 
 	public static final Transform2d leftBlueOffset = new Transform2d(new Translation2d(1.5, -Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));
 	public static final Transform2d rightBlueOffset = new Transform2d(new Translation2d(1.5, Units.inchesToMeters(22.5)), new Rotation2d(Math.PI));

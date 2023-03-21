@@ -19,7 +19,7 @@ import frc.robot.Constants.ElevatorConstants;
 public class Elevator extends SubsystemBase {
 	// Fwd: Down
 	// Rev: Up
-	public final WPI_TalonFX motor = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon1);
+	public final WPI_TalonFX motor = new WPI_TalonFX(Constants.CANBusIDs.ElevatorTalon);
 
 	// True: Unlocked
 	// False: Locked
@@ -84,6 +84,10 @@ public class Elevator extends SubsystemBase {
 		this.motor.configReverseSoftLimitEnable(true);
 
 		this.motor.overrideSoftLimitsEnable(true);
+
+		Telemetry.track("Elevator Position", this::getPosition, false);
+		Telemetry.track("Elevator Home Limit", () -> this.limitHomeClosed(), false);
+		Telemetry.track("Elevator Top Limit", () -> this.limitTopClosed(), false);
 	}
 
 	// --------------- Control Input ---------------------
@@ -95,11 +99,12 @@ public class Elevator extends SubsystemBase {
 	public void control(double power) {
 		if(this.pastTopLimit()) power = Math.max(power, 0.0);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
+
 		power = MathUtil.applyDeadband(power, 0.25);
 
 		this.lock(power == 0);
-		if(power == 0) this.setPower(power);
-		else this.setPower(power - 0.05);
+
+		if(power != 0) this.setPower(power - 0.05);
 	}
 
 	public void setPower(double power) {
@@ -137,7 +142,7 @@ public class Elevator extends SubsystemBase {
 		return this.getPosition() >= ElevatorConstants.bottomSoftLimit;
 	}
 
-	 // ------------- Process State -------------------
+	// ------------- Process State -------------------
 
 	@Override
 	public void periodic() {
