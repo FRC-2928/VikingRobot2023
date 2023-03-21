@@ -7,23 +7,15 @@ import frc.robot.subsystems.Arm;
 
 public class ArmGoToPosition extends PIDCommand {
 	public ArmGoToPosition(Arm arm, double goalPosition) {
-		super(
-			new PIDController(ArmConstants.armGains.P, ArmConstants.armGains.I, ArmConstants.armGains.D),
-			() -> arm.getPosition(),
-			(goalPosition),
-			output -> arm.control(-output)
-		);
-
-		this.addRequirements(arm);
-		this.m_controller.setTolerance(2);
+		this(arm, 0, 1);
 	}
 
 	public ArmGoToPosition(Arm arm, double goalPosition, double speedFactor) {
 		super(
 			new PIDController(ArmConstants.armGains.P * speedFactor, ArmConstants.armGains.I, ArmConstants.armGains.D),
 			() -> arm.getPosition(),
-			(goalPosition),
-			output -> arm.control(-output)
+			goalPosition,
+			output -> arm.control(output)
 		);
 
 		this.addRequirements(arm);
@@ -32,6 +24,6 @@ public class ArmGoToPosition extends PIDCommand {
 
 	@Override
 	public boolean isFinished() {
-		return getController().atSetpoint();
+		return this.m_controller.atSetpoint();
 	}
 }

@@ -4,17 +4,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
 public class RunIntake extends CommandBase {
-	private Intake intake;
-	private double speed = 0;
+	private final Intake intake;
+	private final double speed;
 
 	public RunIntake(Intake intake, double speed) {
 		this.intake = intake;
-		this.addRequirements(intake);
 		this.speed = speed;
-	}
 
-	@Override
-	public void initialize() {}
+		this.addRequirements(intake);
+	}
 
 	@Override
 	public void execute() {
@@ -24,10 +22,5 @@ public class RunIntake extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		this.intake.setOutput(0);
-	}
-
-	@Override
-	public boolean isFinished() {
-		return false;
 	}
 }

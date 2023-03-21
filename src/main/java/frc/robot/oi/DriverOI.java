@@ -12,9 +12,9 @@ import frc.robot.oi.DriverOI;
 public class DriverOI extends OIBase {
 	/*
 
-	A
-	B
-	X
+	A - coast
+	B - brake
+	X - slow down
 	Y - balance
 
 	Start(right)
@@ -48,11 +48,11 @@ public class DriverOI extends OIBase {
 		return () -> this.controller.getRightX();
 	}
 
-	public Trigger getSetBrakeButton(){
+	public Trigger getSetBrakeButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kB.value);
 	}
 
-	public Trigger getSetCoastButton(){
+	public Trigger getSetCoastButton() {
 		return new JoystickButton(this.controller, XboxController.Button.kA.value);
 	}
 
@@ -77,12 +77,8 @@ public class DriverOI extends OIBase {
 	}
 
 	public double getReductFactorRotation() {
-		return MathUtil.interpolate(1, Constants.DrivetrainConstants.reductFactor, this.controller.getLeftTriggerAxis()); // Pulling the trigger more moves slower
+		return MathUtil.interpolate(1, Constants.DrivetrainConstants.reductFactorRotation, this.controller.getLeftTriggerAxis()); // Pulling the trigger more moves slower
 	}
-
-	// public Trigger getCoastBrakeButton() {
-	// 	return new JoystickButton(this.controller, XboxController.Button.kX.value);
-	// }
 
 	// Balance
 

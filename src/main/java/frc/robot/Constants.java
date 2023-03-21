@@ -19,10 +19,11 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-	public enum GamePiece {
+	public static enum GamePiece {
 		Cone, // not purple
 		Cube, // purple
 	}
+
 	public static final class PneumaticIDs {
 		public static final int drivetrainShiftPiston = 1;
 
@@ -32,37 +33,26 @@ public final class Constants {
 
 	public static final class CANBusIDs {
 		// Drivetrain, right side
-		public static final int DrivetrainRightBackTalonFX = 19;
-		public static final int DrivetrainRightFrontTalonFX = 18;
-
-		//public static final int DrivetrainLeftBackTalonFX = 0;
-		//public static final int DrivetrainLeftFrontTalonFX = 1;
+		public static final int DrivetrainRightBackTalon = 19;
+		public static final int DrivetrainRightFrontTalon = 18;
 
 		// Drivetrain, left side
-		public static final int DrivetrainLeftFrontTalonFX = 13;
-		public static final int DrivetrainLeftBackTalonFX = 10;
+		public static final int DrivetrainLeftFrontTalon = 13;
+		public static final int DrivetrainLeftBackTalon = 10;
 
-		//public static final int DrivetrainRightFrontTalonFX = 14;
-		//public static final int DrivetrainRightBackTalonFX = 15;
+		// Elevator
+		public static final int ElevatorTalon = 6;
 
-		//Arm
-		public static final int ArmTalon1 = 7;
-		public static final int ArmTalon2 = 8;
+		// Arm
+		public static final int ArmTalonLeader = 7;
+		public static final int ArmTalonFollower = 8;
 
-		//Intake
-		public static final int IntakeTalon1 = 9;
-
-		public static final int ElevatorTalon1 = 6;
+		// Intake
+		public static final int IntakeTalon = 9;
 
 		// Sensors
-		public static final int PigeonIMU = 0;
-
+		public static final int Pigeon = 0;
 		public static final int ArmEncoder = 5;
-	}
-
-	public static final class LimelightConstants {
-		public static final double tagGoalY = 8.25;
-		public static final double tagGoalX = 0;
 	}
 
 	public static final class IntakeConstants {
@@ -97,7 +87,6 @@ public final class Constants {
 	}
 
 	public static final class ArmConstants {
-		// TODO: make more accurate
 		public static final Gains armGains = new Gains(0.01, 0.02, 0.0015, 0.0, 100, 0.50);
 		public static final double lowPositionCone = -67.5;
 		public static final double lowPositionCube = -75;
@@ -106,7 +95,6 @@ public final class Constants {
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 
-		//TODO: make encoder reset right
 		public static final double armLimitSwitchEncoderValue = -114;
 		public static final double doubleSubstationCone = -4 - 4;
 		public static final double doubleSubstationCube = -7 - 3;
@@ -137,7 +125,6 @@ public final class Constants {
 		public static final double poleVertical = 20;
 		public static final double poleHorizontal = 0;
 
-
 		public static final TrapezoidProfile.Constraints kTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(
 			AutoConstants.maxSpeedMetersPerSecond,
 			AutoConstants.maxAccelMetersPerSecondSquared
@@ -158,7 +145,6 @@ public final class Constants {
 		 *
 		 * kP kI kD kF Iz PeakOut
 		 */
-		// TODO: tune when weight is added
 		public static final Gains GainsBalance = new Gains(0.094, 0.005, 0.0025, 0, 0, 0.3);
 		public static final Gains GainsAlignBalance = new Gains(1.1, 0.0, 0.01, 0.0, 0, 0.3);
 		public static final Gains GainsTurnto = new Gains(.08,0.001,0.01,0.0,0,0.3);

@@ -47,14 +47,13 @@ public class TrajectoryRunner {
 		Center
 	}
 
-    /**
+	/**
 	 * Generates a dynamic trajectory starting at the current pose of the
 	 * robot, as determined by the Limelight looking at the AprilTags.
 	 * The trajectory will end at the current in-view apriltag, or to the
 	 * left or right of it as directed.
 	 *
-	 * @param direction whether the robot should end at the center, left,
-	 *                  or right of the apriltag.
+	 * @param direction whether the robot should end at the center, left, or right of the apriltag.
 	 *
 	 * @return The generated Trajectory object
 	 */
@@ -106,14 +105,14 @@ public class TrajectoryRunner {
 		trajectory = TrajectoryGenerator.generateTrajectory(
 			startPose,
 			waypoints,
-        	endPose,
+			endPose,
 			config
 		);
 
-        return trajectory;
+		return trajectory;
 	}
 
-    /**
+	/**
 	 * Generate a trajectory following Ramsete command
 	 *
 	 * This is very similar to the WPILib RamseteCommand example. It uses
@@ -153,7 +152,7 @@ public class TrajectoryRunner {
 			.andThen(new InstantCommand(() -> drivetrain.tankDriveVolts(0, 0), drivetrain));
 	}
 
-    public static Trajectory loadTrajectory(String trajectoryJSON) {
+	public static Trajectory loadTrajectory(String trajectoryJSON) {
 		Path trajectoryPath = Filesystem
 			.getDeployDirectory()
 			.toPath()

@@ -13,7 +13,6 @@ public class DriveDistance extends CommandBase {
 	private final double speed;
 	private Pose2d endPose;
 
-	//TODO fix negatives
 	public DriveDistance(double speed, double meters, Drivetrain drivetrain) {
 		this.distance = -meters;
 		this.speed = -speed;
@@ -45,8 +44,6 @@ public class DriveDistance extends CommandBase {
 
 	@Override
 	public boolean isFinished() {
-		// return Math.abs(this.drivetrain.getAvgDistanceMeters()) >= this.distance;
-		// TODO take care of negative distances
 		if(this.distance >= 0) {
 			return this.drivetrain.getEncoderPose().getX() <= this.endPose.getX();
 		} else {
