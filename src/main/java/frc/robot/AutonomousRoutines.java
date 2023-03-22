@@ -40,7 +40,7 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition),
+				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
 				new WaitCommand(.3),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
@@ -52,29 +52,29 @@ public final class AutonomousRoutines {
 			)
 		);
 
-		chooser.addOption(
-			"shoot cone high and drive?",
-			new SequentialCommandGroup(
-				new InitializeElevator(elevator),
-				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition),
-				new WaitCommand(.3),
-				new DriveDistance(.3, DrivetrainConstants.toHighDistance, drivetrain),
-				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
-				new WaitCommand(.5),
-				new InstantCommand(()-> intake.setOutput(0), intake),
-				new DriveDistance(-.3, -1 * DrivetrainConstants.toHighDistance, drivetrain),
-				new StashIntake(elevator, arm),
-				new DriveDistance(-.5, -3.5, drivetrain)
-			)
-		);
+		// chooser.addOption(
+		// 	"shoot cone high and drive?",
+		// 	new SequentialCommandGroup(
+		// 		new InitializeElevator(elevator),
+		// 		new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
+		// 		new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
+		// 		new WaitCommand(.3),
+		// 		new DriveDistance(.3, DrivetrainConstants.toHighDistance, drivetrain),
+		// 		new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
+		// 		new WaitCommand(.5),
+		// 		new InstantCommand(()-> intake.setOutput(0), intake),
+		// 		new DriveDistance(-.3, -1 * DrivetrainConstants.toHighDistance, drivetrain),
+		// 		new StashIntake(elevator, arm),
+		// 		new DriveDistance(-.5, -3.5, drivetrain)
+		// 	)
+		// );
 
 		chooser.addOption(
 			"shoot high don't drive",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition + 4),
+				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
 				new WaitCommand(.2),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
@@ -90,8 +90,8 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition),
-				new WaitCommand(.3),
+				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
+				new WaitCommand(.2),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
 				new WaitCommand(.5),
@@ -108,7 +108,7 @@ public final class AutonomousRoutines {
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
-				new ArmGoToPosition(arm, ArmConstants.highPosition + 4),
+				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
 				new WaitCommand(.2),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
