@@ -96,7 +96,7 @@ public final class Constants {
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 
-		public static final double armLimitSwitchEncoderValue = -114;
+		public static final double armLimitSwitchEncoderValue = -115.3;
 		public static final double doubleSubstationCone = -4 - 4;
 		public static final double doubleSubstationCube = -7 - 3;
 
