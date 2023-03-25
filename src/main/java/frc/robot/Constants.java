@@ -218,6 +218,7 @@ public final class Constants {
 		public static final double lowPositionCube = -75;
 		public static final double midPosition = -22.2 - 4;
 		public static final double highPosition = 0 - 4;
+		public static final double highCubeAuto = 0;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 

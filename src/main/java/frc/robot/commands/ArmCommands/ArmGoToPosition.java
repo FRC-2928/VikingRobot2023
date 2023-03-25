@@ -7,7 +7,7 @@ import frc.robot.subsystems.Arm;
 
 public class ArmGoToPosition extends PIDCommand {
 	public ArmGoToPosition(Arm arm, double goalPosition) {
-		this(arm, 0, 1);
+		this(arm, goalPosition, 1);
 	}
 
 	public ArmGoToPosition(Arm arm, double goalPosition, double speedFactor) {
