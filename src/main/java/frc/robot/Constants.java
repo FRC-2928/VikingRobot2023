@@ -130,8 +130,8 @@ public final class Constants {
                         .toString()
                 ));
 			} catch(IOException e) {
-				Log.fatal(e);
-				return null; // unreachable
+				Log.error(e);
+				return null;
 			}
         }
 
