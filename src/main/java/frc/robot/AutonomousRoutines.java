@@ -100,7 +100,7 @@ public final class AutonomousRoutines {
 					new InstantCommand(() -> Log.writeln("stashed")),
 					new SequentialCommandGroup(new WaitCommand(1), new DriveDistance(-.35, -3, drivetrain))),
 				new WaitCommand(.75),
-				new DriveDistance(.35, 1.84, drivetrain),
+				new DriveDistance(.35, 1.8, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);
