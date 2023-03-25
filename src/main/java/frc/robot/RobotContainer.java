@@ -9,7 +9,6 @@ import frc.robot.commands.IntakeCommands.*;
 import frc.robot.commands.POVSelector;
 import frc.robot.oi.*;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.LimelightFX.GuardRef;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -17,8 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
-import java.awt.Rectangle;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.*;
 
@@ -143,17 +141,22 @@ public class RobotContainer {
 		this.operatorOI.getArmGroundCube().onTrue(new GroundIntake(elevator, arm, GamePiece.Cube));
 		this.operatorOI.getArmGroundCone().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmGroundCone().onTrue(new GroundIntake(elevator, arm, GamePiece.Cone));
-		this.operatorOI.getArmStash().onTrue(new StashIntake(elevator, arm));
+		this.operatorOI.getArmStash().onTrue(
+            new StashIntake(elevator, arm)
+                .alongWith(new InstantCommand(() -> this.displayImage("heart"), this.fx).unless(DriverStation::isAutonomousEnabled))
+        );
 
-		this.operatorOI.getArmSubstationCone().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmSubstationCone().onTrue(
-			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
-				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCone))
+            new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
+                .andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCone))
+                .alongWith(new InstantCommand(() -> this.displayImage("cone"), this.fx).unless(DriverStation::isAutonomousEnabled))
+                .alongWith(new InstantCommand(this.transmission::setLow, this.transmission))
 		);
-		this.operatorOI.getArmSubstationCube().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmSubstationCube().onTrue(
-			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
-				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCube))
+            new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
+                .andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCube))
+                .alongWith(new InstantCommand(() -> this.displayImage("cube3d"), this.fx).unless(DriverStation::isAutonomousEnabled))
+                .alongWith(new InstantCommand(this.transmission::setLow, this.transmission))
 		);
 
 		this.operatorOI.getHaltButton().onTrue(new InstantCommand(() -> {
@@ -166,31 +169,9 @@ public class RobotContainer {
 		}));
 	}
 
-    public void signalGamePiece(GamePiece piece) {
-        if(LimelightFXConstants.useImageSignals) {
-            this.fx.image(LimelightFXConstants.image(piece.getImageName()));
-        } else {
-            try(GuardRef guard = this.fx.burst()) {
-                switch(piece) {
-                    case Cone: {
-                        this.fx.box(new Rectangle(9, 0, 2, 3), LimelightFXConstants.coneColor, true);
-                        this.fx.box(new Rectangle(8, 3, 4, 3), LimelightFXConstants.coneColor, true);
-                        this.fx.box(new Rectangle(7, 6, 6, 3), LimelightFXConstants.coneColor, true);
-                        this.fx.box(new Rectangle(6, 9, 8, 1), LimelightFXConstants.coneColor, true);
-                        this.fx.box(new Rectangle(4, 10, 12, 1), LimelightFXConstants.coneColor, true);
-
-                        break;
-                    }
-
-                    case Cube: {
-                        this.fx.box(new Rectangle(5, 1, 10, 9), LimelightFXConstants.cubeFillColor, true);
-                        this.fx.box(new Rectangle(5, 1, 10, 9), LimelightFXConstants.cubeBorderColor, false);
-
-                        break;
-                    }
-                }
-            }
-        }
+    public void displayImage(String image) {
+        this.fx.addressable();
+        this.fx.image(LimelightFXConstants.image(image));
     }
 
 	public Command getAutonomousCommand() {
