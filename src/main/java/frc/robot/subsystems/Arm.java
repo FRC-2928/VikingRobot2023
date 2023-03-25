@@ -1,14 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 
@@ -31,7 +23,7 @@ public class Arm extends SubsystemBase {
 	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.armLock);
 
 	public Arm() {
-		for(TalonFX fx : new TalonFX[] { this.motorLead, this.motorFollower}) {
+		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.motorLead, this.motorFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -79,10 +71,6 @@ public class Arm extends SubsystemBase {
 		Telemetry.track("Arm Limit", () -> this.motorLead.getSensorCollection().isRevLimitSwitchClosed() == 1, false);
 	}
 
-	// -----------------------------------------------------------
-	// Control Input
-	// -----------------------------------------------------------
-
 	public void halt() {
 		this.lock(true);
 	}
@@ -128,7 +116,7 @@ public class Arm extends SubsystemBase {
 		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
 
 		if(this.motorLead.getSensorCollection().isRevLimitSwitchClosed() == 1) {
-			this.encoder.configMagnetOffset(this.encoder.configGetMagnetOffset() - (this.encoder.getAbsolutePosition() - ArmConstants.armLimitSwitchEncoderValue));
+			this.encoder.configMagnetOffset(this.encoder.configGetMagnetOffset() - (this.encoder.getAbsolutePosition() - ArmConstants.armLimitSwitchOffset));
 		}
 	}
 }

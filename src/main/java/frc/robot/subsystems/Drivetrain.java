@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
-import edu.wpi.first.math.filter.MedianFilter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,30 +12,21 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.Robot;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.*;
 import frc.robot.sim.DrivebaseSimFX;
 import frc.robot.subsystems.Transmission.GearState;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.FollowerType;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Drivetrain extends SubsystemBase {
-	public final WPI_TalonFX rightLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightBackTalon);
-	public final WPI_TalonFX leftLeader = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftBackTalon);
-	public final WPI_TalonFX rightFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainRightFrontTalon);
-	public final WPI_TalonFX leftFollower = new WPI_TalonFX(Constants.CANBusIDs.DrivetrainLeftFrontTalon);
+	public final WPI_TalonFX rightLeader = new WPI_TalonFX(CANBusIDs.DrivetrainRightBackTalon);
+	public final WPI_TalonFX leftLeader = new WPI_TalonFX(CANBusIDs.DrivetrainLeftBackTalon);
+	public final WPI_TalonFX rightFollower = new WPI_TalonFX(CANBusIDs.DrivetrainRightFrontTalon);
+	public final WPI_TalonFX leftFollower = new WPI_TalonFX(CANBusIDs.DrivetrainLeftFrontTalon);
 
   	private final Limelight limelight = new Limelight("limelight-top");
 	private final Limelight bottomLimelight = new Limelight("limelight-intake");
@@ -47,7 +36,7 @@ public class Drivetrain extends SubsystemBase {
 	// TODO: make this work
 	public boolean brakeOverride = false;
 
-	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(Constants.CANBusIDs.Pigeon);
+	private WPI_Pigeon2 pigeon = new WPI_Pigeon2(CANBusIDs.Pigeon);
 
 	private double offset;
 
@@ -107,7 +96,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void configureMotors() {
 		// Configure the motors
-		for(TalonFX fx : new TalonFX[] { this.rightLeader, this.rightFollower, this.leftLeader, this.leftFollower }) {
+		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.rightLeader, this.rightFollower, this.leftLeader, this.leftFollower }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 

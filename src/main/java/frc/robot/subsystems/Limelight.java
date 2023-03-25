@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.LimelightHelpers.LimelightResults;
 

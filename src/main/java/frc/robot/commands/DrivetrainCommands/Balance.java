@@ -23,11 +23,11 @@ public class Balance extends CommandBase {
 	);
 
 	/// Whether or not the command should stop when it reaches the setpoint within the tolerance
-	public boolean stopAtSetpoint;
+	public final boolean stopAtSetpoint;
 
 	/// The timeout to automatically end the command at
 	/// Set to Double.POSITIVE_INFINITY to disable
-	public double timeout;
+	public final double timeout;
 
 	public Balance(Drivetrain drivetrain, boolean stopAtSetpoint, double timeout) {
 		this.drivetrain = drivetrain;

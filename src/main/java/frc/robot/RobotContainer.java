@@ -1,41 +1,23 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.GamePiece;
-import frc.robot.commands.DrivetrainCommands.Balance;
-import frc.robot.commands.DrivetrainCommands.Shift;
-import frc.robot.commands.DrivetrainCommands.TurnToPole;
-import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
-import frc.robot.commands.ElevatorCommands.GroundIntake;
-import frc.robot.commands.ElevatorCommands.InitializeElevator;
-import frc.robot.commands.ElevatorCommands.StashIntake;
-import frc.robot.commands.ArmCommands.ArmGoToPosition;
-import frc.robot.commands.IntakeCommands.RunIntake;
+import frc.robot.Constants.*;
+import frc.robot.commands.LimelightFXCommands.*;
+import frc.robot.commands.DrivetrainCommands.*;
+import frc.robot.commands.ElevatorCommands.*;
+import frc.robot.commands.ArmCommands.*;
+import frc.robot.commands.IntakeCommands.*;
 import frc.robot.commands.POVSelector;
-import frc.robot.commands.POVSelector.Tree;
-import frc.robot.oi.DriverOI;
-import frc.robot.oi.OperatorOI;
-import frc.robot.subsystems.Log;
-import frc.robot.subsystems.Transmission;
-import frc.robot.subsystems.Transmission.GearState;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.TrajectoryRunner;
-import frc.robot.subsystems.TrajectoryRunner.Direction;
-import frc.robot.subsystems.LimelightFX;
+import frc.robot.oi.*;
+import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,7 +33,13 @@ public class RobotContainer {
 	public final Arm arm = new Arm();
 	public final Intake intake = new Intake();
 
-	public final LimelightFX limelightFX = new LimelightFX(SerialPort.Port.kUSB);
+	public final LimelightFX fx = new LimelightFX(SerialPort.Port.kUSB);
+
+	public final Mechanism2d mech;
+	public final MechanismRoot2d mechRoot;
+	public final MechanismLigament2d mechElevator;
+	public final MechanismLigament2d mechElevatorExtension;
+	public final MechanismLigament2d mechArm;
 
 	private final XboxController driverController = new XboxController(0);
 	private final XboxController operatorController = new XboxController(1);
@@ -65,6 +53,14 @@ public class RobotContainer {
 
 		this.configureDriverControls();
 		this.configureOperatorControls();
+
+		this.mech = new Mechanism2d(10, 10, new Color8Bit(0, 0, 0));
+		this.mechRoot = this.mech.getRoot("Root", 0, 0);
+		this.mechElevator = this.mechRoot.append(new MechanismLigament2d("Elevator", GlassMechanismConstants.elevator.length, 30, 0, new Color8Bit(255, 0, 0)));
+		this.mechElevatorExtension = this.mechElevator.append(new MechanismLigament2d("ElevatorExtension", GlassMechanismConstants.elevator.length, 30, 0, new Color8Bit(255, 0, 0)));
+		this.mechArm = this.mechElevatorExtension.append(new MechanismLigament2d("Arm", GlassMechanismConstants.elevator.length, 30, 0, new Color8Bit(255, 0, 0)));
+
+		SmartDashboard.putData(mech);
 	}
 
 	private void configureDriverControls() {
@@ -85,7 +81,7 @@ public class RobotContainer {
 		// Configure gear shifting
 		this.driverOI.getShiftLowButton().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.driverOI.getShiftHighButton().onTrue(new InstantCommand(this.transmission::setHigh, this.transmission));
-		this.driverOI.getShiftButton().whileTrue(new Shift(this.transmission, GearState.HIGH));
+		this.driverOI.getShiftButton().whileTrue(new Shift(this.transmission, Transmission.GearState.HIGH));
 
 		// this.driverOI.getSetBrakeButton().onTrue(new InstantCommand(this.drivetrain::setBrakeMode, this.drivetrain));
 		// this.driverOI.getSetCoastButton().onTrue(new InstantCommand(this.drivetrain::setCoastMode, this.drivetrain));
@@ -101,14 +97,14 @@ public class RobotContainer {
 			(dir, __) -> {
 				CommandScheduler
 					.getInstance()
-					.schedule(TrajectoryRunner.generateRamseteCommand(this.drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(this.drivetrain, (Direction)dir)));
+					.schedule(TrajectoryRunner.generateRamseteCommand(this.drivetrain, () -> TrajectoryRunner.generateLocalTrajectory(this.drivetrain, (TrajectoryRunner.Direction)dir)));
 			},
-			new Tree(
+			new POVSelector.Tree(
 				"Select tag offset",
-				new Tree("Center", Direction.Center),
-				new Tree("Left", Direction.Left),
-				new Tree(),
-				new Tree("Right", Direction.Right)
+				new POVSelector.Tree("Center", TrajectoryRunner.Direction.Center),
+				new POVSelector.Tree("Left", TrajectoryRunner.Direction.Left),
+				new POVSelector.Tree(),
+				new POVSelector.Tree("Right", TrajectoryRunner.Direction.Right)
 			)
 		));
 
@@ -116,7 +112,7 @@ public class RobotContainer {
 
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
-			Log.writeln("[HALT - DRIVER]");
+			Log.warning("[HALT - DRIVER]");
 			this.drivetrain.halt();
 			this.elevator.halt();
 			this.arm.halt();
@@ -131,7 +127,6 @@ public class RobotContainer {
 		this.operatorOI.getIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
 		this.operatorOI.getShootCubeButton().whileTrue(new RunIntake(intake, IntakeConstants.shootCubePower));
 		this.operatorOI.getShootConeButton().whileTrue(new RunIntake(intake, IntakeConstants.shootConePower));
-		//this.operatorOI.getStopIntakeButton().onTrue(new InstantCommand(() -> this.intake.setOutput(0)));
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
 
@@ -151,16 +146,18 @@ public class RobotContainer {
 		this.operatorOI.getArmSubstationCone().onTrue(
 			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
 				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCone))
+				.deadlineWith(new SignalGamePiece(this.fx, GamePiece.Cone))
 		);
 		this.operatorOI.getArmSubstationCube().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmSubstationCube().onTrue(
 			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
 				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCube))
+				.deadlineWith(new SignalGamePiece(this.fx, GamePiece.Cube))
 		);
 
 		this.operatorOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
-			Log.writeln("[HALT - OPERATOR]");
+			Log.warning("[HALT - OPERATOR]");
 			this.drivetrain.halt();
 			this.elevator.halt();
 			this.arm.halt();

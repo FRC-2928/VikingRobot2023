@@ -23,6 +23,11 @@ public class ArmGoToPosition extends PIDCommand {
 	}
 
 	@Override
+	public void initialize() {
+		super.initialize();
+	}
+
+	@Override
 	public boolean isFinished() {
 		return this.m_controller.atSetpoint();
 	}

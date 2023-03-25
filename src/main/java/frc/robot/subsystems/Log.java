@@ -75,6 +75,13 @@ public final class Log extends SubsystemBase {
 	/// `trimExcessLeadingLines` or `writeln`
 	public static void writelnFast(Object... input) { Log.writeFast(input, '\n'); }
 
+	/// Writes a fatal error to the buffer, trims old leading lines, dirties the network entry, transmits the error to the driver station with a full stack trace, and aborts
+	public static void fatal(Exception error) {
+		DriverStation.reportError(error.getLocalizedMessage(), error.getStackTrace());
+		Log.writeln("! ERROR !", '\n', error.getLocalizedMessage(), '\n');
+		System.exit(1);
+	}
+
 	/// Writes an error to the buffer, trims old leading lines, dirties the network entry, and transmits the error to the driver station with a full stack trace
 	public static void error(Exception error) {
 		DriverStation.reportError(error.getLocalizedMessage(), error.getStackTrace());
