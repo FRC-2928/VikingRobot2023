@@ -3,8 +3,7 @@ package frc.robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -31,7 +30,15 @@ import frc.robot.subsystems.*;
 public final class Constants {
 	public static enum GamePiece {
 		Cone, // not purple
-		Cube, // purple
+		Cube; // purple
+
+        public String getImageName() {
+            switch(this) {
+                case Cone: return "cone";
+                case Cube: return "cube";
+                default: return null; // unreachable
+            }
+        }
 	}
 
 	public static class Gains {
@@ -110,33 +117,25 @@ public final class Constants {
 
         public static final boolean useImageSignals = true;
 
-		public static final BufferedImage imageCone = LimelightFXConstants.readImage(
-			Filesystem.getDeployDirectory()
-				.toPath()
-				.resolve("img/cone.bmp")
-				.toAbsolutePath()
-		);
-		public static final BufferedImage imageCube2d = LimelightFXConstants.readImage(
-			Filesystem.getDeployDirectory()
-				.toPath()
-				.resolve("img/cube2d.bmp")
-				.toAbsolutePath()
-		);
-		public static final BufferedImage imageCube3d = LimelightFXConstants.readImage(
-			Filesystem.getDeployDirectory()
-				.toPath()
-				.resolve("img/cube3d.bmp")
-				.toAbsolutePath()
-		);
+        public static BufferedImage image(String name) {
+            if(LimelightFXConstants.imageCache.containsKey(name)) return LimelightFXConstants.imageCache.get(name);
 
-		private static BufferedImage readImage(Path path) {
-			try {
-				return ImageIO.read(new File(path.toString()));
+            try {
+				return ImageIO.read(new File(
+                    Filesystem.getDeployDirectory()
+                        .toPath()
+                        .resolve("img")
+                        .resolve(name + ".bmp")
+                        .toAbsolutePath()
+                        .toString()
+                ));
 			} catch(IOException e) {
 				Log.fatal(e);
 				return null; // unreachable
 			}
-		}
+        }
+
+        private static HashMap<String, BufferedImage> imageCache = new HashMap<>();
 	}
 
 	public static final class GlassMechanismConstants {
@@ -218,7 +217,7 @@ public final class Constants {
 		public static final double lowPositionCube = -75;
 		public static final double midPosition = -22.2 - 4;
 		public static final double highPosition = 0 - 4;
-		public static final double highCubeAuto = 0;
+		public static final double highCubeAuto = 0 + 6;
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 

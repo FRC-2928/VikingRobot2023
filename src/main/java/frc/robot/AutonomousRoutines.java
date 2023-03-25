@@ -22,7 +22,7 @@ public final class AutonomousRoutines {
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
-				new WaitCommand(.3),
+				new WaitCommand(.5),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
 				new WaitCommand(.5),
@@ -56,7 +56,7 @@ public final class AutonomousRoutines {
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
-				new WaitCommand(.2),
+				new WaitCommand(.4),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
@@ -72,7 +72,7 @@ public final class AutonomousRoutines {
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
-				new WaitCommand(.2),
+				new WaitCommand(.4),
 				//new DriveDistance(.3, DrivetrainConstants.honeToHighDistance, drivetrain),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower), intake),
 				new WaitCommand(.5),
@@ -82,15 +82,15 @@ public final class AutonomousRoutines {
 				new DriveDistance(-.5, -1.2, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
-		);	
-		
+		);
+
 		chooser.addOption(
 			"shoot high drive over and balance?",
 			new SequentialCommandGroup(
 				new InitializeElevator(elevator),
 				new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight),
 				new ArmGoToPosition(arm, ArmConstants.highCubeAuto),
-				new WaitCommand(.2),
+				new WaitCommand(.4),
 				new InstantCommand(()-> intake.setOutput(IntakeConstants.shootConePower + .05), intake),
 				new WaitCommand(.5),
 				new InstantCommand(()-> intake.setOutput(0), intake),
@@ -100,7 +100,7 @@ public final class AutonomousRoutines {
 					new InstantCommand(() -> Log.writeln("stashed")),
 					new SequentialCommandGroup(new WaitCommand(1), new DriveDistance(-.35, -3, drivetrain))),
 				new WaitCommand(.75),
-				new DriveDistance(.35, 1.8, drivetrain),
+				new DriveDistance(.35, 1.84, drivetrain),
 				new Balance(drivetrain, false, 15000)
 			)
 		);
