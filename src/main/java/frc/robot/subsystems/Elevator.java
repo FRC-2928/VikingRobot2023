@@ -1,19 +1,15 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
@@ -34,7 +30,7 @@ public class Elevator extends SubsystemBase {
 
 	public void configureMotors() {
 		// Configure the motors
-		for(TalonFX fx : new TalonFX[] { this.motor }) {
+		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.motor }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -147,5 +143,8 @@ public class Elevator extends SubsystemBase {
 	@Override
 	public void periodic() {
 		if(this.limitTopClosed() || this.pastBottomLimit() || this.pastTopLimit()) this.halt();
+
+		MechanismLigament2d mech = Robot.instance.robotContainer.mechElevatorExtension;
+		mech.setLength(1);
 	}
 }

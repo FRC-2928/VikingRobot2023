@@ -3,8 +3,7 @@ package frc.robot.commands.DrivetrainCommands;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.*;
 import frc.robot.subsystems.Drivetrain;
 
 public class RunRamseteTrajectory extends RamseteCommand {

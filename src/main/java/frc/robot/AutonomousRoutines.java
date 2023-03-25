@@ -2,34 +2,15 @@ package frc.robot;
 
 import java.util.List;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.ArmCommands.ArmGoToPosition;
-import frc.robot.commands.DrivetrainCommands.Balance;
-import frc.robot.commands.DrivetrainCommands.DriveDistance;
-import frc.robot.commands.DrivetrainCommands.RunRamseteTrajectory;
-import frc.robot.commands.ElevatorCommands.ElevatorGoToHeight;
-import frc.robot.commands.ElevatorCommands.InitializeElevator;
-import frc.robot.commands.ElevatorCommands.StashIntake;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Log;
-import frc.robot.subsystems.TrajectoryRunner;
+import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.Constants.*;
+import frc.robot.commands.ArmCommands.*;
+import frc.robot.commands.DrivetrainCommands.*;
+import frc.robot.commands.ElevatorCommands.*;
+import frc.robot.subsystems.*;
 
 public final class AutonomousRoutines {
 	public static SendableChooser<Command> createAutonomousChooser(Drivetrain drivetrain, Elevator elevator, Arm arm, Intake intake) {

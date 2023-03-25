@@ -1,10 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,7 +16,7 @@ public class Intake extends SubsystemBase {
 
 	public void configureMotors() {
 		// Configure the motors
-		for(TalonSRX fx : new TalonSRX[] { this.motor }) {
+		for(WPI_TalonSRX fx : new WPI_TalonSRX[] { this.motor }) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 

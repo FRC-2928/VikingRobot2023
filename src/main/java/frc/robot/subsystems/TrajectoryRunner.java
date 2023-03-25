@@ -8,24 +8,14 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.FieldConstants;
 import frc.robot.Robot;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.*;
 
 public class TrajectoryRunner {
 	/// We use this only once, but it is needed to wrap a Trajectory

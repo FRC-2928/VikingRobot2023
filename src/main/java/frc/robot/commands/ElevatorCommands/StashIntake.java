@@ -1,11 +1,9 @@
 package frc.robot.commands.ElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.*;
 import frc.robot.commands.ArmCommands.ArmGoToPosition;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.*;
 
 public class StashIntake extends SequentialCommandGroup {
 	public StashIntake(Elevator elevator, Arm arm) {

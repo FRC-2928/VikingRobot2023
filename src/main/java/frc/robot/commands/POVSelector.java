@@ -6,9 +6,7 @@ import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.oi.OIBase;
-import frc.robot.subsystems.Log;
-import frc.robot.subsystems.Telemetry;
-import frc.robot.subsystems.Telemetry.TelemetryData;
+import frc.robot.subsystems.*;
 
 public class POVSelector extends CommandBase {
 	public static final class Tree {
@@ -97,7 +95,7 @@ public class POVSelector extends CommandBase {
 		}
 	}
 
-	private final TelemetryData telem = Telemetry.track("POV Selector", () -> {
+	private final Telemetry.TelemetryData telem = Telemetry.track("POV Selector", () -> {
 		if(!this.isScheduled()) return "<inactive>";
 
 		return String.join(" > ", this.state.stream().map(tree -> tree.name).toArray(String[]::new)) + " > ?";

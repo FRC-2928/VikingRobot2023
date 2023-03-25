@@ -129,10 +129,6 @@ public final class Constants {
 				.toAbsolutePath()
 		);
 
-        public static BufferedImage
-
-        private static final Map<String, BufferedImage> images;
-
 		private static BufferedImage readImage(Path path) {
 			try {
 				return ImageIO.read(new File(path.toString()));
