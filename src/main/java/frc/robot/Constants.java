@@ -1,10 +1,20 @@
 package frc.robot;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.subsystems.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -22,6 +32,43 @@ public final class Constants {
 	public static enum GamePiece {
 		Cone, // not purple
 		Cube, // purple
+	}
+
+	public static class Gains {
+		// Proportional gain for closed loop. This is multiplied by closed loop error in sensor units.
+		// Note the closed loop output interprets a final value of 1023 as full output.
+		// So use a gain of ‘0.25’ to get full output if err is 4096u (Mag Encoder 1 rotation)
+		public final double P;
+
+		// Integral gain for closed loop.
+		// This is multiplied by closed loop error in sensor units every PID Loop.
+		public final double I;
+
+		// Derivative gain for closed loop.
+		// This is multiplied by derivative error (sensor units per PID loop).
+		public final double D;
+
+		// Feed Forward gain for Closed loop.
+		// If using velocity, motion magic, or motion profile, use (1023 * duty-cycle / sensor-velocity-sensor-units-per-100ms)
+		public final double F;
+
+		// Integral Zone can be used to auto clear the integral accumulator if the sensor position
+		// is too far from the target. This prevent unstable oscillation if the kI is too large.
+		// Value is in sensor units.
+		public final int iZone;
+
+		// Absolute max motor output during closed-loop control modes only.
+		// A value of ‘1’ represents full output in both directions.
+		public final double peakOutput;
+
+		public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput) {
+			this.P = _kP;
+			this.I = _kI;
+			this.D = _kD;
+			this.F = _kF;
+			this.iZone = _kIzone;
+			this.peakOutput = _kPeakOutput;
+		}
 	}
 
 	public static final class PneumaticIDs {
@@ -55,6 +102,90 @@ public final class Constants {
 		public static final int ArmEncoder = 5;
 	}
 
+	public static final class LimelightFXConstants {
+		public static final LimelightFX.Color coneColor = new LimelightFX.Color(0, 0, 0);
+
+		public static final LimelightFX.Color cubeFillColor = new LimelightFX.Color(102, 0, 255);
+		public static final LimelightFX.Color cubeBorderColor = new LimelightFX.Color(174, 107, 255);
+
+        public static final boolean useImageSignals = true;
+
+		public static final BufferedImage imageCone = LimelightFXConstants.readImage(
+			Filesystem.getDeployDirectory()
+				.toPath()
+				.resolve("img/cone.bmp")
+				.toAbsolutePath()
+		);
+		public static final BufferedImage imageCube2d = LimelightFXConstants.readImage(
+			Filesystem.getDeployDirectory()
+				.toPath()
+				.resolve("img/cube2d.bmp")
+				.toAbsolutePath()
+		);
+		public static final BufferedImage imageCube3d = LimelightFXConstants.readImage(
+			Filesystem.getDeployDirectory()
+				.toPath()
+				.resolve("img/cube3d.bmp")
+				.toAbsolutePath()
+		);
+
+        public static BufferedImage
+
+        private static final Map<String, BufferedImage> images;
+
+		private static BufferedImage readImage(Path path) {
+			try {
+				return ImageIO.read(new File(path.toString()));
+			} catch(IOException e) {
+				Log.fatal(e);
+				return null; // unreachable
+			}
+		}
+	}
+
+	public static final class GlassMechanismConstants {
+		// Length & thickness measurements in meters
+
+		public static final class Dimension {
+			public final Color8Bit color;
+			public final double thickness;
+			public final double length;
+			public final double angle;
+
+			Dimension(Color8Bit color, double thickness, double length, double angle) {
+				this.color = color;
+				this.thickness = thickness;
+				this.length = length;
+				this.angle = angle;
+			}
+		}
+
+		public static final Dimension elevator = new Dimension(
+			new Color8Bit(128, 128, 128),
+			0.05,
+			1,
+			30
+		);
+		public static final Dimension elevatorExtension = new Dimension(
+			new Color8Bit(192, 192, 192),
+			0.025,
+			0.5,
+			30
+		);
+		public static final Dimension armColor = new Dimension(
+			new Color8Bit(64, 255, 255),
+			0.05,
+			1,
+			0
+		);
+		public static final Dimension intakeColor = new Dimension(
+			new Color8Bit(255, 255, 255),
+			0.05,
+			0.25,
+			90
+		);
+	}
+
 	public static final class IntakeConstants {
 		public static final double intakePower = -0.85;
 		public static final double intakeCubePower = -0.3;
@@ -64,7 +195,12 @@ public final class Constants {
 
 	public static final class ElevatorConstants {
 		public static final Gains elevatorGains = new Gains(0.015, 0.0, 0.0, 0.0, 100, 0.50);
-		//public static final double lowHeight = 9000;
+
+		public static final int averageLockIntervalTicks = -1925; // distance in encoder ticks between locking piston clicks
+		// public static final int exitHeight = -10000; // min height to allow arm movement
+		// public static final int driveHeight = -9780;
+		public static final int substationHeight = 8545 - 2 * averageLockIntervalTicks;
+
 		public static final double lowHeight = 13674;
 		public static final double highHeight = -11500 - 500;
 		public static final double stashHeight = 0;
@@ -72,22 +208,16 @@ public final class Constants {
 		public static final double homingPower = -0.55;
 
 		public static final int homeOffset = 1900;
-		//TODO: maybe fix
 		public static final int topOffset = -12176;
 		public static final int bottomSoftLimit = 11000;
 		public static final int topSoftLimit = -13600;
 
-		public static final int elevatorForStart = -1300;
-
-		public static final int exitHeight = -10000; // min height to allow arm movement
-		public static final int driveHeight = -9780;
-
-		public static final int averageLockIntervalTicks = -1925; // distance in encoder ticks between locking piston clicks
-		public static final int elevatorForHumanPlayer = 8545 - 2 * averageLockIntervalTicks;
+		// public static final int elevatorForStart = -1300;
 	}
 
 	public static final class ArmConstants {
 		public static final Gains armGains = new Gains(0.01, 0.02, 0.0015, 0.0, 100, 0.50);
+
 		public static final double lowPositionCone = -67.5;
 		public static final double lowPositionCube = -75;
 		public static final double midPosition = -22.2 - 4;
@@ -95,7 +225,7 @@ public final class Constants {
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 
-		public static final double armLimitSwitchEncoderValue = -114;
+		public static final double armLimitSwitchOffset = -114;
 		public static final double doubleSubstationCone = -4 - 4;
 		public static final double doubleSubstationCube = -7 - 3;
 
@@ -107,9 +237,7 @@ public final class Constants {
 		public static final double trackWidthMeters = 0.7; // Placeholder
 		public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
 
-		// TODO: find these
 		public static final double toHighDistance = .2;
-		public static final double honeToMidDistance = .6;
 
 		public static final int encoderCPR = 2048;
 		public static final double wheelDiameterMeters = 0.1016;
