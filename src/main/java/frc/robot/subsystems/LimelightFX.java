@@ -3,13 +3,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.LimelightFXCommands.Idle;
 import edu.wpi.first.wpilibj2.command.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Optional;
-import java.util.Set;
 
 /** Utility class to interface to a LimelightFX */
 public class LimelightFX extends SubsystemBase {
@@ -211,8 +208,6 @@ public class LimelightFX extends SubsystemBase {
 		this.serial.setWriteBufferMode(WriteBufferMode.kFlushOnAccess);
 		this.serial.writeString("init 0\nstart\n");
 		this.addressable();
-
-		this.setDefaultCommand(new Idle(this));
 	}
 
 	/** Writes to the current BurstGuard if it exists or writes directly to serial */
@@ -383,8 +378,6 @@ public class LimelightFX extends SubsystemBase {
 		}
 		return this;
 	}
-
-	// TODO: TEST IMAGES
 
 	/**
 	 * Paint an image onto the FX starting at the upper left-hand corner and clipping at the bottom-right

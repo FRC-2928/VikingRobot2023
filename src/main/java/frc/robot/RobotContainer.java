@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.*;
-import frc.robot.commands.LimelightFXCommands.*;
 import frc.robot.commands.DrivetrainCommands.*;
 import frc.robot.commands.ElevatorCommands.*;
 import frc.robot.commands.ArmCommands.*;
@@ -10,12 +9,16 @@ import frc.robot.commands.IntakeCommands.*;
 import frc.robot.commands.POVSelector;
 import frc.robot.oi.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.LimelightFX.GuardRef;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+
+import java.awt.Rectangle;
+
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.*;
 
@@ -146,13 +149,11 @@ public class RobotContainer {
 		this.operatorOI.getArmSubstationCone().onTrue(
 			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
 				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCone))
-				.deadlineWith(new SignalGamePiece(this.fx, GamePiece.Cone))
 		);
 		this.operatorOI.getArmSubstationCube().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
 		this.operatorOI.getArmSubstationCube().onTrue(
 			new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
 				.andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCube))
-				.deadlineWith(new SignalGamePiece(this.fx, GamePiece.Cube))
 		);
 
 		this.operatorOI.getHaltButton().onTrue(new InstantCommand(() -> {
@@ -164,6 +165,33 @@ public class RobotContainer {
 			this.intake.setOutput(0);
 		}));
 	}
+
+    public void signalGamePiece(GamePiece piece) {
+        if(LimelightFXConstants.useImageSignals) {
+            this.fx.image(LimelightFXConstants.image(piece.getImageName()));
+        } else {
+            try(GuardRef guard = this.fx.burst()) {
+                switch(piece) {
+                    case Cone: {
+                        this.fx.box(new Rectangle(9, 0, 2, 3), LimelightFXConstants.coneColor, true);
+                        this.fx.box(new Rectangle(8, 3, 4, 3), LimelightFXConstants.coneColor, true);
+                        this.fx.box(new Rectangle(7, 6, 6, 3), LimelightFXConstants.coneColor, true);
+                        this.fx.box(new Rectangle(6, 9, 8, 1), LimelightFXConstants.coneColor, true);
+                        this.fx.box(new Rectangle(4, 10, 12, 1), LimelightFXConstants.coneColor, true);
+
+                        break;
+                    }
+
+                    case Cube: {
+                        this.fx.box(new Rectangle(5, 1, 10, 9), LimelightFXConstants.cubeFillColor, true);
+                        this.fx.box(new Rectangle(5, 1, 10, 9), LimelightFXConstants.cubeBorderColor, false);
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 	public Command getAutonomousCommand() {
 		return this.autonomousChooser.getSelected();
