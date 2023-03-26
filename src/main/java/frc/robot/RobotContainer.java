@@ -170,7 +170,6 @@ public class RobotContainer {
 	}
 
     public void displayImage(String image) {
-        this.fx.addressable();
         this.fx.image(LimelightFXConstants.image(image));
     }
 
