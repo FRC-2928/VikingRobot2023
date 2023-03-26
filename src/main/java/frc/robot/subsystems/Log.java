@@ -60,8 +60,6 @@ public final class Log extends SubsystemBase {
 	}
 
 	public static void writeFast(String str) {
-		DriverStationJNI.sendConsoleLine(str);
-
 		System.err.print(str);
 
 		Log.instance.log.append(str);
@@ -90,15 +88,7 @@ public final class Log extends SubsystemBase {
 
 	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the warning to the driver station without a stack trace
 	public static void warning(String str) {
-		DriverStationJNI.sendError(true, 0, false, str, "", "", true);
-
-		str += '\n';
-
-		Log.instance.log.append(str);
-		Log.instance.lines += str.lines().count();
-		Log.instance.dirty = true;
-
-		System.err.print(str);
+		DriverStationJNI.sendError(false, 0, false, str, "", "", true);
 	}
 
 	/// Writes a warning to the buffer, trims old leading lines, dirties the network entry, and transmits the warning to the driver station with a full stack trace

@@ -4,6 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.Constants;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Optional;
@@ -75,7 +77,7 @@ public class LimelightFX extends SubsystemBase {
 
 		@Override
 		public void close() {
-			LimelightFX.this.serial.writeString(this.queue.toString());
+			LimelightFX.this.write(this.queue.toString());
 			LimelightFX.this.burst = null;
 		}
 	}
@@ -125,21 +127,21 @@ public class LimelightFX extends SubsystemBase {
 			}
 
 			/** The Color for the A chevrons */
-			public Color colorA;
+			public Color colorA = new Color(255, 127, 255);
 			/** The Color for the B chevrons */
-			public Color colorB;
+			public Color colorB = new Color(127, 0, 255);
 			/** The thickness for the A chevrons in pixels */
-			public int thicknessA;
+			public int thicknessA = 4;
 			/** The thickness for the B chevrons in pixels */
-			public int thicknessB;
+			public int thicknessB = 2;
 			/**
 			 * The speed the chevrons should move at
 			 *
 			 * Measured in pixels per tick (100 ticks/sec)
 			 */
-			public int speed;
+			public int speed = 1;
 			/** The direction the chevrons should move in */
-			public Direction dir;
+			public Direction dir = Direction.Up;
 
 			@Override
 			public int getID() { return 5; }
@@ -160,13 +162,14 @@ public class LimelightFX extends SubsystemBase {
 
 		public static class CountdownBehavior implements Behavior {
 			/** The Color for the countdown */
-			public Color colorA;
+			//public Color colorA = new Color(255);
+            public Color colorA = new Color(255);
 			/** The total countdown time in milliseconds */
-			public int ms;
+			public int ms = 15000;
 			/** Whether the countdown should stop when it hits zero */
-			public boolean stopAtZero;
+			public boolean stopAtZero = true;
 			/** Whether the countdown should be paused */
-			public boolean paused;
+			public boolean paused = false;
 
 			@Override
 			public int getID() { return 11; }
@@ -187,7 +190,7 @@ public class LimelightFX extends SubsystemBase {
 	// IMPLEMENTATION //
 
 	/** The SerialPort connected to the LimelightFX **/
-	private final SerialPort serial;
+	private SerialPort serial;
 
 	/** The current behavior **/
 	private Behavior active;
@@ -201,25 +204,49 @@ public class LimelightFX extends SubsystemBase {
 	 * @param port The serial port to communicate over
 	 */
 	public LimelightFX(final SerialPort.Port port) {
+        if(Constants.LimelightFXConstants.disable) return;
+
 		this.serial = new SerialPort(115200, port);
 		this.serial.reset();
 		this.serial.enableTermination();
 		this.serial.setTimeout(0.5);
 		this.serial.setWriteBufferMode(WriteBufferMode.kFlushOnAccess);
-		this.serial.writeString("init 0\nstart\n");
+		this.write("init 0\nstart\n");
 		this.addressable();
 	}
+
+    /**
+     * Writes data to the port and disables the FX if no reply
+     */
+    // todo: test byte result
+    private void write(final String data) {
+        if(this.serial == null) return;
+
+        int n = this.serial.writeString(data);
+
+        //Log.writeln("Serial (" + n + "): " + data);
+
+        if(n == 0) this.disable("no response");
+    }
 
 	/** Writes to the current BurstGuard if it exists or writes directly to serial */
 	private void writeMaybeQueue(final String data) {
 		if(this.burst != null) this.burst.queue(data);
-		else {
-            Log.writeln("Serial: " + data);
-            this.serial.writeString(data);
-        }
+		else this.write(data);
 	}
 
-	/**
+    /**
+     * Disable the FX
+     */
+	public void disable(String reason) {
+        if(this.serial == null) return;
+
+        this.serial.close();
+        this.serial = null;
+        Log.warning("LimelightFX disabled: " + reason);
+    }
+
+    /**
 	 * Begins a command burst. All addressable draw commands issued while the burst
 	 * is open are written into a queue and flushed when the CommandBurst is closed.
 	 * (Use a try-with-resources block or manually call {@code guard.close()})
@@ -238,7 +265,7 @@ public class LimelightFX extends SubsystemBase {
 
 	/** Puts the LimelightFX into addressable mode, where no behaviors are active and the only painting is done by the user **/
 	public LimelightFX addressable() {
-		this.serial.writeString("behavior 0 0\n");
+		this.write("behavior 0 0\n");
 		this.active = null;
 		return this;
 	}
@@ -249,7 +276,7 @@ public class LimelightFX extends SubsystemBase {
 	 * @param behavior The behavior to start
 	 */
 	public LimelightFX behavior(final Behavior behavior) {
-		this.serial.writeString(String.format("behavior 0 %d %s\n", behavior.getID(), behavior.getParams()));
+		this.write(String.format("behavior 0 %d %s\n", behavior.getID(), behavior.getParams()));
 		this.active = behavior;
 		return this;
 	}
@@ -257,7 +284,7 @@ public class LimelightFX extends SubsystemBase {
 	/** Updates the LimelightFX with the current parameters of the active behavior, if there is one **/
 	public LimelightFX update() {
 		if(this.active == null) return this;
-		this.serial.writeString(String.format("param 0 %s\n", this.active.getParams()));
+		this.write(String.format("param 0 %s\n", this.active.getParams()));
 		return this;
 	}
 
@@ -446,6 +473,8 @@ public class LimelightFX extends SubsystemBase {
 					));
 				}
 			}
+
+            this.write("~\n");
 		}
 
 		return this;

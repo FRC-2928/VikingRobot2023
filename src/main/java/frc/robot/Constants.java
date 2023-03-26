@@ -110,6 +110,8 @@ public final class Constants {
 	}
 
 	public static final class LimelightFXConstants {
+        public static final boolean disable = true;
+
 		public static final LimelightFX.Color coneColor = new LimelightFX.Color(0, 0, 0);
 
 		public static final LimelightFX.Color cubeFillColor = new LimelightFX.Color(102, 0, 255);
