@@ -213,7 +213,10 @@ public class LimelightFX extends SubsystemBase {
 	/** Writes to the current BurstGuard if it exists or writes directly to serial */
 	private void writeMaybeQueue(final String data) {
 		if(this.burst != null) this.burst.queue(data);
-		else this.serial.writeString(data);
+		else {
+            Log.writeln("Serial: " + data);
+            this.serial.writeString(data);
+        }
 	}
 
 	/**
@@ -385,9 +388,7 @@ public class LimelightFX extends SubsystemBase {
 	 * @param image Image to draw
 	 */
 	public LimelightFX image(final BufferedImage image) {
-		final Rectangle dim = new Rectangle(image.getWidth(), image.getHeight());
-		this.image(image, dim, dim, Optional.empty());
-		return this;
+		return this.image(image, Optional.empty());
 	}
 
 	/**
@@ -397,6 +398,7 @@ public class LimelightFX extends SubsystemBase {
 	 * @param alphaMask Mask color that should indicate pixels that should *not* be drawn
 	 */
 	public LimelightFX image(final BufferedImage image, final Optional<Color> alphaMask) {
+        if(image == null) return this;
 		final Rectangle dim = new Rectangle(image.getWidth(), image.getHeight());
 		this.image(image, dim, dim, alphaMask);
 		return this;
@@ -411,9 +413,13 @@ public class LimelightFX extends SubsystemBase {
 	 */
 	@SuppressWarnings("unlikely-arg-type")
 	public LimelightFX image(final BufferedImage image, Rectangle from, final Rectangle to, final Optional<Color> alphaMask) {
+        if(image == null) return this;
+
 		from = from.intersection(new Rectangle(image.getWidth(), image.getHeight()));
 
 		if(!from.intersects(to)) return this; // Short circuit if nothing actually needs to be drawn
+
+        this.addressable();
 
 		final boolean alpha = alphaMask.isPresent();
 		final Color mask = alphaMask.orElse(null);
