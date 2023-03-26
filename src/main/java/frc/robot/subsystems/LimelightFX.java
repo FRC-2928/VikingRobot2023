@@ -224,8 +224,6 @@ public class LimelightFX extends SubsystemBase {
 
         int n = this.serial.writeString(data);
 
-        //Log.writeln("Serial (" + n + "): " + data);
-
         if(n == 0) this.disable("no response");
     }
 
