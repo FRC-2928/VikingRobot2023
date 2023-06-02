@@ -38,7 +38,8 @@ public class LimelightFX extends SubsystemBase {
 		/** Creates a Color from white value */
 		public Color(final int light) { this(light, light, light); }
 
-		public boolean equals(final Object other) {
+		@Override
+        public boolean equals(final Object other) {
 			if(this != other) return false;
 			if(this instanceof Color) {
 				final Color col = (Color)other;
@@ -222,7 +223,7 @@ public class LimelightFX extends SubsystemBase {
     private void write(final String data) {
         if(this.serial == null) return;
 
-        int n = this.serial.writeString(data);
+        final int n = this.serial.writeString(data);
 
         if(n == 0) this.disable("no response");
     }
@@ -236,7 +237,7 @@ public class LimelightFX extends SubsystemBase {
     /**
      * Disable the FX
      */
-	public void disable(String reason) {
+	public void disable(final String reason) {
         if(this.serial == null) return;
 
         this.serial.close();
@@ -483,7 +484,7 @@ public class LimelightFX extends SubsystemBase {
 	 *
 	 * @param id Save buffer to save to (there are 4)
 	 */
-	public LimelightFX saveFrame(int id) {
+	public LimelightFX saveFrame(final int id) {
 		this.writeMaybeQueue(String.format("save %d\n", id));
 		return this;
 	}
@@ -493,7 +494,7 @@ public class LimelightFX extends SubsystemBase {
 	 *
 	 * @param id Save buffer to load from (there are 4)
 	 */
-	public LimelightFX loadFrame(int id) {
+	public LimelightFX loadFrame(final int id) {
 		this.writeMaybeQueue(String.format("load %d\n", id));
 		return this;
 	}
