@@ -23,7 +23,7 @@ public class Arm extends SubsystemBase {
 	private final Solenoid lockingPiston = new Solenoid(PneumaticsModuleType.REVPH, Constants.PneumaticIDs.armLock);
 
 	public Arm() {
-		for(WPI_TalonFX fx : new WPI_TalonFX[] { this.motorLead, this.motorFollower}) {
+		for(final WPI_TalonFX fx : new WPI_TalonFX[] { this.motorLead, this.motorFollower}) {
 			// Reset settings for safety
 			fx.configFactoryDefault();
 
@@ -79,17 +79,17 @@ public class Arm extends SubsystemBase {
 		if(this.pastTopLimit()) power = Math.max(power, 0.0);
 		if(this.pastBottomLimit()) power = Math.min(power, 0.0);
 
-		double deadbandPower = MathUtil.applyDeadband(power, 0.25);
+		final double deadbandPower = MathUtil.applyDeadband(power, 0.25);
 
 		this.lock(deadbandPower == 0);
 		this.setPower(deadbandPower);
 	}
 
-	public void setPower(double power) {
+	public void setPower(final double power) {
 		this.motorLead.set(ControlMode.PercentOutput, MathUtil.clamp(power, -0.5, 0.5));
 	}
 
-	public void lock(boolean shouldLock) {
+	public void lock(final boolean shouldLock) {
 		this.lockingPiston.set(!shouldLock);
 		this.motorLead.set(ControlMode.PercentOutput, 0.0); // just to be safe
 	}
@@ -108,7 +108,7 @@ public class Arm extends SubsystemBase {
 
 	// Returns whether the arm is far enough out to limit speed - beyond pickup position
 	public boolean armIsOut() {
-		return (getPosition() > ArmConstants.lowPositionCone + 10);
+		return (this.getPosition() > ArmConstants.lowPositionCone + 10);
 	}
 
 	@Override
@@ -116,6 +116,7 @@ public class Arm extends SubsystemBase {
 		if(this.pastBottomLimit() || this.pastTopLimit()) this.halt();
 
 		if(this.motorLead.getSensorCollection().isRevLimitSwitchClosed() == 1) {
+            //System.out.println(this.encoder.getAbsolutePosition());
 			this.encoder.configMagnetOffset(this.encoder.configGetMagnetOffset() - (this.encoder.getAbsolutePosition() - ArmConstants.armLimitSwitchOffset));
 		}
 	}

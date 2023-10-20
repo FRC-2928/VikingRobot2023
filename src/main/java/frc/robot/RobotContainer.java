@@ -47,7 +47,7 @@ public class RobotContainer {
 	public final DriverOI driverOI = new DriverOI(this.driverController);
 	public final OperatorOI operatorOI = new OperatorOI(this.operatorController);
 
-	private SendableChooser<Command> autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain, this.elevator, this.arm, this.intake);
+	private final SendableChooser<Command> autonomousChooser = AutonomousRoutines.createAutonomousChooser(this.drivetrain, this.elevator, this.arm, this.intake);
 
 	public RobotContainer() {
 		SmartDashboard.putData("Autonomous Routine", this.autonomousChooser);
@@ -61,14 +61,14 @@ public class RobotContainer {
 		this.mechElevatorExtension = this.mechElevator.append(new MechanismLigament2d("ElevatorExtension", GlassMechanismConstants.elevator.length, 30, 0, new Color8Bit(255, 0, 0)));
 		this.mechArm = this.mechElevatorExtension.append(new MechanismLigament2d("Arm", GlassMechanismConstants.elevator.length, 30, 0, new Color8Bit(255, 0, 0)));
 
-		SmartDashboard.putData(mech);
+		SmartDashboard.putData(this.mech);
 	}
 
 	private void configureDriverControls() {
 		this.drivetrain.setDefaultCommand(
 			new RunCommand(
 				() -> {
-					double clampTo = this.arm.armIsOut() ? 0.6 : 1;
+					final double clampTo = this.arm.armIsOut() ? 0.6 : 1;
 
 					this.drivetrain.diffDrive.arcadeDrive(
 						Math.min(this.driverOI.getMoveSupplier().getAsDouble() * this.driverOI.getReductFactor() * DrivetrainConstants.manualDriveMultiplier, clampTo),
@@ -90,7 +90,7 @@ public class RobotContainer {
 
 		this.driverOI.getBalanceButton().whileTrue(Balance.manual(this.drivetrain));
 
-		this.driverOI.getCenterOnPoleButton().onTrue(new TurnToPole(drivetrain));
+		this.driverOI.getCenterOnPoleButton().onTrue(new TurnToPole(this.drivetrain));
 
 		this.driverOI.getApproachTagButton().toggleOnTrue(new POVSelector(
 			this.driverOI,
@@ -109,7 +109,7 @@ public class RobotContainer {
 			)
 		));
 
-		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
+		this.driverOI.getRunIntakeButton().whileTrue(new RunIntake(this.intake, IntakeConstants.intakePower));
 
 		this.driverOI.getHaltButton().onTrue(new InstantCommand(() -> {
 			CommandScheduler.getInstance().cancelAll();
@@ -125,36 +125,36 @@ public class RobotContainer {
 		this.elevator.setDefaultCommand(new RunCommand(() -> this.elevator.control(this.operatorOI.getElevatorSupplier().getAsDouble()), this.elevator));
 		this.arm.setDefaultCommand(new RunCommand(() -> this.arm.control(this.operatorOI.getArmSupplier().getAsDouble()), this.arm));
 
-		this.operatorOI.getIntakeButton().whileTrue(new RunIntake(intake, IntakeConstants.intakePower));
-		this.operatorOI.getShootCubeButton().whileTrue(new RunIntake(intake, IntakeConstants.shootCubePower));
-		this.operatorOI.getShootConeButton().whileTrue(new RunIntake(intake, IntakeConstants.shootConePower));
+		this.operatorOI.getIntakeButton().whileTrue(new RunIntake(this.intake, IntakeConstants.intakePower));
+		this.operatorOI.getShootCubeButton().whileTrue(new RunIntake(this.intake, IntakeConstants.shootCubePower));
+		this.operatorOI.getShootConeButton().whileTrue(new RunIntake(this.intake, IntakeConstants.shootConePower));
 
 		this.operatorOI.getInitializeElevatorButton().onTrue(new InitializeElevator(this.elevator));
 
 		this.operatorOI.getArmHigh().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
-		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(arm, ArmConstants.highPosition));
-		this.operatorOI.getArmHigh().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		this.operatorOI.getArmHigh().onTrue(new ArmGoToPosition(this.arm, ArmConstants.highPosition));
+		this.operatorOI.getArmHigh().onTrue(new ElevatorGoToHeight(this.elevator, ElevatorConstants.highHeight));
 		this.operatorOI.getArmMid().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
-		this.operatorOI.getArmMid().onTrue(new ArmGoToPosition(arm, ArmConstants.midPosition));
-		this.operatorOI.getArmMid().onTrue(new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight));
+		this.operatorOI.getArmMid().onTrue(new ArmGoToPosition(this.arm, ArmConstants.midPosition));
+		this.operatorOI.getArmMid().onTrue(new ElevatorGoToHeight(this.elevator, ElevatorConstants.highHeight));
 		this.operatorOI.getArmGroundCube().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
-		this.operatorOI.getArmGroundCube().onTrue(new GroundIntake(elevator, arm, GamePiece.Cube));
+		this.operatorOI.getArmGroundCube().onTrue(new GroundIntake(this.elevator, this.arm, GamePiece.Cube));
 		this.operatorOI.getArmGroundCone().onTrue(new InstantCommand(this.transmission::setLow, this.transmission));
-		this.operatorOI.getArmGroundCone().onTrue(new GroundIntake(elevator, arm, GamePiece.Cone));
+		this.operatorOI.getArmGroundCone().onTrue(new GroundIntake(this.elevator, this.arm, GamePiece.Cone));
 		this.operatorOI.getArmStash().onTrue(
-            new StashIntake(elevator, arm)
+            new StashIntake(this.elevator, this.arm)
                 .alongWith(new InstantCommand(() -> this.displayImage("heart"), this.fx).unless(DriverStation::isAutonomousEnabled))
         );
 
 		this.operatorOI.getArmSubstationCone().onTrue(
-            new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
-                .andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCone))
+            new ElevatorGoToHeight(this.elevator, ElevatorConstants.highHeight)
+                .andThen(new ArmGoToPosition(this.arm, ArmConstants.doubleSubstationCone))
                 .alongWith(new InstantCommand(() -> this.displayImage("cone"), this.fx).unless(DriverStation::isAutonomousEnabled))
                 .alongWith(new InstantCommand(this.transmission::setLow, this.transmission))
 		);
 		this.operatorOI.getArmSubstationCube().onTrue(
-            new ElevatorGoToHeight(elevator, ElevatorConstants.highHeight)
-                .andThen(new ArmGoToPosition(arm, ArmConstants.doubleSubstationCube))
+            new ElevatorGoToHeight(this.elevator, ElevatorConstants.highHeight)
+                .andThen(new ArmGoToPosition(this.arm, ArmConstants.doubleSubstationCube))
                 .alongWith(new InstantCommand(() -> this.displayImage("cube3d"), this.fx).unless(DriverStation::isAutonomousEnabled))
                 .alongWith(new InstantCommand(this.transmission::setLow, this.transmission))
 		);
@@ -169,7 +169,7 @@ public class RobotContainer {
 		}));
 	}
 
-    public void displayImage(String image) {
+    public void displayImage(final String image) {
         this.fx.image(LimelightFXConstants.image(image));
     }
 

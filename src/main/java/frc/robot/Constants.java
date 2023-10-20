@@ -68,7 +68,7 @@ public final class Constants {
 		// A value of ‘1’ represents full output in both directions.
 		public final double peakOutput;
 
-		public Gains(double _kP, double _kI, double _kD, double _kF, int _kIzone, double _kPeakOutput) {
+		public Gains(final double _kP, final double _kI, final double _kD, final double _kF, final int _kIzone, final double _kPeakOutput) {
 			this.P = _kP;
 			this.I = _kI;
 			this.D = _kD;
@@ -119,7 +119,7 @@ public final class Constants {
 
         public static final boolean useImageSignals = true;
 
-        public static BufferedImage image(String name) {
+        public static BufferedImage image(final String name) {
             if(LimelightFXConstants.imageCache.containsKey(name)) return LimelightFXConstants.imageCache.get(name);
 
             try {
@@ -131,7 +131,7 @@ public final class Constants {
                         .toAbsolutePath()
                         .toString()
                 ));
-			} catch(IOException e) {
+			} catch(final IOException e) {
 				Log.error(e);
 				return null;
 			}
@@ -149,7 +149,7 @@ public final class Constants {
 			public final double length;
 			public final double angle;
 
-			Dimension(Color8Bit color, double thickness, double length, double angle) {
+			Dimension(final Color8Bit color, final double thickness, final double length, final double angle) {
 				this.color = color;
 				this.thickness = thickness;
 				this.length = length;
@@ -196,7 +196,7 @@ public final class Constants {
 		public static final int averageLockIntervalTicks = -1925; // distance in encoder ticks between locking piston clicks
 		// public static final int exitHeight = -10000; // min height to allow arm movement
 		// public static final int driveHeight = -9780;
-		public static final int substationHeight = 8545 - 2 * averageLockIntervalTicks;
+		public static final int substationHeight = 8545 - 2 * ElevatorConstants.averageLockIntervalTicks;
 
 		public static final double lowHeight = 13674;
 		public static final double highHeight = -11500 - 500;
@@ -223,7 +223,7 @@ public final class Constants {
 		public static final double inPosition = -109;
 		public static final double defaultPower = .4;
 
-		public static final double armLimitSwitchOffset = -114;
+		public static final double armLimitSwitchOffset = -114 - 3.428;
 		public static final double doubleSubstationCone = -4 - 4;
 		public static final double doubleSubstationCube = -7 - 3;
 
@@ -233,7 +233,7 @@ public final class Constants {
 
 	public static final class DrivetrainConstants {
 		public static final double trackWidthMeters = 0.7; // Placeholder
-		public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
+		public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(DrivetrainConstants.trackWidthMeters);
 
 		public static final double toHighDistance = .2;
 
@@ -241,7 +241,7 @@ public final class Constants {
 		public static final double wheelDiameterMeters = 0.1016;
 
 		// Assumes the encoders are directly mounted on the wheel shafts
-		public static final double kEncoderDistancePerPulse = (wheelDiameterMeters * Math.PI) / (double)encoderCPR;
+		public static final double kEncoderDistancePerPulse = (DrivetrainConstants.wheelDiameterMeters * Math.PI) / (double)DrivetrainConstants.encoderCPR;
 
 		public static final double unitsPerRevolution = 2048;
 
@@ -311,25 +311,25 @@ public final class Constants {
 
 		// Feedforward contraints
 		public static final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(
-			ksVolts,
-			kvVoltSecondsPerMeter,
-			kaVoltSecondsSquaredPerMeter
+			AutoConstants.ksVolts,
+			AutoConstants.kvVoltSecondsPerMeter,
+			AutoConstants.kaVoltSecondsSquaredPerMeter
 		);
 		public static final SimpleMotorFeedforward feedForwardL = new SimpleMotorFeedforward(
-			ksVolts,
-			kvVoltSecondsPerMeter,
-			kaVoltSecondsSquaredPerMeter
+			AutoConstants.ksVolts,
+			AutoConstants.kvVoltSecondsPerMeter,
+			AutoConstants.kaVoltSecondsSquaredPerMeter
 		);
 		public static final SimpleMotorFeedforward feedForwardR = new SimpleMotorFeedforward(
-			ksVolts,
-			kvVoltSecondsPerMeter,
-			kaVoltSecondsSquaredPerMeter
+			AutoConstants.ksVolts,
+			AutoConstants.kvVoltSecondsPerMeter,
+			AutoConstants.kaVoltSecondsSquaredPerMeter
 		);
 		public static final double maxVolts = 10;
 		public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-			feedForward,
+			AutoConstants.feedForward,
 			DrivetrainConstants.driveKinematics,
-			maxVolts
+			AutoConstants.maxVolts
 		);
 
 		public static final double maxSpeedMetersPerSecond = 1.0;
@@ -337,18 +337,18 @@ public final class Constants {
 
 		// Setup trajectory constraints
 		public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-			maxSpeedMetersPerSecond,
-			maxAccelMetersPerSecondSquared
+			AutoConstants.maxSpeedMetersPerSecond,
+			AutoConstants.maxAccelMetersPerSecondSquared
 		)
 			.setKinematics(DrivetrainConstants.driveKinematics)
-			.addConstraint(autoVoltageConstraint);
+			.addConstraint(AutoConstants.autoVoltageConstraint);
 
 		public static final TrajectoryConfig trajectoryConfigReversed = new TrajectoryConfig(
-			maxSpeedMetersPerSecond,
-			maxAccelMetersPerSecondSquared
+			AutoConstants.maxSpeedMetersPerSecond,
+			AutoConstants.maxAccelMetersPerSecondSquared
 		)
 			.setKinematics(DrivetrainConstants.driveKinematics)
-			.addConstraint(autoVoltageConstraint)
+			.addConstraint(AutoConstants.autoVoltageConstraint)
 			.setReversed(true);
 
 		// Reasonable baseline values for a RAMSETE follower in units of meters and
